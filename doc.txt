@@ -1,0 +1,135 @@
+server {
+    server_name gajpatiindustries.com www.gajpatiindustries.com;
+
+    location / {
+        root /var/www/gipl/frontend/dist;
+        try_files $uri /index.html;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/gajpatiindustries.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/gajpatiindustries.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    if ($host = www.gajpatiindustries.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    if ($host = gajpatiindustries.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    listen 80;
+    server_name gajpatiindustries.com www.gajpatiindustries.com;
+
+    return 404; # managed by Certbot
+}
+
+
+
+server {
+    server_name admin.gajpatiindustries.com;
+
+    location / {
+        root /var/www/gipl/admin/dist;
+        try_files $uri /index.html;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/gajpatiindustries.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/gajpatiindustries.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = admin.gajpatiindustries.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name admin.gajpatiindustries.com;
+    return 404; # managed by Certbot
+
+
+}
+
+
+
+
+
+  GNU nano 7.2                                      /etc/nginx/sites-available/api.gajpatiindustries.com.conf                                               server {
+    listen 443 ssl;
+    server_name api.gajpatiindustries.com;
+    ssl_certificate /etc/letsencrypt/live/api.gajpatiindustries.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/api.gajpatiindustries.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    client_max_body_size 50M;
+
+    location / {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+}
+
+server {
+    if ($host = api.gajpatiindustries.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name api.gajpatiindustries.com;
+
+    ret
+
+
+
+
+
+
+
+server {
+    server_name api.gajpatiindustries.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/api.gajpatiindustries.com-0001/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/api.gajpatiindustries.com-0001/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = api.gajpatiindustries.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name api.gajpatiindustries.com;
+    return 404; # managed by Certbot
+
+
+}

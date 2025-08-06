@@ -54,6 +54,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const allowedOrigins = [
+  "https://gajpatiindustries.com",
+  "https://www.gajpatiindustries.com",
+  "https://admin.gajpatiindustries.com",
   "https://gajpatiadminfrontend.onrender.com",
   "https://gajpatifrontend.onrender.com",
   "http://localhost:5173",
