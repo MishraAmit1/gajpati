@@ -14,7 +14,7 @@ export const Footer = () => {
                 <img
                   src={logo}
                   alt="Gajpati Industries Logo"
-                  className="h-10 w-auto" // Adjust height and width as needed
+                  className="h-10 w-auto"
                 />
               </Link>
             </div>
@@ -38,9 +38,6 @@ export const Footer = () => {
               <Link to="/products" className="block text-gray-300 hover:text-amber text-sm">
                 Products
               </Link>
-              <Link to="/plant-availability" className="block text-gray-300 hover:text-amber text-sm">
-                Plant Availability
-              </Link>
               <Link to="/blog" className="block text-gray-300 hover:text-amber text-sm">
                 Infrastructure Insights
               </Link>
@@ -51,11 +48,13 @@ export const Footer = () => {
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Products</h3>
             <div className="space-y-2 text-sm text-gray-300">
-              <p>TARFIX™ Bitumen Emulsions</p>
-              <p>MIXWELL™ Admixtures</p>
-              <p>Waterproofing Systems</p>
-              <p>Industrial Sealants</p>
-              <p>Epoxy Solutions</p>
+              <p>BITMIX Bitumen Solutions</p>
+              <p>GABION Gabions & Rockfall Systems</p>
+              <p>BONDLITE Epoxy Systems</p>
+              <p>SEALMAX Sealants</p>
+              <p>MIXWELL Admixtures</p>
+              <p>CUREMIX Curing Compounds</p>
+              <p>PROOFEX Waterproofing</p>
             </div>
           </div>
 

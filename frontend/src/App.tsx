@@ -9,12 +9,10 @@ import NotFound from './pages/NotFound';
 const About = lazy(() => import('./pages/About'));
 const Products = lazy(() => import('./pages/Products'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
-const PlantAvailability = lazy(() => import('./pages/PlantAvailability'));
 const Blog = lazy(() => import('./pages/Blog'));
 const BlogPost = lazy(() => import('./pages/BlogPost'));
 const Contact = lazy(() => import('./pages/Contact'));
 const ProductList = lazy(() => import('./pages/ProductList'));
-const NatureDetail = lazy(() => import('./pages/NatureDetail'));
 const NatureProducts = lazy(() => import('./pages/NatureProducts'));
 const NatureProductList = lazy(() => import('./pages/NatureProductList'));
 console.log(import.meta.env.API_BASE_URL);
@@ -44,7 +42,6 @@ const App = () => (
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/nature/:id" element={<NatureProducts />} />
               <Route path="/nature/:natureId/products" element={<NatureProductList />} />
-              <Route path="/plant-availability" element={<PlantAvailability />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/contact" element={<Contact />} />
