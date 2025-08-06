@@ -7,11 +7,11 @@ import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Link } from 'react-router-dom';
 import { fetchPlantsWithStats, type PlantWithStats } from '../services/plantStats';
-
-import heroImage1 from '../assets/111.png';
-import heroImage2 from '../assets/1111.png';
-import heroImage3 from '../assets/11111.png';
-import { ArrowRight, CheckCircle, Factory, Shield, Award, Phone, Building2, Beaker, MessageCircleCode } from 'lucide-react';
+import heroImage1 from '../assets/111.webp';
+import heroImage2 from '../assets/1111.webp';
+import heroImage3 from '../assets/11111.webp';
+import heroImage4 from '../assets/111111.webp';
+import { ArrowRight, CheckCircle, Factory, Shield, Award, Building2, Beaker, MessageCircleCode } from 'lucide-react';
 import { fetchProducts } from '../services/product';
 import type { Product } from '../services/product';
 import QuoteModal from "../components/QuoteModal";
@@ -19,14 +19,12 @@ import { handleWhatsAppRedirect } from '../helper/whatsapp';
 const Container = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
   <div className={`max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 ${className}`}>{children}</div>
 );
-
 const LoadingSpinner = () => (
   <div className="text-center py-12">
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber mx-auto"></div>
     <p className="text-gray-600 mt-4">Loading...</p>
   </div>
 );
-
 const ErrorFallback = ({ error }: { error: string }) => (
   <div className="text-center py-12">
     <p className="text-red-500">{error}</p>
@@ -57,7 +55,7 @@ const Index = () => {
   });
 
   // Define the desired plant order
-  const plantOrder = ['bitumen', 'gabions', 'construction chemicals'];
+  const plantOrder = ['bitumen', 'gabions', 'construct'];
 
   // Define static category configurations
   const categoryConfigs = {
@@ -145,9 +143,8 @@ const Index = () => {
       return flagship;
     },
   });
-  console.log(heroImage1, heroImage2, heroImage3);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const backgroundImages = [heroImage1, heroImage2, heroImage3];
+  const backgroundImages = [heroImage1, heroImage2, heroImage3, heroImage4];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => {
@@ -175,23 +172,23 @@ const Index = () => {
           property="og:description"
           content="Trusted by 5000+ projects, Gajpati Industries offers IS/ASTM certified infrastructure chemicals from 5 plants across India since 1998."
         />
-        <meta property="og:image" content="https://yourdomain.com/images/hero-manufacturing.jpg" />
-        <meta property="og:url" content="https://yourdomain.com" />
+        <meta property="og:image" content="https://gajpatiindustries.com/images/hero-manufacturing.jpg" />
+        <meta property="og:url" content="https://gajpatiindustries.com" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Gajpati Industries | Infrastructure Chemicals Manufacturer" />
         <meta
           name="twitter:description"
           content="Trusted by 5000+ projects, Gajpati Industries offers IS/ASTM certified infrastructure chemicals from 5 plants across India since 1998."
         />
-        <meta name="twitter:image" content="https://yourdomain.com/images/hero-manufacturing.jpg" />
-        <link rel="canonical" href="https://yourdomain.com" />
+        <meta name="twitter:image" content="https://gajpatiindustries.com/images/hero-manufacturing.jpg" />
+        <link rel="canonical" href="https://gajpatiindustries.com" />
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": "Gajpati Industries",
-            "url": "https://yourdomain.com",
-            "logo": "https://yourdomain.com/images/logo.png",
+            "url": "https://gajpatiindustries.com",
+            "logo": "https://gajpatiindustries.com/images/logo.webp",
             "description": "India's premier infrastructure chemicals manufacturer, trusted by 5000+ projects since 1998.",
             "contactPoint": {
               "@type": "ContactPoint",
@@ -210,7 +207,7 @@ const Index = () => {
             className="absolute inset-0 flex transition-transform duration-1000 ease-in-out"
             style={{
               transform: `translateX(-${currentImageIndex * 100}vw)`,
-              width: `${backgroundImages.length * 100}%`
+              width: `${backgroundImages.length * 101}%`
             }}
           >
             {backgroundImages.map((image, index) => (
@@ -224,8 +221,6 @@ const Index = () => {
               />
             ))}
           </div>
-
-
           {/* Dots Indicator (optional) */}
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
             {backgroundImages.map((_, index) => (

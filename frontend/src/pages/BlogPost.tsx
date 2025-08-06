@@ -239,32 +239,32 @@ const BlogPost = () => {
           property="og:description"
           content={post.seoDescription || post.excerpt || 'Read expert insights and technical guides from Gajpati Industries.'}
         />
-        <meta property="og:image" content={post.image || 'https://yourdomain.com/images/blog-og.jpg'} />
-        <meta property="og:url" content={`https://yourdomain.com/blog/${post.slug}`} />
+        <meta property="og:image" content={post.image || 'https://gajpatiindustries.com/images/blog-og.jpg'} />
+        <meta property="og:url" content={`https://gajpatiindustries.com/blog/${post.slug}`} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={post.seoTitle || post.title || 'Blog Post | Gajpati Industries'} />
         <meta
           name="twitter:description"
           content={post.seoDescription || post.excerpt || 'Read expert insights and technical guides from Gajpati Industries.'}
         />
-        <meta name="twitter:image" content={post.image || 'https://yourdomain.com/images/blog-og.jpg'} />
-        <link rel="canonical" href={`https://yourdomain.com/blog/${post.slug}`} />
+        <meta name="twitter:image" content={post.image || 'https://gajpatiindustries.com/images/blog-og.jpg'} />
+        <link rel="canonical" href={`https://gajpatiindustries.com/blog/${post.slug}`} />
         <script type="application/ld+json">
           {JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
             'headline': post.title,
             'description': post.seoDescription || post.excerpt,
-            'image': post.image || 'https://yourdomain.com/images/blog-og.jpg',
+            'image': post.image || 'https://gajpatiindustries.com/images/blog-og.jpg',
             'author': { '@type': 'Person', 'name': post.author },
             'datePublished': post.createdAt,
             'dateModified': post.updatedAt,
             'publisher': {
               '@type': 'Organization',
               'name': 'Gajpati Industries',
-              'logo': { '@type': 'ImageObject', 'url': 'https://yourdomain.com/images/logo.png' },
+              'logo': { '@type': 'ImageObject', 'url': 'https://gajpatiindustries.com/images/logo.webp' },
             },
-            'mainEntityOfPage': { '@type': 'WebPage', '@id': `https://yourdomain.com/blog/${post.slug}` },
+            'mainEntityOfPage': { '@type': 'WebPage', '@id': `https://gajpatiindustries.com/blog/${post.slug}` },
             'keywords': post.seoKeywords || post.tags,
           })}
         </script>
@@ -273,13 +273,13 @@ const BlogPost = () => {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://yourdomain.com' },
-              { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': 'https://yourdomain.com/blog' },
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://gajpatiindustries.com' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': 'https://gajpatiindustries.com/blog' },
               {
                 '@type': 'ListItem',
                 'position': 3,
                 'name': post.title.substring(0, 30),
-                'item': `https://yourdomain.com/blog/${post.slug}`,
+                'item': `https://gajpatiindustries.com/blog/${post.slug}`,
               },
             ],
           })}

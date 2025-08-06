@@ -357,6 +357,11 @@ export const NatureProducts = () => {
             setLoading(false);
             return;
         }
+        // Wait for plants to finish loading before checking for currentPlant
+        if (plantsLoading) {
+            setLoading(true);
+            return;
+        }
 
         if (!currentPlant?._id) {
             setError("Plant not found for this category");
@@ -409,7 +414,7 @@ export const NatureProducts = () => {
                 setError("Failed to load product types. Please try again later.");
             })
             .finally(() => setLoading(false));
-    }, [id, currentPlant]);
+    }, [id, currentPlant, plantsLoading]);
 
     // --- Filtering Logic ---
     const filteredNatures = natures.filter((nature) => {
@@ -513,13 +518,14 @@ export const NatureProducts = () => {
                             {capitalizeWords(currentPlant?.name || "Category")}™
                         </h1>
                         {/* Tagline */}
-                        <p className="text-2xl text-white/90 mb-4">
-                            {categoryConfigs[id].tagline}
+                        <p className="text-xl text-white/90 mb-4">
+                            {currentPlant?.description || "Explore our range of products in this category. Each product is designed to meet the highest standards of quality and performance."}
+
                         </p>
                         {/* Description */}
-                        <p className="text-lg text-white/80 mb-8">
+                        {/* <p className="text-lg text-white/80 mb-8">
                             {currentPlant?.description || "Explore our range of products in this category. Each product is designed to meet the highest standards of quality and performance."}
-                        </p>
+                        </p> */}
                         {/* Buttons */}
                         <div className="flex flex-wrap gap-4">
                             <Link to={categoryConfigs[id].linkPdf} target="_blank" className="flex items-center">
@@ -537,7 +543,7 @@ export const NatureProducts = () => {
                 </section>
             </div>
             <div className="min-h-screen bg-background">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12">
                     <div className="container-industrial">
                         {/* Controls */}
                         <div className="flex items-center justify-between">
@@ -592,54 +598,46 @@ export const NatureProducts = () => {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div
-                                        className={
-                                            viewMode === "grid" ? "grid-industrial" : "space-y-4"
-                                        }
-                                    >
-                                        {filteredNatures.length > 0 ? (
-                                            filteredNatures.map((nature, index) => (
-                                                <div
-                                                    key={nature._id}
-                                                    className="fade-in"
-                                                    style={{ animationDelay: `${index * 100}ms` }}
-                                                >
-                                                    {viewMode === "grid" ? (
-                                                        <SubcategoryCard
-                                                            title={nature.name}
-                                                            description={nature.description || "Explore products in this category"}
-                                                            productCount={natureProductCounts[nature._id] || 0}
-                                                            image={nature.image || "https://via.placeholder.com/1200x300"}
-                                                            link={`/nature/${nature._id}/products?categoryId=${id}`}
-                                                            specs={
-                                                                nature.technicalOverview
-                                                                    ? nature.technicalOverview.split(",").map((spec) => spec.trim())
-                                                                    : ["No specifications available"]
-                                                            }
-                                                            keyFeatures={nature.keyFeatures || []}
-                                                            applications={nature.applications || []}
-                                                        />
-                                                    ) : (
-                                                        <SubcategoryListRow
-                                                            title={nature.name}
-                                                            description={nature.description || "Explore products in this category"}
-                                                            productCount={natureProductCounts[nature._id] || 0}
-                                                            image={nature.image || "https://via.placeholder.com/1200x300"}
-                                                            link={`/nature/${nature._id}/products?categoryId=${id}`}
-                                                            specs={
-                                                                nature.technicalOverview
-                                                                    ? nature.technicalOverview.split(",").map((spec) => spec.trim())
-                                                                    : ["No specifications available"]
-                                                            }
-                                                            keyFeatures={nature.keyFeatures || []}
-                                                            applications={nature.applications || []}
-                                                        />
-                                                    )}
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p className="text-gray-600">No product types available.</p>
-                                        )}
+                                    <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
+                                        {filteredNatures.map((nature, index) => (
+                                            <div
+                                                key={nature._id}
+                                                className={`fade-in ${viewMode === "grid" ? "h-[450px]" : ""}`} // Fixed height for grid view
+                                                style={{ animationDelay: `${index * 100}ms` }}
+                                            >
+                                                {viewMode === "grid" ? (
+                                                    <SubcategoryCard
+                                                        title={nature.name}
+                                                        description={nature.description || "Explore products in this category"}
+                                                        productCount={natureProductCounts[nature._id] || 0}
+                                                        image={nature.image || "https://via.placeholder.com/1200x300"}
+                                                        link={`/nature/${nature._id}/products?categoryId=${id}`}
+                                                        specs={
+                                                            nature.technicalOverview
+                                                                ? nature.technicalOverview.split(",").map((spec) => spec.trim())
+                                                                : ["No specifications available"]
+                                                        }
+                                                        keyFeatures={nature.keyFeatures || []}
+                                                        applications={nature.applications || []}
+                                                    />
+                                                ) : (
+                                                    <SubcategoryListRow
+                                                        title={nature.name}
+                                                        description={nature.description || "Explore products in this category"}
+                                                        productCount={natureProductCounts[nature._id] || 0}
+                                                        image={nature.image || "https://via.placeholder.com/1200x300"}
+                                                        link={`/nature/${nature._id}/products?categoryId=${id}`}
+                                                        specs={
+                                                            nature.technicalOverview
+                                                                ? nature.technicalOverview.split(",").map((spec) => spec.trim())
+                                                                : ["No specifications available"]
+                                                        }
+                                                        keyFeatures={nature.keyFeatures || []}
+                                                        applications={nature.applications || []}
+                                                    />
+                                                )}
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>

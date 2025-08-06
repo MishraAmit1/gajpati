@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { cn } from "../lib/utils";
-import logo from "../../public/logo.png"
+import logo from "../../public/logo.webp"
 import QuoteModal from "./QuoteModal";
 
 const navItems = [

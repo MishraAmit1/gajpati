@@ -101,24 +101,24 @@ const Blog = () => {
         <meta name="keywords" content={seoKeywords.join(', ')} />
         <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={seoDescription} />
-        <meta property="og:image" content="https://yourdomain.com/images/blog-og.jpg" />
-        <meta property="og:url" content="https://yourdomain.com/blog" />
+        <meta property="og:image" content="https://gajpatiindustries.com/images/blog-og.jpg" />
+        <meta property="og:url" content="https://gajpatiindustries.com/blog" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={seoTitle} />
         <meta name="twitter:description" content={seoDescription} />
-        <meta name="twitter:image" content="https://yourdomain.com/images/blog-og.jpg" />
-        <link rel="canonical" href="https://yourdomain.com/blog" />
+        <meta name="twitter:image" content="https://gajpatiindustries.com/images/blog-og.jpg" />
+        <link rel="canonical" href="https://gajpatiindustries.com/blog" />
         <script type="application/ld+json">
           {JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Blog',
             'name': 'Gajpati Industries Blog',
-            'url': 'https://yourdomain.com/blog',
+            'url': 'https://gajpatiindustries.com/blog',
             'description': seoDescription,
             'publisher': {
               '@type': 'Organization',
               'name': 'Gajpati Industries',
-              'logo': { '@type': 'ImageObject', 'url': 'https://yourdomain.com/images/logo.png' },
+              'logo': { '@type': 'ImageObject', 'url': 'https://gajpatiindustries.com/images/logo.webp' },
             },
           })}
         </script>
@@ -127,8 +127,8 @@ const Blog = () => {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://yourdomain.com' },
-              { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': 'https://yourdomain.com/blog' },
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://gajpatiindustries.com' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': 'https://gajpatiindustries.com/blog' },
             ],
           })}
         </script>

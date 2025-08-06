@@ -48,8 +48,8 @@ const About = () => {
           property="og:description"
           content="Learn about Gajpati Industries, India's trusted infrastructure chemicals manufacturer since 1998, with 5 plants and 5000+ projects completed."
         />
-        <meta property="og:image" content="https://yourdomain.com/images/about-og.jpg" />
-        <meta property="og:url" content="https://yourdomain.com/about" />
+        <meta property="og:image" content="https://gajpatiindustries.com/images/about-og.jpg" />
+        <meta property="og:url" content="https://gajpatiindustries.com/about" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
@@ -59,15 +59,15 @@ const About = () => {
           name="twitter:description"
           content="Learn about Gajpati Industries, India's trusted infrastructure chemicals manufacturer since 1998, with 5 plants and 5000+ projects completed."
         />
-        <meta name="twitter:image" content="https://yourdomain.com/images/about-og.jpg" />
-        <link rel="canonical" href="https://yourdomain.com/about" />
+        <meta name="twitter:image" content="https://gajpatiindustries.com/images/about-og.jpg" />
+        <link rel="canonical" href="https://gajpatiindustries.com/about" />
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": "Gajpati Industries",
-            "url": "https://yourdomain.com",
-            "logo": "https://yourdomain.com/images/logo.png",
+            "url": "https://gajpatiindustries.com",
+            "logo": "https://gajpatiindustries.com/images/logo.webp",
             "description": "India's premier infrastructure chemicals manufacturer since 1998, trusted by 5000+ projects.",
             "contactPoint": {
               "@type": "ContactPoint",
@@ -82,8 +82,8 @@ const About = () => {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://yourdomain.com" },
-              { "@type": "ListItem", "position": 2, "name": "About", "item": "https://yourdomain.com/about" },
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://gajpatiindustries.com" },
+              { "@type": "ListItem", "position": 2, "name": "About", "item": "https://gajpatiindustries.com/about" },
             ],
           })}
         </script>
@@ -113,7 +113,8 @@ const About = () => {
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-4 text-center font-bold">
               <div className="group">
                 <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-egyptian-blue/10 flex items-center justify-center mb-3 group-hover:bg-egyptian-blue/20 transition-colors duration-300">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full  flex items-center justify-center mb-3 
+                  group-hover:bg-egyptian-blue/20 transition-colors duration-300">
                     <Calendar className="h-8 w-8 sm:h-10 sm:w-10 text-egyptian-blue" />
                   </div>
                   {/* <div className="text-3xl sm:text-4xl font-bold text-egyptian-blue">5+</div> */}
@@ -122,16 +123,16 @@ const About = () => {
               </div>
               <div className="group">
                 <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-egyptian-blue/10 flex items-center justify-center mb-3 group-hover:bg-egyptian-blue/20 transition-colors duration-300">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full  flex items-center justify-center mb-3 group-hover:bg-egyptian-blue/20 transition-colors duration-300">
                     <Factory className="h-8 w-8 sm:h-10 sm:w-10 text-egyptian-blue" />
                   </div>
                   {/* <div className="text-3xl sm:text-4xl font-bold text-egyptian-blue">1</div> */}
-                  <div className="text-gray-600 mt-2 text-sm sm:text-base">1+ Manufacturing Plants</div>
+                  <div className="text-gray-600 mt-2 text-sm sm:text-base">Pan-India Supply</div>
                 </div>
               </div>
               <div className="group">
                 <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-egyptian-blue/10 flex items-center justify-center mb-3 group-hover:bg-egyptian-blue/20 transition-colors duration-300">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full  flex items-center justify-center mb-3 group-hover:bg-egyptian-blue/20 transition-colors duration-300">
                     <Package className="h-8 w-8 sm:h-10 sm:w-10 text-egyptian-blue" />
                   </div>
                   {/* <div className="text-3xl sm:text-4xl font-bold text-egyptian-blue">70+</div> */}
@@ -140,7 +141,7 @@ const About = () => {
               </div>
               <div className="group">
                 <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-egyptian-blue/10 flex items-center justify-center mb-3 group-hover:bg-egyptian-blue/20 transition-colors duration-300">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full  flex items-center justify-center mb-3 group-hover:bg-egyptian-blue/20 transition-colors duration-300">
                     <Wrench className="h-8 w-8 sm:h-10 sm:w-10 text-egyptian-blue" />
                   </div>
                   {/* <div className="text-3xl sm:text-4xl font-bold text-egyptian-blue">50+</div> */}

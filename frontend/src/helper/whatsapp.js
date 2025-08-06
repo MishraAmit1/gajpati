@@ -1,3 +1,3 @@
 export const handleWhatsAppRedirect = () => {
-  window.open("https://wa.me/+917777909218", "_blank");
+  window.open("https://wa.me/+919528355555", "_blank");
 };

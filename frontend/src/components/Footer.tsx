@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Linkedin, Twitter } from "lucide-react";
-import logo from "../../public/logo-footer-removebg-preview.png"
+import logo from "../../public/logo-footer-removebg-preview.webp"
 
 export const Footer = () => {
   return (

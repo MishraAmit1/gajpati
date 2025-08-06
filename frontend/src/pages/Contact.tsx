@@ -168,22 +168,22 @@ const Contact = () => {
           property="og:description"
           content="Connect with Gajpati Industries for project consultations, product specifications, and customized chemical solutions. Submit your inquiry or contact our experts today."
         />
-        <meta property="og:image" content="https://yourdomain.com/images/contact-og.jpg" />
-        <meta property="og:url" content="https://yourdomain.com/contact" />
+        <meta property="og:image" content="https://gajpatiindustries.com/images/contact-og.jpg" />
+        <meta property="og:url" content="https://gajpatiindustries.com/contact" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Contact Us | Gajpati Industries - Get in Touch" />
         <meta
           name="twitter:description"
           content="Connect with Gajpati Industries for project consultations, product specifications, and customized chemical solutions. Submit your inquiry or contact our experts today."
         />
-        <meta name="twitter:image" content="https://yourdomain.com/images/contact-og.jpg" />
-        <link rel="canonical" href="https://yourdomain.com/contact" />
+        <meta name="twitter:image" content="https://gajpatiindustries.com/images/contact-og.jpg" />
+        <link rel="canonical" href="https://gajpatiindustries.com/contact" />
         <script type="application/ld+json">
           {JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Organization',
             'name': 'Gajpati Industries Pvt. Ltd.',
-            'url': 'https://yourdomain.com',
+            'url': 'https://gajpatiindustries.com',
             'contactPoint': [
               {
                 '@type': 'ContactPoint',
@@ -221,8 +221,8 @@ const Contact = () => {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://yourdomain.com' },
-              { '@type': 'ListItem', 'position': 2, 'name': 'Contact', 'item': 'https://yourdomain.com/contact' },
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://gajpatiindustries.com' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Contact', 'item': 'https://gajpatiindustries.com/contact' },
             ],
           })}
         </script>
