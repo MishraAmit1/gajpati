@@ -7,7 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Spinner } from "./Products";
 import QuoteModal from "../components/QuoteModal";
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
-import bitumen from "../assets/bitumen.jpg";
+import bitumen from "../assets/bitumen1.jpg";
 import constructChemical from "../assets/construct.jpg";
 // Define productCategories here or import it if it's in a separate file
 const productCategories = [
@@ -17,7 +17,7 @@ const productCategories = [
         tagline:
             "Comprehensive range of CRMB, PMB, VG & PG grades for road construction and infrastructure projects.",
         bgImage:
-            "https://www.shutterstock.com/image-photo/construction-site-laying-new-asphalt-600nw-1679316820.jpg",
+            bitumen,
         gradient: "from-indigo-900/90 via-blue-800/70 to-cyan-400/20", // Deep blue to sky blue
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Bitumen-Product-Catalogue.pdf",
         plantId: "68808208cf8dba209c5a0b1d",
@@ -28,7 +28,7 @@ const productCategories = [
         tagline:
             "Advanced epoxy adhesives, sealants, admixtures, curing compounds and waterproofing solutions.",
         bgImage: "https://cdn.mos.cms.futurecdn.net/hFHLgTVFX6VJpwPDUzrEtL.jpg",
-        gradient: "from-green-500/70 via-blue-800/70 to-green-400/70", // Dark gray to light gray
+        gradient: "from-gray-500/70 via-blue-800/80 to-gray-400/70", // Dark gray to light gray
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Gabion-Product-Catalogue.pdf",
         plantId: "68808208cf8dba209c5a0b1e",
     },

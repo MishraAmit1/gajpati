@@ -71,7 +71,7 @@ const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: {
         tagline: "Advanced epoxy adhesives, sealants, admixtures, curing compounds and waterproofing solutions.",
         icon: Shield,
         bgImage: "https://cdn.mos.cms.futurecdn.net/hFHLgTVFX6VJpwPDUzrEtL.jpg",
-        gradient: "from-green-500/70 via-blue-800/80 to-green-400/70", // Dark gray to light gray
+        gradient: "from-gray-500/70 via-blue-800/80 to-gray-400/70", // Dark gray to light gray
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Gabion-Product-Catalogue.pdf",
         filters: [
             {

@@ -7,6 +7,7 @@ import { Layout } from './components/Layout';
 import Index from './pages/Index';
 import NotFound from './pages/NotFound';
 const About = lazy(() => import('./pages/About'));
+const Careers = lazy(() => import('./pages/Careers'));
 const Products = lazy(() => import('./pages/Products'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Blog = lazy(() => import('./pages/Blog'));
@@ -38,6 +39,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
+              <Route path="/careers" element={<Careers />} />
               <Route path="/products" element={<Products />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/nature/:id" element={<NatureProducts />} />
