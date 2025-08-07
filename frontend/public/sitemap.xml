@@ -36,13 +36,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  
-  <url>
-    <loc>https://gajpatiindustries.com/product-list</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
+    
   <!-- Nature Category Pages -->
   <url>
     <loc>https://gajpatiindustries.com/nature/bitumen</loc>
