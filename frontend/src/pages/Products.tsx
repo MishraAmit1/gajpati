@@ -308,7 +308,7 @@ const Products = () => {
         </section>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:mt-0 mt-10">
           {!categoryIdFromQuery && !natureIdFromQuery ? (
             <section className="py-8 sm:py-10 bg-gradient-to-b from-background to-slate-50 -mt-10">
               <div className="container-industrial">

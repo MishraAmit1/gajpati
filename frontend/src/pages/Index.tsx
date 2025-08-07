@@ -55,7 +55,7 @@ const Index = () => {
   });
 
   // Define the desired plant order
-  const plantOrder = ['bitumen', 'gabions', 'construct'];
+  const plantOrder = ['gabions', 'bitumen', 'construct'];
 
   // Define static category configurations
   const categoryConfigs = {
@@ -129,7 +129,7 @@ const Index = () => {
     queryKey: ['flagshipProducts'],
     queryFn: () => fetchProducts(20),
     staleTime: 5 * 60 * 1000,
-    enabled: !!Object.keys(plantMap).length, // Only fetch if plantMap is populated
+    enabled: !!Object.keys(plantMap).length,
     select: (allProducts) => {
       const flagship: Product[] = [];
       // Follow plantOrder for flagship products
@@ -293,10 +293,10 @@ const Index = () => {
             <Container>
               <div className="text-center mb-8 sm:mb-12">
                 <h2 className="font-display font-bold text-2xl sm:text-4xl text-egyptian-blue mb-2 sm:mb-4">
-                  Industrial Chemical Solutions Portfolio
+                  Infrastructure Material Solutions
                 </h2>
                 <p className="text-gray-600 max-w-xl sm:max-w-3xl mx-auto text-sm sm:text-base">
-                  Tailored product categories that deliver strength, reliability, and performance — for every infrastructure challenge.
+                  Tailored product categories that deliver strength, reliability, and performance for every infrastructure challenge.
                 </p>
               </div>
               {plantsLoading ? (
@@ -364,6 +364,7 @@ const Index = () => {
                 <h2 className="font-display font-bold text-2xl sm:text-4xl text-egyptian-blue mb-4 sm:mb-6">
                   Trusted by India's Leading Infrastructure Projects
                 </h2>
+                <p className="mb-8">Backed by 25+ years of legacy through our parent company, A&T Infracon — Gajpati Industries is committed to supplying performance-driven materials across India’s most critical infrastructure projects.</p>
                 <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                   <div className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-600 mr-2 sm:mr-3" />
@@ -388,19 +389,19 @@ const Index = () => {
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
                 <Card className="shadow-card text-center p-4 sm:p-6">
-                  <div className="text-2xl sm:text-2xl font-bold text-egyptian-blue">Sister Company of A&T Infracon</div>
+                  <div className="text-xl sm:text-2xl font-bold text-egyptian-blue mt-4">Backed by A&T Infracon</div>
                   <div className="text-gray-600 text-sm sm:text-base">Since 1998</div>
                 </Card>
                 <Card className="shadow-card text-center p-4 sm:p-6">
-                  <div className="text-2xl sm:text-2xl font-bold text-egyptian-blue">5+</div>
-                  <div className="text-gray-600 text-sm sm:text-base">Materials Manufacturing Excellence</div>
+                  <div className="text-3xl sm:text-5xl md:font-[500] font-bold text-egyptian-blue mt-5">5+ </div>
+                  <div className="text-gray-600 text-sm sm:text-base">Years of R&D</div>
                 </Card>
                 <Card className="shadow-card text-center p-4 sm:p-6">
-                  <div className="text-2xl sm:text-2xl font-bold text-egyptian-blue">Comprehensive Portfolio</div>
+                  <div className="text-xl sm:text-2xl font-bold text-egyptian-blue">Comprehensive Portfolio</div>
                   <div className="text-gray-600 text-sm sm:text-base">Bitumen, Gabions & Construction Chemicals</div>
                 </Card>
                 <Card className="shadow-card text-center p-4 sm:p-6">
-                  <div className="text-2xl sm:text-2xl font-bold text-egyptian-blue">Pan-India Reach</div>
+                  <div className="text-xl sm:text-2xl font-bold text-egyptian-blue mt-3">Pan-India <br />Reach</div>
                   <div className="text-gray-600 text-sm sm:text-base">Supply Capability</div>
                 </Card>
               </div>
@@ -445,7 +446,7 @@ const Index = () => {
                         <Badge variant="secondary" className="mb-1 sm:mb-2">
                           {product.category || 'Product'}
                         </Badge>
-                        <h3 className="font-semibold text-base sm:text-lg mb-1 sm:mb-2">{product.name}</h3>
+                        <h3 className="font-semibold text-base sm:text-lg mb-1 sm:mb-2">Gajpati {product.abbreviation}</h3>
                         <p className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-4">{product.shortDescription}</p>
                         <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
                           <Badge variant="outline" className="text-amber border-amber text-xs">

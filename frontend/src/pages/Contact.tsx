@@ -31,7 +31,7 @@ const InteractiveMap = () => (
   <section className="py-0">
     <div className="w-full h-96">
       <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14964.487569207819!2d72.92556826738284!3d20.33658255030062!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be0cfa73a797947%3A0xaa1cef7299a3ed78!2sCaP%20Multispeciality%20Dental%20Clinic%20%2C%20Vapi!5e0!3m2!1sen!2sin!4v1752569371144!5m2!1sen!2sin"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3363.66593850005!2d75.1203227!3d32.53506799999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391c192d60165219%3A0x9a6921bc9ffe5a89!2sGajpati%20Industries%20Pvt%20Ltd!5e0!3m2!1sen!2sin!4v1754547734807!5m2!1sen!2sin"
         width="100%"
         height="100%"
         style={{ border: 0 }}
@@ -551,18 +551,27 @@ const Contact = () => {
                       Technical Support
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="text-sm">
-                      <div className="font-semibold mb-1">Technical Helpline</div>
-                      <div className="text-gray-600">+91 95283 55555</div>
-                    </div>
-                    <div className="text-sm">
-                      <div className="font-semibold mb-1">Email</div>
-                      <div className="text-gray-600">technical@gajpatiindustries.com</div>
-                    </div>
-                    <div className="text-sm">
-                      <div className="font-semibold mb-1">Available</div>
-                      <div className="text-gray-600">Mon-Fri, 9 AM - 6 PM</div>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <div>
+                          <div className="font-semibold">Technical Helpline</div>
+                          <div className="text-gray-600">+91 95283 55555</div>
+                          <div className="text-sm text-gray-500">Mon-Sat, 9 AM - 7 PM</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <div>
+                          <div className="font-semibold">Email</div>
+                          <div className="text-gray-600">sales@gajpatiindustries.com</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <div>
+                          <div className="font-semibold">Available</div>
+                          <div className="text-sm text-gray-500">Mon-Fri, 9 AM - 6 PM</div>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -573,27 +582,26 @@ const Contact = () => {
                       Head Office
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2 text-sm">
-                      <div className="font-semibold">Gajpati Industries Pvt. Ltd.</div>
-                      <div className="text-gray-600">
-                        Near Power Grid, SIDCO IGC Phase III
-                        <br />
-                        Samba, Jammu, J&K 184121, India
-                      </div>
-                      <div className="pt-4 space-y-2">
-                        <div className="flex items-center text-xs text-gray-500">
-                          <Shield className="h-3 w-3 mr-1" />
-                          ISO 9001:2015 Certified
-                        </div>
-                        <div className="flex items-center text-xs text-gray-500">
-                          <Shield className="h-3 w-3 mr-1" />
-                          NDA Available on Request
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <div>
+                          <div className="font-semibold">Gajpati Industries Pvt. Ltd.</div>
+                          <div className="text-sm text-gray-500">Near Power Grid, SIDCO IGC Phase III
+                            Samba, Jammu, J&K 184121, India</div>
                         </div>
                       </div>
+                      <div className="flex items-start space-x-3">
+                        <div>
+                          <div className="text-gray-500 text-sm">ISO 9001:2015 Certified</div>
+                          <div className="text-gray-500 text-sm">NDA Available on Request</div>
+                        </div>
+                      </div>
+
                     </div>
                   </CardContent>
                 </Card>
+
                 <div className="space-y-3">
                   <PopupButton
                     url="https://calendly.com/amsmisho/30min"
@@ -614,7 +622,7 @@ const Contact = () => {
             </div>
           </Container>
         </section>
-        <LazyLoad height={200} offset={100}>
+        {/* <LazyLoad height={200} offset={100}>
           <section className="py-16 bg-platinum/20">
             <Container>
               <div className="text-center mb-12">
@@ -639,7 +647,7 @@ const Contact = () => {
               </div>
             </Container>
           </section>
-        </LazyLoad>
+        </LazyLoad> */}
         <section className="py-0">
           <InteractiveMap />
         </section>

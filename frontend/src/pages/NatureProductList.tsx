@@ -7,7 +7,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Spinner } from "./Products";
 import QuoteModal from "../components/QuoteModal";
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
-
+import bitumen from "../assets/bitumen.jpg";
+import constructChemical from "../assets/construct.jpg";
 // Define productCategories here or import it if it's in a separate file
 const productCategories = [
     {
@@ -17,8 +18,8 @@ const productCategories = [
             "Comprehensive range of CRMB, PMB, VG & PG grades for road construction and infrastructure projects.",
         bgImage:
             "https://www.shutterstock.com/image-photo/construction-site-laying-new-asphalt-600nw-1679316820.jpg",
+        gradient: "from-indigo-900/90 via-blue-800/70 to-cyan-400/20", // Deep blue to sky blue
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Bitumen-Product-Catalogue.pdf",
-
         plantId: "68808208cf8dba209c5a0b1d",
     },
     {
@@ -27,6 +28,7 @@ const productCategories = [
         tagline:
             "Advanced epoxy adhesives, sealants, admixtures, curing compounds and waterproofing solutions.",
         bgImage: "https://cdn.mos.cms.futurecdn.net/hFHLgTVFX6VJpwPDUzrEtL.jpg",
+        gradient: "from-green-500/70 via-blue-800/70 to-green-400/70", // Dark gray to light gray
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Gabion-Product-Catalogue.pdf",
         plantId: "68808208cf8dba209c5a0b1e",
     },
@@ -35,8 +37,8 @@ const productCategories = [
         name: "Construct Chemicals",
         tagline:
             "Engineered gabion mesh, boxes and rockfall netting systems for erosion control and stabilization.",
-        bgImage:
-            "https://backgroundimages.withfloats.com/actual/5bd1af4f3f02cc0001c0f035.jpg",
+        bgImage: constructChemical,
+        gradient: "from-yellow-500/70 via-blue-800/50 to-yellow-400/70", // Dark yellow to bright yellow
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Construct-Product-Catalogue.pdf",
         plantId: "68808208cf8dba209c5a0b1f",
     },
@@ -237,7 +239,8 @@ const NatureProductList = () => {
                         aria-hidden="true"
                     />
                     {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-glow opacity-90" />
+
+                    <div className={`absolute inset-0 bg-gradient-to-br ${currentCategory?.gradient || 'from-gray-900/90 via-gray-700/80 to-gray-400/70'}`} />
 
                     {/* Content */}
                     <div className="relative z-10 p-6 md:p-12 text-white">
@@ -261,7 +264,7 @@ const NatureProductList = () => {
                             </p>
                             <div className="flex flex-wrap gap-4">
                                 <Link to={currentCategory?.linkPdf || "#"} target="_blank" className="flex items-center">
-                                    <Button variant="secondary" size="lg" className="bg-accent hover:bg-accent/90">
+                                    <Button variant="secondary" size="lg" className="bg-accent hover:bg-accent/90 text-black">
                                         Download Complete Catalog
                                     </Button>
                                 </Link>
@@ -323,7 +326,7 @@ const NatureProductList = () => {
                                                         <p className="text-sm text-gray-500 mt-1 mb-3">
                                                             {product.name}
                                                         </p>
-                                                        <p className="text-sm text-muted-foreground mt-1 ">
+                                                        <p className="text-sm text-muted-foreground mt-1 mr-24">
                                                             {product.shortDescription}
                                                         </p>
                                                     </div>

@@ -16,7 +16,8 @@ import { Spinner } from "./Products";
 import { SubcategoryListRow } from "./SubcategoryListRow";
 import QuoteModal from "../components/QuoteModal";
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
-
+import bitumen from "../assets/bitumen.jpg";
+import constructChemical from "../assets/construct_chemical.jpg";
 // --- Interfaces ---
 interface Nature {
     _id: string;
@@ -44,11 +45,12 @@ interface ProductCategory {
 }
 
 // --- Static Category Configurations ---
-const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: { title: string; options: string[] }[]; bgImage: string } } = {
+const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: { title: string; options: string[] }[]; bgImage: string; gradient: string } } = {
     bitumen: {
         tagline: "Trusted Bitumen Technologies for Every Road",
         icon: Building2,
-        bgImage: "https://www.constructionworld.in/assets/uploads/s_ae40e2939eb212f9b98fc628c69fbf5a.jpg",
+        bgImage: bitumen,
+        gradient: "from-indigo-500/40 via-blue-800/80 to-cyan-400/40", // Deep blue to sky blue
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Bitumen-Product-Catalogue.pdf",
         filters: [
             {
@@ -69,6 +71,7 @@ const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: {
         tagline: "Advanced epoxy adhesives, sealants, admixtures, curing compounds and waterproofing solutions.",
         icon: Shield,
         bgImage: "https://cdn.mos.cms.futurecdn.net/hFHLgTVFX6VJpwPDUzrEtL.jpg",
+        gradient: "from-green-500/70 via-blue-800/80 to-green-400/70", // Dark gray to light gray
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Gabion-Product-Catalogue.pdf",
         filters: [
             {
@@ -88,7 +91,8 @@ const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: {
     construct: {
         tagline: "Engineered gabion mesh, boxes and rockfall netting systems for erosion control and stabilization.",
         icon: Beaker,
-        bgImage: "https://backgroundimages.withfloats.com/actual/5bd1af4f3f02cc0001c0f035.jpg",
+        bgImage: constructChemical,
+        gradient: "from-yellow-500/20 via-blue-800/80 to-yellow-400/70", // Dark yellow to bright yellow
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Construct-Product-Catalogue.pdf",
         filters: [
             {
@@ -106,6 +110,7 @@ const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: {
         ],
     },
 };
+
 
 // --- Mapping for Short Forms to Full Names ---
 const gradeTypeMapping: { [key: string]: string[] } = {
@@ -503,29 +508,25 @@ export const NatureProducts = () => {
                         backgroundImage: `url(${categoryConfigs[id].bgImage})`,
                     }}
                 >
-                    {/* Blue Overlay */}
-                    <div className="absolute inset-0 bg-blue-900/70"></div>
+                    {/* Gradient Overlay - Updated to use dynamic gradient */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${categoryConfigs[id].gradient}`}></div>
+
                     {/* Content */}
                     <div className="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto px-4 py-16">
                         {/* Icon */}
-                        <div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center mb-6">
+                        <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-6 shadow-lg">
                             <span className="text-3xl text-white">
                                 {IconComponent ? <IconComponent /> : <Building2 />}
                             </span>
                         </div>
                         {/* Heading */}
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg">
                             {capitalizeWords(currentPlant?.name || "Category")}™
                         </h1>
                         {/* Tagline */}
-                        <p className="text-xl text-white/90 mb-4">
+                        <p className="text-xl text-white/95 mb-4 drop-shadow-md">
                             {currentPlant?.description || "Explore our range of products in this category. Each product is designed to meet the highest standards of quality and performance."}
-
                         </p>
-                        {/* Description */}
-                        {/* <p className="text-lg text-white/80 mb-8">
-                            {currentPlant?.description || "Explore our range of products in this category. Each product is designed to meet the highest standards of quality and performance."}
-                        </p> */}
                         {/* Buttons */}
                         <div className="flex flex-wrap gap-4">
                             <Link to={categoryConfigs[id].linkPdf} target="_blank" className="flex items-center">
@@ -542,8 +543,8 @@ export const NatureProducts = () => {
                     </div>
                 </section>
             </div>
-            <div className="min-h-screen bg-background">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12">
+            <div className="min-h-screen bg-background mb-20 -mt-32">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="container-industrial">
                         {/* Controls */}
                         <div className="flex items-center justify-between">
