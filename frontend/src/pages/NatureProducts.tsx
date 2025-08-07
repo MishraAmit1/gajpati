@@ -50,7 +50,7 @@ const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: {
         tagline: "Trusted Bitumen Technologies for Every Road",
         icon: Building2,
         bgImage: bitumen,
-        gradient: "from-indigo-500/40 via-blue-800/80 to-cyan-400/40", // Deep blue to sky blue
+        gradient: "from-gray-500/40 via-blue-800/80 to-gray-500/40", // Deep blue to sky blue
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Bitumen-Product-Catalogue.pdf",
         filters: [
             {
@@ -80,7 +80,7 @@ const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: {
             },
             {
                 title: "Application",
-                options: ["Building Construction", "Waterproofing", "Repair"],
+                options: ["Retaining Walls", "Rockfall Protection", "Slope Stabilization", 'Highway Protection'],
             },
             {
                 title: "Packaging",
@@ -101,7 +101,7 @@ const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: {
             },
             {
                 title: "Application",
-                options: ["Erosion Control", "Slope Stabilization", "Retaining Walls"],
+                options: ["Ready-mix concrete", "Industrial flooring", "Concrete repair"],
             },
             {
                 title: "Size",
@@ -215,6 +215,7 @@ const FilterSidebar = ({
     );
 };
 
+
 // --- SubcategoryCard Component ---
 const SubcategoryCard = ({
     title,
@@ -236,45 +237,55 @@ const SubcategoryCard = ({
     specs: string[];
 }) => {
     return (
-        <Link to={link} className="block group">
-            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-5 flex flex-col h-full">
-                {/* Image */}
-                <div className="relative mb-4 overflow-hidden rounded-lg aspect-[4/3]">
+        <Link to={link} className="block group h-full">
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-5 flex flex-col h-[480px]"> {/* Fixed height */}
+                {/* Image - Fixed height */}
+                <div className="relative mb-4 overflow-hidden rounded-lg h-48 flex-shrink-0">
                     <img src={image} alt={title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
                 </div>
-                {/* Title */}
-                <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">
-                    {title}
-                </h3>
-                {/* Description */}
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-3 line-clamp-3">
-                    {description}
-                </p>
-                {/* Applications */}
-                {applications.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-2">
-                        {applications.slice(0, 3).map((feature, idx) => (
-                            <span
-                                key={idx}
-                                className="bg-primary/10 text-primary text-xs px-2 py-1 rounded font-medium"
-                            >
-                                {feature}
-                            </span>
-                        ))}
-                        {applications.length > 3 && (
-                            <span className="text-xs text-zinc-400">+{applications.length - 3} more</span>
-                        )}
-                    </div>
-                )}
-                {/* Footer */}
-                <div className="flex items-center justify-between mt-auto pt-2">
-                    <span className="text-xs text-zinc-400">
-                        {productCount} product{productCount !== 1 ? "s" : ""}
-                    </span>
-                    <div className="flex items-center text-primary font-medium text-sm group-hover:text-primary-dark transition-colors">
-                        <span>Explore</span>
-                        <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+
+                {/* Content container with flex-grow */}
+                <div className="flex flex-col flex-grow overflow-hidden">
+                    {/* Title - Fixed space */}
+                    <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                        {title}
+                    </h3>
+
+                    {/* Description - Fixed space with line clamp */}
+                    <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-3 line-clamp-3">
+                        {description}
+                    </p>
+
+                    {/* Applications - Fixed space */}
+                    {applications.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-3 min-h-[32px]">
+                            {applications.slice(0, 3).map((feature, idx) => (
+                                <span
+                                    key={idx}
+                                    className="bg-primary/10 text-primary text-xs px-2 py-1 rounded font-medium"
+                                >
+                                    {feature}
+                                </span>
+                            ))}
+                            {applications.length > 3 && (
+                                <span className="text-xs text-zinc-400 self-center">+{applications.length - 3} more</span>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Spacer to push footer down */}
+                    <div className="flex-grow"></div>
+
+                    {/* Footer - Always at bottom */}
+                    <div className="flex items-center justify-between pt-3 border-t border-zinc-100 dark:border-zinc-800">
+                        <span className="text-xs text-zinc-400">
+                            {productCount} product{productCount !== 1 ? "s" : ""}
+                        </span>
+                        <div className="flex items-center text-primary font-medium text-sm group-hover:text-primary-dark transition-colors">
+                            <span>Explore</span>
+                            <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -603,7 +614,7 @@ export const NatureProducts = () => {
                                         {filteredNatures.map((nature, index) => (
                                             <div
                                                 key={nature._id}
-                                                className={`fade-in ${viewMode === "grid" ? "h-[450px]" : ""}`} // Fixed height for grid view
+                                                className="fade-in"
                                                 style={{ animationDelay: `${index * 100}ms` }}
                                             >
                                                 {viewMode === "grid" ? (
