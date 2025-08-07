@@ -1,9 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import emailjs from 'emailjs-com';
 import {
     Briefcase, MapPin, Clock, Users, TrendingUp, Heart, Award, Building2,
     GraduationCap, Mail, ChevronRight, CheckCircle, X
@@ -13,14 +12,16 @@ const Container = ({ children, className = '' }) => (
     <div className={`max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 ${className}`}>{children}</div>
 );
 
-
 const Careers = () => {
     const [selectedDepartment, setSelectedDepartment] = useState('all');
     const [showModal, setShowModal] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
-    const [formError, setFormError] = useState('');
-    const [formSuccess, setFormSuccess] = useState('');
-    const formRef = useRef();
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: ''
+    });
+
     // Job openings data
     const jobOpenings = [
         {
@@ -150,48 +151,53 @@ const Careers = () => {
         ? jobOpenings
         : jobOpenings.filter(job => job.department === selectedDepartment);
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file && file.size > 1024 * 1024) { // 1MB
-            setFormError('File size should be less than 1MB.');
-            e.target.value = '';
-            return;
-        }
-        setFormError('');
-    };
     const handleApplyClick = (job) => {
         setSelectedJob(job);
-        setFormError('');
-        setFormSuccess('');
+        setFormData({ name: '', email: '', phone: '' });
         setShowModal(true);
     };
-    // heelo hoe are you 
+
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedJob(null);
     };
-    // Form change handler
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setFormError('');
-        setFormSuccess('Submitting...');
 
-        emailjs.sendForm(
-            'service_a69cmrl', // Your Service ID
-            'template_8xdw0wg', // Your Template ID
-            formRef.current,
-            'tuMby3K1-jT62DW4C' // <-- Replace with your EmailJS public key
-        ).then(
-            (result) => {
-                setFormSuccess('Application submitted! We will contact you soon.');
-                setTimeout(() => setShowModal(false), 2000);
-            },
-            (error) => {
-                setFormError('Failed to send application. Please try again.');
-            }
-        );
+    const handleInputChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        // Create WhatsApp message
+        const message = `Hello! I would like to apply for the position of *${selectedJob?.title}*
+
+*Applicant Details:*
+Name: ${formData.name}
+Email: ${formData.email}
+Phone: ${formData.phone}
+Position: ${selectedJob?.title}
+Department: ${selectedJob?.department}
+Location: ${selectedJob?.location}
+
+I am interested in this opportunity and would like to share my resume.`;
+
+        // Encode message for URL
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappNumber = '917777909218'; // Added country code 91 for India
+        const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+        // Open WhatsApp
+        window.open(whatsappURL, '_blank');
+
+        // Close modal after redirect
+        setTimeout(() => {
+            setShowModal(false);
+        }, 1000);
+    };
 
     return (
         <>
@@ -216,6 +222,7 @@ const Careers = () => {
                         </div>
                     </Container>
                 </section>
+
                 {/* Why Join Us Section */}
                 <section className="py-12 sm:py-16 bg-gray-50">
                     <Container>
@@ -385,7 +392,7 @@ const Careers = () => {
                                 Our Application Process
                             </h2>
                             <p className="text-gray-600 max-w-2xl mx-auto">
-                                We value transparency and efficiency. Here’s what you can expect after applying:
+                                We value transparency and efficiency. Here's what you can expect after applying:
                             </p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -423,6 +430,8 @@ const Careers = () => {
                         </div>
                     </Container>
                 </section>
+
+                {/* Modal */}
                 {showModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
                         <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 relative">
@@ -435,18 +444,14 @@ const Careers = () => {
                             </button>
                             <div className="p-6">
                                 <h2 className="text-xl font-bold mb-2 text-egyptian-blue">Apply for {selectedJob?.title}</h2>
-                                <form
-                                    ref={formRef}
-                                    onSubmit={handleSubmit}
-                                    className="space-y-4"
-                                    encType="multipart/form-data"
-                                >
-                                    <input type="hidden" name="position" value={selectedJob?.title || ''} />
+                                <form onSubmit={handleSubmit} className="space-y-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                                         <input
                                             type="text"
                                             name="name"
+                                            value={formData.name}
+                                            onChange={handleInputChange}
                                             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
                                             required
                                         />
@@ -456,6 +461,8 @@ const Careers = () => {
                                         <input
                                             type="email"
                                             name="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
                                             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
                                             required
                                         />
@@ -465,26 +472,15 @@ const Careers = () => {
                                         <input
                                             type="tel"
                                             name="phone"
+                                            value={formData.phone}
+                                            onChange={handleInputChange}
                                             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
                                             required
                                         />
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Resume (PDF/DOC)</label>
-                                        <input
-                                            type="file"
-                                            name="resume"
-                                            accept=".pdf,.doc,.docx"
-                                            className="w-full"
-                                            required
-                                            onChange={handleFileChange}
-                                        />
-                                    </div>
-                                    {formError && <div className="text-red-600 text-sm">{formError}</div>}
-                                    {formSuccess && <div className="text-green-600 text-sm">{formSuccess}</div>}
                                     <div className="pt-2">
                                         <Button type="submit" variant="cta" className="w-full">
-                                            Submit Application
+                                            Apply via WhatsApp
                                         </Button>
                                     </div>
                                 </form>
