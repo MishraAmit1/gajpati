@@ -187,7 +187,7 @@ I am interested in this opportunity and would like to share my resume.`;
 
         // Encode message for URL
         const encodedMessage = encodeURIComponent(message);
-        const whatsappNumber = '917777909218'; // Added country code 91 for India
+        const whatsappNumber = '919528355555'; // Added country code 91 for India
         const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
         // Open WhatsApp
