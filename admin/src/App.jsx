@@ -20,7 +20,7 @@ import Blogs from "./pages/Blogs";
 import Inquiries from "./pages/Inquiries";
 import Users from "./pages/Users";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+// import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import NatureView from "./pages/NatureView";
 import ProductCreate from "./pages/ProductCreate";
@@ -58,14 +58,14 @@ function App() {
                 </AuthRedirect>
               }
             />
-            <Route
+            {/* <Route
               path="/signup"
               element={
                 <AuthRedirect>
                   <Signup />
                 </AuthRedirect>
               }
-            />
+            /> */}
             <Route
               path="/forgot-password"
               element={
