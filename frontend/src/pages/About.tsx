@@ -26,7 +26,7 @@ const LeaderImage = ({ src, alt }: { src: string; alt: string }) => (
     />
   </div>
 );
-
+// done
 const About = () => {
   return (
     <>
