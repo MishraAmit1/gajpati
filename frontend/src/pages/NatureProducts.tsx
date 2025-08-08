@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Filter, Grid, List, ArrowRight, Download, Mail, Building2, Shield, Beaker, MessageCircleCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import {
     Sheet,
     SheetContent,
@@ -28,6 +29,9 @@ interface Nature {
     keyFeatures: string[];
     applications: string[];
     plantId: { _id: string; name: string };
+    seoTitle: string;
+    seoDescription: string;
+    seoKeywords: string[];
 }
 
 interface ProductCategory {
@@ -45,71 +49,45 @@ interface ProductCategory {
 }
 
 // --- Static Category Configurations ---
-const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: { title: string; options: string[] }[]; bgImage: string; gradient: string } } = {
+const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: { title: string; options: string[] }[]; bgImage: string; gradient: string; linkPdf: string } } = {
     bitumen: {
         tagline: "Trusted Bitumen Technologies for Every Road",
         icon: Building2,
         bgImage: bitumen,
-        gradient: "from-gray-500/40 via-blue-800/80 to-gray-500/40", // Deep blue to sky blue
+        gradient: "from-gray-500/40 via-blue-800/80 to-gray-500/40",
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Bitumen-Product-Catalogue.pdf",
         filters: [
-            {
-                title: "Grade Type",
-                options: ["CRMB", "PMB", "VG", "PG", "PR", "CB", "BM"],
-            },
-            {
-                title: "Application",
-                options: ["Road Construction", "Waterproofing", "Industrial"],
-            },
-            {
-                title: "Packaging",
-                options: ["50kg Drums", "200kg Drums", "Bulk"],
-            },
+            { title: "Grade Type", options: ["CRMB", "PMB", "VG", "PG", "PR", "CB", "BM"] },
+            { title: "Application", options: ["Road Construction", "Waterproofing", "Industrial"] },
+            { title: "Packaging", options: ["50kg Drums", "200kg Drums", "Bulk"] },
         ],
     },
     gabion: {
         tagline: "Advanced epoxy adhesives, sealants, admixtures, curing compounds and waterproofing solutions.",
         icon: Shield,
         bgImage: "https://cdn.mos.cms.futurecdn.net/hFHLgTVFX6VJpwPDUzrEtL.jpg",
-        gradient: "from-gray-500/70 via-blue-800/80 to-gray-400/70", // Dark gray to light gray
+        gradient: "from-gray-500/70 via-blue-800/80 to-gray-400/70",
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Gabion-Product-Catalogue.pdf",
         filters: [
-            {
-                title: "Product Type",
-                options: ["Gabion Structures", "Rockfall Protection"],
-            },
-            {
-                title: "Application",
-                options: ["Retaining Walls", "Rockfall Protection", "Slope Stabilization", 'Highway Protection'],
-            },
-            {
-                title: "Packaging",
-                options: ["1m x 1m", "2m x 1m", "3m x 1m"],
-            },
+            { title: "Product Type", options: ["Gabion Structures", "Rockfall Protection"] },
+            { title: "Application", options: ["Retaining Walls", "Rockfall Protection", "Slope Stabilization", "Highway Protection"] },
+            { title: "Packaging", options: ["1m x 1m", "2m x 1m", "3m x 1m"] },
         ],
     },
     construct: {
         tagline: "Engineered gabion mesh, boxes and rockfall netting systems for erosion control and stabilization.",
         icon: Beaker,
         bgImage: constructChemical,
-        gradient: "from-yellow-500/20 via-blue-800/80 to-yellow-400/70", // Dark yellow to bright yellow
+        gradient: "from-yellow-500/20 via-blue-800/80 to-yellow-400/70",
         linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Construct-Product-Catalogue.pdf",
         filters: [
-            {
-                title: "Product Type",
-                options: ["Admixture", "Curing Compound", "Epoxy", "Sealants", "Waterproofing"],
-            },
-            {
-                title: "Application",
-                options: ["Ready-mix concrete", "Industrial flooring", "Concrete repair"],
-            },
-            {
-                title: "Size",
-                options: ["5L Cans", "20L Drums", "200L Drums"],
-            },
+            { title: "Product Type", options: ["Admixture", "Curing Compound", "Epoxy", "Sealants", "Waterproofing"] },
+            { title: "Application", options: ["Ready-mix concrete", "Industrial flooring", "Concrete repair"] },
+            { title: "Size", options: ["5L Cans", "20L Drums", "200L Drums"] },
         ],
     },
 };
+
 
 
 // --- Mapping for Short Forms to Full Names ---
@@ -459,6 +437,26 @@ export const NatureProducts = () => {
             return true;
         });
     });
+    // Dynamic SEO metadata
+    const seoTitle = currentPlant
+        ? `${capitalizeWords(currentPlant.name)} Products | Gajpati Industries`
+        : `${capitalizeWords(id)} Products | Gajpati Industries`;
+
+    const seoDescription = currentPlant?.description
+        ? `${currentPlant.description.slice(0, 157)}...`
+        : categoryConfigs[id]?.tagline
+            ? `${categoryConfigs[id].tagline.slice(0, 157)}...`
+            : `Explore high-quality ${capitalizeWords(id)} products from Gajpati Industries, designed for superior performance.`;
+
+    const seoKeywords = useMemo(() => {
+        const baseKeywords = [
+            'Gajpati Industries',
+            id,
+            ...categoryConfigs[id]?.filters.flatMap(f => f.options) || [],
+        ];
+        const natureKeywords = natures.flatMap(nature => nature.seoKeywords || []);
+        return [...new Set([...baseKeywords, ...natureKeywords])].slice(0, 10);
+    }, [natures, id]);
 
     if (!categoryConfigs[id] || plantsLoading) {
         return (
@@ -501,6 +499,45 @@ export const NatureProducts = () => {
 
     return (
         <>
+            <Helmet>
+                <title>{seoTitle}</title>
+                <meta name="description" content={seoDescription} />
+                <meta name="keywords" content={seoKeywords.join(', ')} />
+                <meta property="og:title" content={seoTitle} />
+                <meta property="og:description" content={seoDescription} />
+                <meta property="og:image" content={categoryConfigs[id]?.bgImage || 'https://yourdomain.com/images/default-og.jpg'} />
+                <meta property="og:url" content={`https://yourdomain.com/products/${id}`} />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={seoTitle} />
+                <meta name="twitter:description" content={seoDescription} />
+                <meta name="twitter:image" content={categoryConfigs[id]?.bgImage || 'https://yourdomain.com/images/default-og.jpg'} />
+                <link rel="canonical" href={`https://yourdomain.com/products/${id}`} />
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'CollectionPage',
+                        'name': seoTitle,
+                        'description': seoDescription,
+                        'url': `https://yourdomain.com/products/${id}`,
+                        'publisher': {
+                            '@type': 'Organization',
+                            'name': 'Gajpati Industries',
+                            'logo': { '@type': 'ImageObject', 'url': 'https://yourdomain.com/images/logo.png' },
+                        },
+                    })}
+                </script>
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'BreadcrumbList',
+                        'itemListElement': [
+                            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://yourdomain.com' },
+                            { '@type': 'ListItem', 'position': 2, 'name': 'Products', 'item': 'https://yourdomain.com/products' },
+                            { '@type': 'ListItem', 'position': 3, 'name': capitalizeWords(currentPlant?.name || id), 'item': `https://yourdomain.com/products/${id}` },
+                        ],
+                    })}
+                </script>
+            </Helmet>
             <div className="min-h-screen bg-background">
                 {/* Breadcrumb */}
                 <nav className="container py-4 bg-white border-b border-gray-200">

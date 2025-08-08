@@ -15,6 +15,12 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+const products = [
+  { value: "Bitumen", label: "Bitumen" },
+  { value: "Gabion", label: "Gabion" },
+  { value: "Construct", label: "Construct Chemicals" },
+];
+
 const QuoteModal = ({ isOpen, setIsOpen }) => {
   const [formData, setFormData] = useState({
     customerName: "",
@@ -22,6 +28,7 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
     customerPhone: "",
     city: "",
     selectedProducts: [],
+    additionalRequirement: "",
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -29,19 +36,17 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
   const [error, setError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const products = ["Bitumen", "Gabion", "Construct"];
-
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
     setErrors((prev) => ({ ...prev, [id]: "" }));
   };
 
-  const handleProductChange = (product) => {
+  const handleProductChange = (productValue) => {
     setFormData((prev) => {
-      const selectedProducts = prev.selectedProducts.includes(product)
-        ? prev.selectedProducts.filter((p) => p !== product)
-        : [...prev.selectedProducts, product];
+      const selectedProducts = prev.selectedProducts.includes(productValue)
+        ? prev.selectedProducts.filter((p) => p !== productValue)
+        : [...prev.selectedProducts, productValue];
       return { ...prev, selectedProducts };
     });
     setErrors((prev) => ({ ...prev, selectedProducts: "" }));
@@ -89,12 +94,14 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
     setShowSuccess(false);
 
     try {
+      // Backend ko value bhejo
       const payload = {
         customerName: formData.customerName,
         customerEmail: formData.customerEmail,
         customerPhone: formData.customerPhone,
         city: formData.city,
-        selectedProducts: formData.selectedProducts,
+        selectedProducts: formData.selectedProducts, // yahan value jayegi
+        additionalRequirement: formData.additionalRequirement,
       };
       await createQuote(payload);
       setSuccess(
@@ -102,15 +109,22 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
       );
       setShowSuccess(true);
 
-      // Prepare WhatsApp message
+      // WhatsApp message ke liye label nikalo
+      const selectedProductLabels = products
+        .filter((p) => formData.selectedProducts.includes(p.value))
+        .map((p) => p.label)
+        .join(", ");
+
       const message = `New Quote Request:\n\nName: ${
         formData.customerName
       }\nEmail: ${formData.customerEmail}\nPhone: ${
         formData.customerPhone
-      }\nCity: ${formData.city}\nProducts: ${formData.selectedProducts.join(
-        ", "
-      )}`;
-      const whatsappUrl = `https://wa.me/9528355555?text=${encodeURIComponent(
+      }\nCity: ${
+        formData.city
+      }\nProducts: ${selectedProductLabels}\nAdditional Requirement: ${
+        formData.additionalRequirement || "N/A"
+      }`;
+      const whatsappUrl = `https://wa.me/+917777909218?text=${encodeURIComponent(
         message
       )}`;
       window.open(whatsappUrl, "_blank");
@@ -121,6 +135,7 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
         customerPhone: "",
         city: "",
         selectedProducts: [],
+        additionalRequirement: "",
       });
       setTimeout(() => setIsOpen(false), 3000); // Close modal after success
     } catch (err) {
@@ -167,39 +182,50 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
               </Alert>
             )}
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="customerName" className="text-sm font-medium">
-                  Full Name *
-                </Label>
-                <Input
-                  id="customerName"
-                  value={formData.customerName}
-                  onChange={handleInputChange}
-                  placeholder="Enter your full name"
-                  disabled={loading}
-                  className="w-full"
-                />
-                {errors.customerName && (
-                  <p className="text-red-600 text-sm">{errors.customerName}</p>
-                )}
+              {/* Name & Email in one row */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1 space-y-2">
+                  <Label htmlFor="customerName" className="text-sm font-medium">
+                    Full Name *
+                  </Label>
+                  <Input
+                    id="customerName"
+                    value={formData.customerName}
+                    onChange={handleInputChange}
+                    placeholder="Enter your full name"
+                    disabled={loading}
+                    className="w-full"
+                  />
+                  {errors.customerName && (
+                    <p className="text-red-600 text-sm">
+                      {errors.customerName}
+                    </p>
+                  )}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <Label
+                    htmlFor="customerEmail"
+                    className="text-sm font-medium"
+                  >
+                    Email Address *
+                  </Label>
+                  <Input
+                    id="customerEmail"
+                    type="email"
+                    value={formData.customerEmail}
+                    onChange={handleInputChange}
+                    placeholder="your.email@company.com"
+                    disabled={loading}
+                    className="w-full"
+                  />
+                  {errors.customerEmail && (
+                    <p className="text-red-600 text-sm">
+                      {errors.customerEmail}
+                    </p>
+                  )}
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="customerEmail" className="text-sm font-medium">
-                  Email Address *
-                </Label>
-                <Input
-                  id="customerEmail"
-                  type="email"
-                  value={formData.customerEmail}
-                  onChange={handleInputChange}
-                  placeholder="your.email@company.com"
-                  disabled={loading}
-                  className="w-full"
-                />
-                {errors.customerEmail && (
-                  <p className="text-red-600 text-sm">{errors.customerEmail}</p>
-                )}
-              </div>
+              {/* Phone */}
               <div className="space-y-2">
                 <Label htmlFor="customerPhone" className="text-sm font-medium">
                   Phone Number *
@@ -216,6 +242,7 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
                   <p className="text-red-600 text-sm">{errors.customerPhone}</p>
                 )}
               </div>
+              {/* City */}
               <div className="space-y-2">
                 <Label htmlFor="city" className="text-sm font-medium">
                   City/Site Location *
@@ -232,6 +259,7 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
                   <p className="text-red-600 text-sm">{errors.city}</p>
                 )}
               </div>
+              {/* Products */}
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
                   Project Details & Requirements *
@@ -239,17 +267,17 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
                 <div className="flex flex-wrap gap-2 mb-2">
                   {products.map((product) => (
                     <Badge
-                      key={product}
+                      key={product.value}
                       variant="outline"
                       className={`cursor-pointer ${
-                        formData.selectedProducts.includes(product)
+                        formData.selectedProducts.includes(product.value)
                           ? "bg-egyptian-blue text-white"
                           : "hover:bg-egyptian-blue hover:text-white"
                       }`}
-                      onClick={() => handleProductChange(product)}
+                      onClick={() => handleProductChange(product.value)}
                       disabled={loading}
                     >
-                      {product}
+                      {product.label}
                     </Badge>
                   ))}
                 </div>
@@ -258,6 +286,24 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
                     {errors.selectedProducts}
                   </p>
                 )}
+              </div>
+              {/* Additional Requirement */}
+              <div className="space-y-2">
+                <Label
+                  htmlFor="additionalRequirement"
+                  className="text-sm font-medium"
+                >
+                  Additional Requirement (Optional)
+                </Label>
+                <textarea
+                  id="additionalRequirement"
+                  value={formData.additionalRequirement}
+                  onChange={handleInputChange}
+                  placeholder="Any other requirement or details"
+                  disabled={loading}
+                  className="w-full border rounded px-3 py-2"
+                  rows={3}
+                />
               </div>
               <DialogFooter>
                 <Button

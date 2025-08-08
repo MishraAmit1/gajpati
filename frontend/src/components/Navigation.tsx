@@ -10,7 +10,6 @@ const navItems = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   { name: "Products", href: "/products" },
-  // { name: "Plant Availability", href: "/plant-availability" },
   { name: "Blog", href: "/blog" },
   { name: "Careers", href: "/careers" },
   { name: "Contact", href: "/contact" },
@@ -106,7 +105,7 @@ export const Navigation = () => {
                 className="w-full"
                 onClick={() => {
                   setIsOpen(false);
-                  setIsModalOpen(true); // Open modal on click
+                  setIsModalOpen(true);
                 }}
               >
                 Get Quote
