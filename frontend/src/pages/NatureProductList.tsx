@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, Link, NavLink, useSearchParams } from "react-router-dom"; // Added useSearchParams
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, MapPin, Beaker, ChevronRight, MessageCircleCode } from "lucide-react";
+import { Download, MapPin, Beaker, ChevronRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Spinner } from "./Products";
 import QuoteModal from "../components/QuoteModal";
@@ -74,9 +74,7 @@ interface Nature {
     _id?: string;
     name?: string;
     description?: string;
-
 }
-
 // Error Boundary Component
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
     state = { hasError: false };
@@ -95,7 +93,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 
 const NatureProductList = () => {
     const { natureId } = useParams<{ natureId: string }>();
-    const [searchParams] = useSearchParams(); // Added to get categoryId
+    const [searchParams] = useSearchParams();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -103,11 +101,10 @@ const NatureProductList = () => {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [nature, setNature] = useState<Nature>({ name: "Nature", description: "" });
-    const [currentCategory, setCurrentCategory] = useState<any>(null); // To store the category
+    const [currentCategory, setCurrentCategory] = useState<any>(null);
     const PAGE_SIZE = 10;
     const sentinelRef = useRef<HTMLDivElement | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
 
     // Get categoryId from URL and set currentCategory
     useEffect(() => {
@@ -117,7 +114,6 @@ const NatureProductList = () => {
             setCurrentCategory(foundCategory || null);
         }
     }, [searchParams]);
-
     if (!natureId) {
         return (
             <div className="min-h-screen bg-background">
@@ -134,6 +130,7 @@ const NatureProductList = () => {
             </div>
         );
     }
+
 
     // Fetch nature details
     useEffect(() => {
@@ -153,7 +150,7 @@ const NatureProductList = () => {
             });
     }, [natureId]);
 
-    // Fetch products
+    // Fetch products - REPLACE THIS ENTIRE USEEFFECT
     useEffect(() => {
         setLoading(true);
         setError(null);
@@ -166,12 +163,191 @@ const NatureProductList = () => {
                 return res.json();
             })
             .then((data) => {
-                const newProducts = data.data?.products || [];
+                let newProducts = data.data?.products || [];
+
+                // Sort products with mapping for format differences
+                newProducts = newProducts.sort((a, b) => {
+                    // Access the proper nature ID
+                    const nId = typeof natureId === 'object' ? natureId._id : natureId;
+
+                    // Special handling for Performance Grade Bitumen products
+                    if (nId === '688f7e61ea6a047e4ffea4ec') {
+                        // Define exact ordering for PG products
+                        const exactMatch = {
+                            // Include all possible format variations
+                            'PMB 64-10': 1,
+                            'PMB PG 64-10': 1,
+                            'PG 64-10': 1,
+
+                            'PMB 70-10': 2,
+                            'PMB PG 70-10': 2,
+                            'PG 70-10': 2,
+
+                            'PMB 76-10': 3,
+                            'PMB PG 76-10': 3,
+                            'PG 76-10': 3,
+
+                            'PMB 82-10': 4,
+                            'PMB PG 82-10': 4,
+                            'PG 82-10': 4,
+
+                            'PMB 76-22': 5,
+                            'PMB PG 76-22': 5,
+                            'PG 76-22': 5
+                        };
+
+                        // Extract just the significant part of the abbreviation
+                        const cleanAbbr = (abbr) => {
+                            if (!abbr) return '';
+                            // Remove BITMIX/Bitmix prefix
+                            let cleaned = abbr.replace(/^(BITMIX|Bitmix)\s+/i, '').trim();
+                            return cleaned;
+                        };
+
+                        const cleanA = cleanAbbr(a.abbreviation);
+                        const cleanB = cleanAbbr(b.abbreviation);
+
+                        // Look up the order directly
+                        const orderA = exactMatch[cleanA] || 999;
+                        const orderB = exactMatch[cleanB] || 999;
+
+                        return orderA - orderB;
+                    }
+
+                    // Normal handling for other product types
+                    const normalizeAbbr = (abbr) => {
+                        if (!abbr) return '';
+                        // Remove BITMIX/Bitmix prefix
+                        let result = abbr.replace(/^(BITMIX|Bitmix)\s+/i, '').trim();
+
+                        // Handle specific format differences for lookups
+                        if (result === 'RS 1') return 'RS-1';
+                        if (result === 'SS-1 ASTM') return 'SS-1 (ASTM)';
+                        if (result === 'SS-2 ASTM') return 'SS-2 (ASTM)';
+
+                        return result;
+                    };
+
+                    const normA = normalizeAbbr(a.abbreviation);
+                    const normB = normalizeAbbr(b.abbreviation);
+
+                    // Lookup orders based on normalized abbreviations
+                    const orderMap = {
+                        // Bitumen Emulsion
+                        '688086bbcf8dba209c5a0b25': {
+                            'RS-1': 1,
+                            'RS-2': 2,
+                            'MS': 3,
+                            'SS-1': 4,
+                            'SS-1 (ASTM)': 5,
+                            'SS-2 (ASTM)': 6,
+                            'CME': 7,
+                            'Micro': 8,
+                            'PMBE': 9
+                        },
+                        // Crumb Rubber Modified Bitumen
+                        '688086bbcf8dba209c5a0b29': {
+                            'CRMB 60': 1,
+                            'CRMB 55': 2,
+                            'CRMB 50': 3
+                        },
+                        // Cutback Bitumen
+                        '688086bbcf8dba209c5a0b2c': {
+                            'MC-30': 1,
+                            'MC-70': 2,
+                            'MC-800': 3
+                        },
+                        // Performance Grade Bitumen (natureId add karna padega)
+                        '688f7e61ea6a047e4ffea4ec': {
+                            'PMB PG 64-10': 1,
+                            'PMB PG 70-10': 2,
+                            'PMB PG 76-10': 3,
+                            'PMB PG 82-10': 4,
+                            'PMB PG 76-22': 5
+                        },
+                        // Polymer Modified Bitumen (natureId add karna padega)
+                        '688f7641800886493051d5c1': {
+                            'PMB 40': 1,
+                            'PMB 70': 2,
+                            'PMB 120': 3
+                        },
+                        // Viscosity Grade Bitumen
+                        '688f80e9ea6a047e4ffea52d': {
+                            'VG-10': 1,
+                            'VG-30': 2,
+                            'VG-40': 3
+                        }
+                    };
+
+                    const natureOrder = orderMap[nId] || {};
+                    const orderA = natureOrder[normA] || 999;
+                    const orderB = natureOrder[normB] || 999;
+
+                    return orderA - orderB;
+                });
+
                 setTotal(data.data?.total || 0);
                 if (page === 1) {
                     setProducts(newProducts);
                 } else {
-                    setProducts((prev) => [...prev, ...newProducts]);
+                    setProducts((prev) => {
+                        // For simplicity, use the same sorting logic for combining
+                        const combined = [...prev, ...newProducts];
+                        return combined.sort((a, b) => {
+                            const nId = typeof natureId === 'object' ? natureId._id : natureId;
+
+                            // Special handling for PG products again
+                            if (nId === '688f7e61ea6a047e4ffea4ec') {
+                                const exactMatch = {
+                                    'PMB 64-10': 1, 'PMB PG 64-10': 1, 'PG 64-10': 1,
+                                    'PMB 70-10': 2, 'PMB PG 70-10': 2, 'PG 70-10': 2,
+                                    'PMB 76-10': 3, 'PMB PG 76-10': 3, 'PG 76-10': 3,
+                                    'PMB 82-10': 4, 'PMB PG 82-10': 4, 'PG 82-10': 4,
+                                    'PMB 76-22': 5, 'PMB PG 76-22': 5, 'PG 76-22': 5
+                                };
+
+                                const cleanAbbr = (abbr) => {
+                                    if (!abbr) return '';
+                                    return abbr.replace(/^(BITMIX|Bitmix)\s+/i, '').trim();
+                                };
+
+                                const cleanA = cleanAbbr(a.abbreviation);
+                                const cleanB = cleanAbbr(b.abbreviation);
+
+                                const orderA = exactMatch[cleanA] || 999;
+                                const orderB = exactMatch[cleanB] || 999;
+
+                                return orderA - orderB;
+                            }
+
+                            // Normal handling for other products
+                            const normalizeAbbr = (abbr) => {
+                                if (!abbr) return '';
+                                let result = abbr.replace(/^(BITMIX|Bitmix)\s+/i, '').trim();
+                                if (result === 'RS 1') return 'RS-1';
+                                if (result === 'SS-1 ASTM') return 'SS-1 (ASTM)';
+                                if (result === 'SS-2 ASTM') return 'SS-2 (ASTM)';
+                                return result;
+                            };
+
+                            const normA = normalizeAbbr(a.abbreviation);
+                            const normB = normalizeAbbr(b.abbreviation);
+
+                            const orderMap = {
+                                '688086bbcf8dba209c5a0b25': {
+                                    'RS-1': 1, 'RS-2': 2, 'MS': 3, 'SS-1 (IS)': 4,
+                                    'SS-1 (ASTM)': 5, 'SS-2 (ASTM)': 6, 'CME': 7,
+                                    'Micro': 8, 'PMBE': 9
+                                }
+                            };
+
+                            const natureOrder = orderMap[nId] || {};
+                            const orderA = natureOrder[normA] || 999;
+                            const orderB = natureOrder[normB] || 999;
+
+                            return orderA - orderB;
+                        });
+                    });
                 }
                 setHasMore(page * PAGE_SIZE < (data.data?.total || 0));
             })
@@ -182,7 +358,6 @@ const NatureProductList = () => {
                 setLoading(false);
             });
     }, [natureId, page]);
-
     // Infinite scroll
     useEffect(() => {
         if (!hasMore || loading) return;
