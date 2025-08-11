@@ -165,8 +165,8 @@ const ProductDetail = () => {
       <div className="min-h-screen bg-background">
         <div className="bg-platinum/30 py-4">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-card border-b border-border">
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 bg-card border-b border-border">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
                 <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
                 <ChevronRight className="w-4 h-4" />
                 <Link to="/products" className="hover:text-foreground transition-colors">Products</Link>
@@ -244,28 +244,40 @@ const ProductDetail = () => {
                     Quality Assured
                   </Badge>
                 </div>
-                <div className="space-y-4">
-                  <div className="flex gap-3">
+                <div className="space-y-3 w-full">
+                  <div className="flex gap-3 w-full">
                     {product.tds?.url && (
-                      <Button asChild variant="cta" size="lg" className="flex-1">
-                        <a href={product.tds.url} target="_blank" rel="noopener noreferrer">
-                          <Download className="h-4 w-4 mr-2" />
-                          Download TDS
+                      <Button
+                        asChild
+                        variant="cta"
+                        size="lg"
+                        // Here is the fix: we add responsive padding classes
+                        className="flex-1 px-3 sm:px-8"
+                      >
+                        <a href={product.tds.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                          <Download className="h-4 w-4 flex-shrink-0" />
+                          <span className="truncate">Download TDS</span>
                         </a>
                       </Button>
                     )}
                     {product.brochure?.url && (
-                      <Button asChild variant="action" size="lg" className="flex-1">
-                        <a href={product.brochure.url} target="_blank" rel="noopener noreferrer">
-                          <Download className="h-4 w-4 mr-2" />
-                          Download Brochure
+                      <Button
+                        asChild
+                        variant="action"
+                        size="lg"
+                        // Here is the fix: we add responsive padding classes
+                        className="flex-1 px-3 sm:px-8"
+                      >
+                        <a href={product.brochure.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                          <Download className="h-4 w-4 flex-shrink-0" />
+                          <span className="truncate">Download Brochure</span>
                         </a>
                       </Button>
                     )}
                   </div>
                   <Button variant="trust" size="lg" className="w-full">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Request Technical Support
+                    <FileText className="h-4 w-4 mr-2 flex-shrink-0" />
+                    <span className="truncate">Request Technical Support</span>
                   </Button>
                 </div>
                 <Card className="shadow-card">
@@ -306,9 +318,9 @@ const ProductDetail = () => {
                     {product.technicalSpecifications && product.technicalSpecifications.length > 0 ? (
                       <div className="space-y-3">
                         {product.technicalSpecifications.map((spec, idx) => (
-                          <div key={idx} className="flex justify-between py-2 border-b border-gray-100 last:border-0">
-                            <span className="text-gray-600 font-medium">{spec.key}</span>
-                            <span className="text-eerie-black font-semibold">{spec.value}</span>
+                          <div key={idx} className="grid grid-cols-2 gap-3 py-2 border-b border-gray-100 last:border-0">
+                            <span className="text-gray-600 font-medium break-words">{spec.key}</span>
+                            <span className="text-eerie-black font-semibold break-words text-right">{spec.value}</span>
                           </div>
                         ))}
                       </div>
@@ -421,17 +433,32 @@ const ProductDetail = () => {
             </Card>
           </div>
         </section>
-        <section className="py-16 bg-gradient-hero text-white">
+        <section className="py-12 sm:py-16 bg-gradient-hero text-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="font-display font-bold text-h2 mb-6">
+            {/* Make heading and paragraph text responsive */}
+            <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl mb-4 sm:mb-6">
               Ready to Use {product.abbreviation} in Your Project?
             </h2>
-            <p className="text-xl mb-8 leading-relaxed">
+            <p className="text-base sm:text-xl mb-6 sm:mb-8 leading-relaxed">
               Get technical specifications, pricing, and delivery details for your specific requirements.
             </p>
+
+            {/* Keep the stacking logic, but make the buttons responsive */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="action" size="xl">Request Detailed Quote</Button>
-              <Button variant="trust" size="xl">Schedule Site Visit</Button>
+              <Button
+                variant="action"
+                // We remove size="xl" and add these responsive classes
+                className="h-11 px-6 text-base sm:h-12 sm:px-8 sm:text-lg"
+              >
+                Request Detailed Quote
+              </Button>
+              <Button
+                variant="trust"
+                // We remove size="xl" and add these responsive classes
+                className="h-11 px-6 text-base sm:h-12 sm:px-8 sm:text-lg"
+              >
+                Schedule Site Visit
+              </Button>
             </div>
           </div>
         </section>

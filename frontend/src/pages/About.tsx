@@ -1,4 +1,3 @@
-{/* Stats Section */ }
 import { Helmet } from 'react-helmet-async';
 import LazyLoad from 'react-lazyload';
 import { Button } from '@/components/ui/button';
@@ -26,7 +25,6 @@ const LeaderImage = ({ src, alt }: { src: string; alt: string }) => (
     />
   </div>
 );
-// done
 const About = () => {
   return (
     <>

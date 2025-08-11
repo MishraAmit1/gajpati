@@ -382,8 +382,8 @@ const NatureProductList = () => {
                 </script>
             </Helmet>
             <div className="min-h-screen bg-background">
-                <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-card border-b border-border">
-                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 bg-card border-b border-border">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
                         <Link to="/" className="hover:text-foreground transition-colors">
                             Home
                         </Link>
@@ -470,112 +470,183 @@ const NatureProductList = () => {
                                 </p>
                             </div>
                             <ErrorBoundary>
-                                <Accordion type="single" collapsible className="space-y-4">
+                                <Accordion type="single" collapsible className="space-y-4 w-full">
                                     {products.map((product) => (
                                         <AccordionItem
                                             key={product._id || product.id}
                                             value={product._id || product.id || `product-${Math.random().toString(36).substring(2)}`}
-                                            className="border rounded-lg bg-card shadow-sm"
+                                            className="border rounded-lg bg-card shadow-sm w-full overflow-hidden"
                                         >
-                                            <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/50 rounded-t-lg">
-                                                <div className="flex items-center justify-between w-full mr-4">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="text-left">
-                                                            <h3 className="text-lg font-semibold text-foreground">Gajpati {product.abbreviation}</h3>
-                                                            <p className="text-sm text-gray-500 mt-1 mb-3">{product.name}</p>
-                                                            <p className="text-sm text-muted-foreground mt-1 mr-24">{product.shortDescription}</p>
-                                                        </div>
+                                            <AccordionTrigger className="px-3 sm:px-6 py-3 sm:py-4 hover:no-underline hover:bg-muted/50 rounded-t-lg w-full">
+                                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-3 pr-2">
+                                                    {/* Product Info */}
+                                                    <div className="flex-1 min-w-0 text-left">
+                                                        <h3 className="text-base sm:text-lg font-semibold text-foreground line-clamp-1">
+                                                            Gajpati {product.abbreviation}
+                                                        </h3>
+                                                        <p className="text-xs sm:text-sm text-gray-500 mt-1 mb-1 sm:mb-3 line-clamp-1">
+                                                            {product.name}
+                                                        </p>
+                                                        <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2 sm:line-clamp-none sm:pr-24">
+                                                            {product.shortDescription}
+                                                        </p>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <Badge variant="outline" className="bg-primary/10 text-primary">
+
+                                                    {/* Badges - Stack on mobile */}
+                                                    <div className="flex flex-wrap gap-1 sm:gap-2 justify-start sm:justify-end">
+                                                        <Badge variant="outline" className="bg-primary/10 text-primary text-xs">
                                                             {product.certification || "IS Certified"}
                                                         </Badge>
                                                         <Badge
                                                             variant="outline"
-                                                            className="bg-secondary/20 text-secondary"
+                                                            className="bg-secondary/20 text-secondary text-xs"
                                                         >
                                                             {product.natureId?.name || "Construction"}
                                                         </Badge>
                                                     </div>
                                                 </div>
                                             </AccordionTrigger>
-                                            <AccordionContent className="px-6 pb-6">
-                                                <div className="grid md:grid-cols-3 gap-10 mt-4">
-                                                    <div className="space-y-4 min-h-[120px]">
-                                                        <div className="flex items-center gap-2 mb-3">
-                                                            <Beaker className="h-5 w-5 text-primary" />
-                                                            <h4 className="font-semibold text-foreground">Specifications</h4>
+
+                                            <AccordionContent className="px-3 sm:px-6 pb-4 sm:pb-6 w-full">
+                                                {/* Grid - Stack on mobile */}
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10 mt-4">
+                                                    {/* Specifications */}
+                                                    <div className="space-y-3 sm:space-y-4">
+                                                        <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                                                            <Beaker className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                                                            <h4 className="font-semibold text-foreground text-sm sm:text-base">
+                                                                Specifications
+                                                            </h4>
                                                         </div>
-                                                        <div className="space-y-2 text-sm">
+                                                        <div className="space-y-2 text-xs sm:text-sm">
                                                             {product.technicalSpecifications && product.technicalSpecifications.length > 0 ? (
-                                                                product.technicalSpecifications.map((spec, index) => (
-                                                                    <div key={spec._id?.$oid || index} className="flex justify-between py-1 border-b border-border">
-                                                                        <span className="text-muted-foreground">{spec.key || `Spec ${index + 1}`}</span>
-                                                                        <span className="font-medium">{spec.value}</span>
+                                                                product.technicalSpecifications.slice(0, 3).map((spec, index) => (
+                                                                    <div
+                                                                        key={spec._id?.$oid || index}
+                                                                        className="flex flex-col sm:flex-row sm:justify-between py-1 border-b border-border gap-1"
+                                                                    >
+                                                                        <span className="text-muted-foreground">
+                                                                            {spec.key || `Spec ${index + 1}`}
+                                                                        </span>
+                                                                        <span className="font-medium break-all">
+                                                                            {spec.value}
+                                                                        </span>
                                                                     </div>
                                                                 ))
                                                             ) : (
-                                                                <p className="text-sm text-muted-foreground">No specifications available</p>
+                                                                <p className="text-xs sm:text-sm text-muted-foreground">
+                                                                    No specifications available
+                                                                </p>
+                                                            )}
+                                                            {product.technicalSpecifications && product.technicalSpecifications.length > 3 && (
+                                                                <p className="text-xs text-muted-foreground pt-1">
+                                                                    +{product.technicalSpecifications.length - 3} more
+                                                                </p>
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <div className="space-y-4 min-h-[120px]">
-                                                        <h4 className="font-semibold text-foreground">Applications</h4>
-                                                        <ul className="space-y-2 text-sm">
+
+                                                    {/* Applications */}
+                                                    <div className="space-y-3 sm:space-y-4">
+                                                        <h4 className="font-semibold text-foreground text-sm sm:text-base">
+                                                            Applications
+                                                        </h4>
+                                                        <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                                                             {product.applications && product.applications.length > 0 ? (
-                                                                product.applications.map((app, index) => (
+                                                                product.applications.slice(0, 3).map((app, index) => (
                                                                     <li key={index} className="flex items-start gap-2">
-                                                                        <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                                                                        <span className="text-muted-foreground">{app}</span>
+                                                                        <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-primary rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></div>
+                                                                        <span className="text-muted-foreground line-clamp-2">
+                                                                            {app}
+                                                                        </span>
                                                                     </li>
                                                                 ))
                                                             ) : (
-                                                                <li className="text-sm text-muted-foreground">No applications listed</li>
+                                                                <li className="text-xs sm:text-sm text-muted-foreground">
+                                                                    No applications listed
+                                                                </li>
+                                                            )}
+                                                            {product.applications && product.applications.length > 3 && (
+                                                                <li className="text-xs text-muted-foreground pl-3">
+                                                                    +{product.applications.length - 3} more
+                                                                </li>
                                                             )}
                                                         </ul>
                                                     </div>
-                                                    <div className="space-y-4 min-h-[120px]">
-                                                        <div className="flex items-center gap-2 mb-3">
-                                                            <MapPin className="h-4 w-4 text-primary" />
-                                                            <h5 className="font-medium text-foreground">Plant Availability</h5>
+
+                                                    {/* Plant Availability */}
+                                                    <div className="space-y-3 sm:space-y-4">
+                                                        <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                                                            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                                                            <h5 className="font-medium text-foreground text-sm sm:text-base">
+                                                                Plant Availability
+                                                            </h5>
                                                         </div>
-                                                        <div className="flex flex-wrap gap-2">
+                                                        <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                                             {product.plantAvailability && product.plantAvailability.length > 0 ? (
-                                                                product.plantAvailability.map((pa, index) => (
+                                                                product.plantAvailability.slice(0, 4).map((pa, index) => (
                                                                     <Badge
                                                                         key={pa._id?.$oid || `plant-${index}`}
                                                                         variant="outline"
-                                                                        className="bg-green-50 text-green-700 border-green-200"
+                                                                        className="bg-green-50 text-green-700 border-green-200 text-xs px-2 py-0.5"
                                                                     >
                                                                         {pa.state || "Unknown"}
                                                                     </Badge>
                                                                 ))
                                                             ) : (
-                                                                <Badge variant="outline" className="text-xs">N/A</Badge>
+                                                                <Badge variant="outline" className="text-xs">
+                                                                    N/A
+                                                                </Badge>
+                                                            )}
+                                                            {product.plantAvailability && product.plantAvailability.length > 4 && (
+                                                                <Badge variant="outline" className="text-xs px-2 py-0.5">
+                                                                    +{product.plantAvailability.length - 4}
+                                                                </Badge>
                                                             )}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="flex flex-wrap gap-3 mt-6 pt-4 border-t border-border">
+
+                                                {/* Action Buttons - Stack on mobile */}
+                                                <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-border">
                                                     {product.tds?.url && (
-                                                        <Button asChild variant="default" size="sm" className="bg-primary hover:bg-primary/90">
+                                                        <Button
+                                                            asChild
+                                                            variant="default"
+                                                            size="sm"
+                                                            className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
+                                                        >
                                                             <a href={product.tds.url} target="_blank" rel="noopener noreferrer">
-                                                                <Download className="h-4 w-4 mr-2" />
-                                                                Download TDS
+                                                                <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                                                                <span className="text-xs sm:text-sm">Download TDS</span>
                                                             </a>
                                                         </Button>
                                                     )}
-                                                    <Button asChild variant="outline" size="sm">
-                                                        <Link to={`/product/${product.slug || product.id}`}>View Details</Link>
+                                                    <Button
+                                                        asChild
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="w-full sm:w-auto"
+                                                    >
+                                                        <Link to={`/product/${product.slug || product.id}`}>
+                                                            <span className="text-xs sm:text-sm">View Details</span>
+                                                        </Link>
                                                     </Button>
-                                                    <Button variant="ghost" size="sm" className="text-primary" onClick={() => setIsModalOpen(true)}>
-                                                        Technical Support
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-primary w-full sm:w-auto"
+                                                        onClick={() => setIsModalOpen(true)}
+                                                    >
+                                                        <span className="text-xs sm:text-sm">Technical Support</span>
                                                     </Button>
                                                 </div>
                                             </AccordionContent>
                                         </AccordionItem>
                                     ))}
+
                                     {hasMore && !loading && <div ref={sentinelRef} style={{ height: 1 }} />}
+
                                     {loading && page > 1 && (
                                         <div className="col-span-full flex justify-center py-8 transition-opacity duration-300">
                                             <Spinner size={10} border={4} />
