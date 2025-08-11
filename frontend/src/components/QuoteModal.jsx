@@ -18,7 +18,7 @@ import {
 const products = [
   { value: "Bitumen", label: "Bitumen" },
   { value: "Gabion", label: "Gabion" },
-  { value: "Construct", label: "Construct Chemicals" },
+  { value: "Construct", label: "Construction Chemicals" },
 ];
 
 const QuoteModal = ({ isOpen, setIsOpen }) => {
@@ -234,7 +234,7 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
                   id="customerPhone"
                   value={formData.customerPhone}
                   onChange={handleInputChange}
-                  placeholder="+91 9528355555"
+                  placeholder="+91 98756-XXXX"
                   disabled={loading}
                   className="w-full"
                 />

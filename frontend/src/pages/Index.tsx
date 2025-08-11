@@ -397,7 +397,7 @@ const Index = () => {
                   <div className="text-gray-600 text-sm sm:text-base">Years of R&D</div>
                 </Card>
                 <Card className="shadow-card text-center p-4 sm:p-6">
-                  <div className="text-xl sm:text-2xl font-bold text-egyptian-blue">Comprehensive Portfolio</div>
+                  <div className="text-xl sm:text-2xl font-bold text-egyptian-blue">Complete Portfolio</div>
                   <div className="text-gray-600 text-sm sm:text-base">Bitumen, Gabions & Construction Chemicals</div>
                 </Card>
                 <Card className="shadow-card text-center p-4 sm:p-6">

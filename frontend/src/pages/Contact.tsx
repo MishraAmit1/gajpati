@@ -18,7 +18,12 @@ import { Link } from 'react-router-dom';
 const Container = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
   <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
 );
-
+const handleRequestSample = () => {
+  const phoneNumber = "9528355555"; // Without +91 format me normal
+  const message = "Hi, my name is ____ I want a sample";
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  window.open(whatsappUrl, "_blank");
+};
 const locations = [
   { name: 'Delhi Plant', lat: 28.4595, lng: 77.0266, location: 'Gurgaon, Haryana', phone: '+91 95283 55555' },
   { name: 'Mumbai Plant', lat: 19.0760, lng: 72.8777, location: 'Bhiwandi, Maharashtra', phone: '+91 95283 55555' },
@@ -609,8 +614,13 @@ const Contact = () => {
                     text="Schedule Plant Visit"
                     className="w-full rounded-md bg-amber text-white py-3 px-4 text-sm font-medium hover:bg-amber-dark focus:outline-none focus:ring-2 focus:ring-amber focus:ring-offset-2"
                   />
-                  <Button variant="enterprise" size="lg" asChild className="w-full">
-                    <Link to="/request-samples">Request Product Samples</Link>
+                  <Button
+                    variant="enterprise"
+                    size="lg"
+                    className="w-full"
+                    onClick={handleRequestSample}
+                  >
+                    Request Product Samples
                   </Button>
                   <Button variant="trust" size="lg" asChild className="w-full">
                     <a href="/downloads/company-profile.pdf" download>
