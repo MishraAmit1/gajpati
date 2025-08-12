@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
-import ourFacilityImage from '../assets/ourfacility.png';
+import ourFacilityImage from '../assets/about.jpg';
 
 const Container = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
     <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
@@ -368,7 +368,7 @@ const OurFacility = () => {
                                 <LazyLoad height={400} offset={100}>
                                     <div className="rounded-lg overflow-hidden shadow-xl">
                                         <img
-                                            src="../images"
+                                            src={ourFacilityImage}
                                             alt="Gajpati Industries Manufacturing Facility"
                                             className="w-full h-full object-cover"
                                         />
@@ -418,7 +418,7 @@ const OurFacility = () => {
                             <FacilityFeature
                                 icon={TestTube}
                                 title="Testing Capabilities"
-                                description="NABL Pan India Accredited Lab"
+                                description="NABL Pan India Accredited Labs"
                             />
                             <FacilityFeature
                                 icon={Zap}
