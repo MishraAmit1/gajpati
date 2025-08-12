@@ -172,7 +172,7 @@ const ProductDetail = () => {
                 <Link to="/products" className="hover:text-foreground transition-colors">Products</Link>
                 <ChevronRight className="w-4 h-4" />
                 <Link
-                  to={`/products/${searchParams.get("categoryId") || currentCategory?.id || "bitumen"}`}
+                  to={`/nature/${searchParams.get("categoryId") || currentCategory?.id || "bitumen"}`}
                   className="hover:text-foreground transition-colors"
                 >
                   {currentCategory?.name || "Category"}
