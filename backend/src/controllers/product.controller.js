@@ -8,7 +8,28 @@ import { throwApiError } from "../utils/apiError.js";
 import { sendResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadToSupabase, deleteFromSupabase } from "../utils/superbase.js";
+const PUBLIC_BASE = (
+  process.env.PUBLIC_BASE_URL || "https://gajpatiindustries.com"
+).replace(/\/$/, "");
 
+const toProxyUrl = (u) => {
+  if (!u) return u;
+  if (u.includes("/Uploads/")) return u; // already your domain
+  const m = u.match(/\/storage\/v1\/object\/(?:public\/)?files\/(.+)$/i);
+  if (m && m[1]) return `${PUBLIC_BASE}/Uploads/${m[1]}`;
+  return u; // non-supabase assets remain unchanged
+};
+
+const mapProductAssets = (prod) => {
+  if (!prod) return prod;
+  const p = prod.toObject ? prod.toObject() : JSON.parse(JSON.stringify(prod));
+  if (Array.isArray(p.images)) {
+    p.images = p.images.map((img) => ({ ...img, url: toProxyUrl(img.url) }));
+  }
+  if (p.brochure?.url) p.brochure.url = toProxyUrl(p.brochure.url);
+  if (p.tds?.url) p.tds.url = toProxyUrl(p.tds.url);
+  return p;
+};
 export const createProduct = asyncHandler(async (req, res) => {
   const {
     name,
@@ -215,7 +236,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     return sendResponse(
       res,
       201,
-      populatedProduct,
+      mapProductAssets(populatedProduct),
       "Product created successfully"
     );
   } catch (error) {
@@ -264,7 +285,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
       res,
       200,
       {
-        products,
+        products: products.map(mapProductAssets),
         total: totalProducts,
         page: pageNum,
         limit: limitNum,
@@ -303,7 +324,12 @@ export const getProductById = asyncHandler(async (req, res) => {
       );
     }
 
-    return sendResponse(res, 200, product, "Product retrieved successfully");
+    return sendResponse(
+      res,
+      200,
+      mapProductAssets(product),
+      "Product retrieved successfully"
+    );
   } catch (error) {
     console.error("Error while retrieving product:", error.message);
     if (error instanceof mongoose.Error) {
@@ -398,7 +424,7 @@ export const fetchProductsWithSearch = asyncHandler(async (req, res) => {
       res,
       200,
       {
-        products,
+        products: products.map(mapProductAssets),
         total,
         page: pageNum,
         limit: limitNum,
@@ -688,7 +714,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     return sendResponse(
       res,
       200,
-      updatedProduct,
+      mapProductAssets(updatedProduct),
       "Product updated successfully"
     );
   } catch (error) {

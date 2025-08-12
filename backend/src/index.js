@@ -1,11 +1,12 @@
-import express from "express";
 import dotenv from "dotenv";
+import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import { connectDB } from "./database/db.js";
+import uploadsRouter from "./routes/uploads.routes.js";
 
 dotenv.config();
 const requiredEnvVars = [
@@ -28,7 +29,7 @@ requiredEnvVars.forEach((envVariable) => {
   }
 });
 
-// initialize the express app
+// Initialize the express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -43,16 +44,19 @@ const globalRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) => {
-    // Skip rate limiting for health checks
-    return req.url === "/" || req.url === "/health";
+    // Skip rate limiting for health checks and uploads
+    return (
+      req.url === "/" ||
+      req.url === "/health" ||
+      req.url.startsWith("/Uploads/")
+    );
   },
 });
 
-// MIDDLEWARES Start
+// MIDDLEWARES
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 const allowedOrigins = [
   "https://gajpatiindustries.com",
   "https://www.gajpatiindustries.com",
@@ -61,11 +65,11 @@ const allowedOrigins = [
   "https://gajpatifrontend.onrender.com",
   "http://localhost:5173",
   "http://localhost:5174",
+  "http://localhost:3000", // Add server origin
 ];
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
@@ -76,7 +80,39 @@ app.use(
     credentials: true,
   })
 );
-app.use(helmet());
+const isDev = process.env.NODE_ENV === "development";
+
+app.use(
+  helmet({
+    contentSecurityPolicy: isDev
+      ? {
+          directives: {
+            defaultSrc: ["'self'"],
+            imgSrc: [
+              "'self'",
+              "data:",
+              "http://localhost:3000",
+              "http://localhost:5173",
+              "http://localhost:5174",
+            ],
+            connectSrc: [
+              "'self'",
+              "http://localhost:3000",
+              "http://localhost:5173",
+              "http://localhost:5174",
+            ],
+          },
+        }
+      : {
+          directives: {
+            defaultSrc: ["'self'"],
+            imgSrc: ["'self'", "data:"],
+            connectSrc: ["'self'"],
+          },
+        },
+    crossOriginResourcePolicy: false, // Images can be embedded
+  })
+);
 app.use(cookieParser());
 app.use(globalRateLimiter);
 
@@ -91,12 +127,10 @@ import plantStatsRouter from "./routes/plantStats.routes.js";
 import subscriberRouter from "./routes/subscriber.route.js";
 import quotesRouter from "./routes/quote.routes.js";
 
+// Apply routers
 app.get("/", async (req, res, next) => {
-  res.json({
-    message: "Running",
-  });
+  res.json({ message: "Running" });
 });
-// routes
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/plants", plantRouter);
 app.use("/api/v1/natures", natureRouter);
@@ -106,6 +140,7 @@ app.use("/api/v1/inquires", inquiresRouter);
 app.use("/api/v1", plantStatsRouter);
 app.use("/api/v1", subscriberRouter);
 app.use("/api/v1/quotes", quotesRouter);
+app.use("/Uploads", uploadsRouter);
 
 // 404 handler
 app.use((req, res) => {

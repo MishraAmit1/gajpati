@@ -1,84 +1,70 @@
+// utils/superbase.js
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs/promises";
 import path from "path";
 
-// Initialize Supabase client with service role key for server-side operations
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.SUPABASE_SERVICE_KEY // server only
 );
 
+const BUCKET = process.env.SUPABASE_STORAGE_BUCKET || "files";
+const PUBLIC_BASE = (
+  process.env.PUBLIC_BASE_URL || "https://gajpatiindustries.com"
+).replace(/\/$/, "");
+
+// Build your-domain URL for a storage key
+export const buildProxyUrl = (key) => `${PUBLIC_BASE}/Uploads/${key}`;
+
+// Extract storage key from: your-domain URL OR supabase public URL OR raw key
+export const extractKey = (input) => {
+  if (!input) return null;
+  if (!/^https?:\/\//i.test(input)) return input.replace(/^\/+/, "");
+  let m = input.match(/\/Uploads\/(.+)$/i);
+  if (m) return m[1];
+  m = input.match(/\/storage\/v1\/object\/(?:public\/)?[^/]+\/(.+)$/i);
+  if (m) return m[1];
+  return null;
+};
+
 export const uploadToSupabase = async (file, folder) => {
-  if (!file || !file.path) {
-    console.error("No file or file path provided");
-    return null;
-  }
+  if (!file || !file.path) throw new Error("No file to upload");
+
   try {
-    // Read file buffer
-    const fileBuffer = await fs.readFile(file.path);
-    const fileExt = path.extname(file.originalname).toLowerCase();
-    const fileName = `${Date.now()}-${Math.round(
-      Math.random() * 1e9
-    )}${fileExt}`;
-    const filePath = `${folder}/${fileName}`;
+    const buffer = await fs.readFile(file.path);
+    const ext = path.extname(file.originalname).toLowerCase();
+    const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+    const key = `${folder}/${fileName}`;
 
-    // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
-      .from("files")
-      .upload(filePath, fileBuffer, {
-        contentType: file.mimetype,
-        upsert: false,
-      });
+    const { error } = await supabase.storage.from(BUCKET).upload(key, buffer, {
+      contentType: file.mimetype,
+      upsert: false,
+    });
+    await fs.unlink(file.path).catch(() => {});
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
-    // Get public URL
-    const { data: publicUrlData } = supabase.storage
-      .from("files")
-      .getPublicUrl(filePath);
-
-    // Delete local file
-    await fs.unlink(file.path);
-
-    return { url: publicUrlData.publicUrl };
+    // Return your-domain URL for storing/display + the key internally if needed
+    return { key, url: buildProxyUrl(key) };
   } catch (error) {
-    try {
-      await fs.unlink(file.path);
-    } catch (unlinkError) {
-      console.error("Failed to delete local file:", unlinkError);
-    }
+    await fs.unlink(file.path).catch(() => {});
     console.error("Supabase upload error:", error);
     throw new Error("Failed to upload to Supabase", { cause: error });
   }
 };
 
-export const deleteFromSupabase = async (fileUrl, folder) => {
-  if (!fileUrl) {
-    console.warn("No file URL provided for deletion");
+// Accepts your-domain URL, supabase URL, or raw key
+export const deleteFromSupabase = async (fileRef) => {
+  if (!fileRef) return;
+  const key = extractKey(fileRef);
+  if (!key) {
+    console.warn("deleteFromSupabase: could not parse key from", fileRef);
     return;
   }
-  try {
-    // Extract file path from URL
-    const urlParts = fileUrl.split("/storage/v1/object/public/files/");
-    if (urlParts.length < 2) {
-      console.warn(`Invalid Supabase URL format: ${fileUrl}`);
-      return;
-    }
-    const filePath = `${folder}/${urlParts[1].split("/").pop()}`;
-
-    // Delete file from Supabase Storage
-    const { error } = await supabase.storage.from("files").remove([filePath]);
-
-    if (error) {
-      console.error(`Failed to delete file from Supabase: ${filePath}`, error);
-      throw error;
-    }
-
-    console.log(`Successfully deleted file from Supabase: ${filePath}`);
-  } catch (error) {
-    console.error(`Error deleting file from Supabase: ${fileUrl}`, error);
-    // Don't throw error to allow MongoDB deletion to proceed
+  const { error } = await supabase.storage.from(BUCKET).remove([key]);
+  if (error) {
+    console.error("Failed to delete file from Supabase:", key, error);
+  } else {
+    console.log("Deleted from Supabase:", key);
   }
 };
