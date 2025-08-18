@@ -49,6 +49,7 @@ function App() {
       <ThemeProvider>
         <Router>
           <Routes>
+            {/* Public routes - accessible before login */}
             <Route
               path="/login"
               element={
