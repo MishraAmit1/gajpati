@@ -358,7 +358,7 @@ const Products = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {productCategories.map((category, index) => (
                       <Link
-                        to={`/nature/${category.slug}`} // Pretty URL
+                        to={`/nature/${category.slug}`}
                         key={category.id}
                         className="block group"
                         onClick={() => console.log(`Navigating to /nature/${category.slug}`)}
