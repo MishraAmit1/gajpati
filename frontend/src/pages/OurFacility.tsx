@@ -5,6 +5,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useRef, useState } from 'react';
 import { PopupButton } from 'react-calendly';
+import auotmatedImage from "../assets/automated.jpg"
+import facility1 from "../assets/facility1.jpg"
+import facility2 from "../assets/facility2.jpg"
+
 import {
     Factory,
     Shield,
@@ -54,7 +58,7 @@ const qaHighlights = [
 const stats = [
     "1 Lkh+ Sq.ft Area",
     "1000+ MT/Month Capacity",
-    "ISO 9001:2015 Certified",
+    "ISO / BIS Certified",
     "100+ Skilled Workforce"
 ];
 
@@ -67,13 +71,13 @@ const AutoScrollGallery = () => {
     const [isPaused, setIsPaused] = useState(false);
 
     const images = [
-        { src: 'https://media.istockphoto.com/id/978535610/photo/industrial-landscape-with-rollers-that-rolls-a-new-asphalt-in-the-roadway-repair-complicated.webp?a=1&b=1&s=612x612&w=0&k=20&c=dcLywrH9LfBw7Ak6hw1YlidQR-o0R3DR1IZlYYTy2tk=', alt: 'Manufacturing Unit 1', caption: 'Automated Production Line' },
-        { src: 'https://images.unsplash.com/photo-1469289759076-d1484757abc3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bWFudWZhY3R1cmV8ZW58MHx8MHx8fDA%3D', alt: 'Quality Control Lab', caption: 'Advanced Testing Equipment' },
+        { src: auotmatedImage, alt: 'Manufacturing Unit 1', caption: 'Automated Production Line' },
+        { src: facility2, alt: 'Quality Control Lab', caption: 'Advanced Testing Equipment' },
         { src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5Nae8ydDvYVhs2TdA-QboBN-P6zketluOWQ&s', alt: 'Storage Facility', caption: 'Climate-Controlled Warehouse' },
         { src: 'https://plus.unsplash.com/premium_photo-1661962318201-c7faa790617b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8SW5ub3ZhdGlvbiUyMENlbnRlcnxlbnwwfHwwfHx8MA%3D%3D', alt: 'R&D Laboratory', caption: 'Innovation Center' },
         { src: 'https://images.unsplash.com/photo-1582190506824-ef3bd95a956e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG1hbnVmYWN0dXJlfGVufDB8fDB8fHww', alt: 'Packaging Unit', caption: 'Automated Packaging Line' },
         { src: 'https://cdn.pixabay.com/photo/2013/09/27/12/18/company-186980_1280.jpg', alt: 'Solar Panels', caption: 'Renewable Energy Systems' },
-        { src: 'https://media.istockphoto.com/id/1421667120/photo/large-industrial-building-solar-panels-and-trucks-aerial-view.webp?a=1&b=1&s=612x612&w=0&k=20&c=tF5KBvfP8QtlLzO6RdLYPoUML6ZSBf3WT0SlsIpzaV0=', alt: 'Loading Bay', caption: 'Logistics Hub' },
+        { src: facility1, alt: 'Loading Bay', caption: '' },
         { src: 'https://media.istockphoto.com/id/1213564048/photo/equipment-for-production-of-asphalt-cement-and-concrete-concrete-plant.webp?a=1&b=1&s=612x612&w=0&k=20&c=MRebTAUnu-I4FUKRAhuyAIXKmD-QIEWHQA9-MQDJ26E=', alt: 'Control Room', caption: 'Central Monitoring System' },
     ];
 
@@ -339,7 +343,7 @@ const OurFacility = () => {
                                     <ul className="space-y-3">
                                         <li className="flex items-start">
                                             <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                                            <span>ENH production lines for both Emulsions & Modified Bitumen</span>
+                                            <span>ENH , Denmark Supplied Fully Automatic Plants for both Emulsions & Modified Bitumen</span>
                                         </li>
                                         <li className="flex items-start">
                                             <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
@@ -347,7 +351,7 @@ const OurFacility = () => {
                                         </li>
                                         <li className="flex items-start">
                                             <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                                            <span>Climate-controlled raw material storage</span>
+                                            <span>Technology equipped raw material sourcing and processing to improve efficiency, sustainability, and performance.e</span>
                                         </li>
                                         <li className="flex items-start">
                                             <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
@@ -398,7 +402,7 @@ const OurFacility = () => {
                             <FacilityFeature
                                 icon={Cog}
                                 title="Bitumen Products"
-                                description="ENH technology for producing all grades of Bitumen Emulsions (RS, MS, SS, PMBE, Micro-Surfacing)"
+                                description="ENH plants for producing all grades of Bitumen Emulsions (RS, MS, SS, PMBE, Micro-Surfacing)"
                             />
                             <FacilityFeature
                                 icon={Shield}
@@ -413,7 +417,7 @@ const OurFacility = () => {
                             <FacilityFeature
                                 icon={Microscope}
                                 title="Quality & Compliance"
-                                description="We follow ISO 9001:2015 aligned SOPs to ensure every batch meets national and international standards."
+                                description="We follow ISO / BIS aligned SOPs to ensure every batch meets national and international standards."
                             />
                             <FacilityFeature
                                 icon={TestTube}
@@ -442,7 +446,7 @@ const OurFacility = () => {
                                         Quality & Compliance
                                     </h2>
                                     <p className="text-gray-700 mb-3">
-                                        We follow ISO 9001:2015 aligned SOPs to ensure every batch meets national and international standards.
+                                        We follow ISO / BIS aligned SOPs to ensure every batch meets national and international standards.
                                     </p>
                                     <p className="text-gray-700 mb-6">Testing Capabilities:</p>
                                     <div className="space-y-3">

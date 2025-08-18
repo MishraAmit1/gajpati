@@ -55,36 +55,32 @@ const Index = () => {
   });
 
   // Define the desired plant order
-  const plantOrder = ['gabions', 'bitumen', 'construct'];
+  const plantOrder = ['gabions', 'bituminous-products', 'construction-chemicals'];
 
   // Define static category configurations
   const categoryConfigs = {
-    bitumen: {
+    'bituminous-products': {
       icon: Building2,
     },
-    gabion: {
-      icon: Shield,
-    },
-    construct: {
-      icon: Beaker,
-    },
+    gabion: { icon: Shield },
+    construct: { icon: Beaker },
   };
 
   // Dynamically create plantCategories from plant data
   const plantCategories = useMemo(() => {
     if (!plants) return [];
     const categories = plants.map((plant) => {
-      const nameLower = plant.name.toLowerCase();
+      const nameLower = plant.name.toLowerCase().replace(/\s+/g, '-');
       let categoryId = 'other';
       let config = {
         icon: Factory,
       };
 
-      if (nameLower.includes('bitumen')) {
-        categoryId = 'bitumen';
-        config = categoryConfigs.bitumen;
+      if (nameLower.includes('bituminous-products') || nameLower.includes('bitumen')) {
+        categoryId = 'bituminous-products';
+        config = categoryConfigs['bituminous-products'];
       } else if (nameLower.includes('gabions')) {
-        categoryId = 'gabion';
+        categoryId = 'gabions';
         config = categoryConfigs.gabion;
       } else if (nameLower.includes('construction') || nameLower.includes('chemical')) {
         categoryId = 'construct';
@@ -101,8 +97,8 @@ const Index = () => {
 
     // Sort categories based on the predefined order
     return categories.sort((a, b) => {
-      const indexA = plantOrder.indexOf(a.name.toLowerCase());
-      const indexB = plantOrder.indexOf(b.name.toLowerCase());
+      const indexA = plantOrder.indexOf(a.id);
+      const indexB = plantOrder.indexOf(b.id);
       return (indexA === -1 ? plantOrder.length : indexA) - (indexB === -1 ? plantOrder.length : indexB);
     });
   }, [plants]);
@@ -112,13 +108,13 @@ const Index = () => {
     const map: { [key: string]: string } = {};
     if (plants) {
       plants.forEach((plant) => {
-        const name = plant.name.toLowerCase();
-        if (name.includes('bitumen')) {
-          map['bitumen'] = plant._id;
+        const name = plant.name.toLowerCase().replace(/\s+/g, '-');
+        if (name.includes('bituminous-products') || name.includes('bitumen')) {
+          map['bituminous-products'] = plant._id;
         } else if (name.includes('gabions')) {
-          map['gabion'] = plant._id;
+          map['gabions'] = plant._id; // ✅ consistent plural
         } else if (name.includes('construction') || name.includes('chemical')) {
-          map['construct'] = plant._id;
+          map['construction-chemicals'] = plant._id; // ✅ consistent slug
         }
       });
     }
@@ -132,14 +128,17 @@ const Index = () => {
     enabled: !!Object.keys(plantMap).length,
     select: (allProducts) => {
       const flagship: Product[] = [];
-      // Follow plantOrder for flagship products
-      plantOrder.forEach((category) => {
-        const plantId = plantMap[category === 'gabions' ? 'gabion' : category];
+
+      // Exact 3 categories in order
+      ['bituminous-products', 'gabions', 'construction-chemicals'].forEach((category) => {
+        const plantId = plantMap[category];  // map already cleaned
         if (plantId) {
+          // pick exactly 1 product of this plant
           const prod = allProducts.find((p) => p.plantId && p.plantId._id === plantId);
           if (prod) flagship.push(prod);
         }
       });
+
       return flagship;
     },
   });
@@ -272,7 +271,7 @@ const Index = () => {
               <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-3 sm:gap-6 mt-8 sm:mt-12 text-xs sm:text-sm">
                 <div className="flex items-center">
                   <Shield className="h-4 w-4 mr-2 text-amber" />
-                  ISO 9001:2015 Certified
+                  ISO / BIS Certified
                 </div>
                 <div className="flex items-center">
                   <Factory className="h-4 w-4 mr-2 text-amber" />

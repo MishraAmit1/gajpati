@@ -9,8 +9,8 @@ import { handleWhatsAppRedirect } from '../helper/whatsapp';
 
 const productCategories = [
   {
-    id: "bitumen",
-    name: "Bitumen Solutions",
+    id: "bituminous-products",
+    name: "Bituminous Products",
     tagline:
       "Comprehensive range of CRMB, PMB, VG & PG grades for road construction and infrastructure projects.",
     bgImage:
@@ -27,7 +27,7 @@ const productCategories = [
   },
   {
     id: "construct",
-    name: "Construct Chemicals",
+    name: "Construction Chemicals",
     tagline:
       "Engineered gabion mesh, boxes and rockfall netting systems for erosion control and stabilization.",
     bgImage:
@@ -53,6 +53,9 @@ interface Product {
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string[];
+  settingTime?: string;
+  shelfLife?: string;
+  packaging?: string[];
 }
 
 const ProductDetail = () => {
@@ -70,7 +73,9 @@ const ProductDetail = () => {
 
     const categoryId = searchParams.get("categoryId");
     if (categoryId) {
-      const foundCategory = productCategories.find(cat => cat.id === categoryId);
+      const foundCategory =
+        productCategories.find(cat => cat.plantId === categoryId) || // backend Mongo id
+        productCategories.find(cat => cat.id === categoryId);        // fallback on slug
       setCurrentCategory(foundCategory || null);
     }
 
@@ -171,15 +176,14 @@ const ProductDetail = () => {
                 <ChevronRight className="w-4 h-4" />
                 <Link to="/products" className="hover:text-foreground transition-colors">Products</Link>
                 <ChevronRight className="w-4 h-4" />
-                <Link
-                  to={`/nature/${searchParams.get("categoryId") || currentCategory?.id || "bitumen"}`}
+                <Link to={`/nature/${currentCategory?.id || "bitumen"}`}
                   className="hover:text-foreground transition-colors"
                 >
                   {currentCategory?.name || "Category"}
                 </Link>
                 <ChevronRight className="w-4 h-4" />
                 <Link
-                  to={`/nature/${product.natureId?._id || product.natureId?.id}/products?categoryId=${searchParams.get("categoryId") || currentCategory?.id}`}
+                  to={`/nature/${product.natureId?._id}/products?categoryId=${currentCategory?.plantId}`}
                   className="hover:text-foreground transition-colors"
                 >
                   <span className="text-foreground font-medium">{product.natureId?.name || "Nature"}</span>
@@ -270,7 +274,7 @@ const ProductDetail = () => {
                       >
                         <a href={product.brochure.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                           <Download className="h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">Download Brochure</span>
+                          <span className="truncate">Download MSDS</span>
                         </a>
                       </Button>
                     )}
@@ -289,15 +293,19 @@ const ProductDetail = () => {
                       </div>
                       <div>
                         <span className="text-gray-500">Setting Time:</span>
-                        <div className="font-medium">2-5 minutes</div>
+                        <div className="font-medium">{product.settingTime || '-'}</div>
                       </div>
                       <div>
                         <span className="text-gray-500">Shelf Life:</span>
-                        <div className="font-medium">6 months</div>
+                        <div className="font-medium">{product.shelfLife || '-'}</div>
                       </div>
                       <div>
                         <span className="text-gray-500">Packaging:</span>
-                        <div className="font-medium">200L, 1000L</div>
+                        <div className="font-medium">
+                          {product.packaging && product.packaging.length > 0
+                            ? product.packaging.join(", ")
+                            : "-"}
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -383,7 +391,7 @@ const ProductDetail = () => {
                   )}
                 </CardContent>
               </Card>
-              <Card className="shadow-card">
+              {/* <Card className="shadow-card">
                 <CardHeader>
                   <CardTitle className="text-egyptian-blue">Reference Projects</CardTitle>
                 </CardHeader>
@@ -400,7 +408,7 @@ const ProductDetail = () => {
                     </li>
                   </ul>
                 </CardContent>
-              </Card>
+              </Card> */}
             </div>
           </div>
         </section>
@@ -418,11 +426,11 @@ const ProductDetail = () => {
                   </div>
                   <div className="text-center p-4 bg-white rounded-lg border">
                     <Shield className="h-8 w-8 text-amber mx-auto mb-2" />
-                    <div className="text-sm font-medium text-eerie-black">ASTM D977 Tested</div>
+                    <div className="text-sm font-medium text-eerie-black">ASTM D977 Compliant</div>
                   </div>
                   <div className="text-center p-4 bg-white rounded-lg border">
                     <Shield className="h-8 w-8 text-amber mx-auto mb-2" />
-                    <div className="text-sm font-medium text-eerie-black">ISO 9001:2015 Certified</div>
+                    <div className="text-sm font-medium text-eerie-black">ISO / BIS Certified</div>
                   </div>
                   <div className="text-center p-4 bg-white rounded-lg border">
                     <Shield className="h-8 w-8 text-amber mx-auto mb-2" />

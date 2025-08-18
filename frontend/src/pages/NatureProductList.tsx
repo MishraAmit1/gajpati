@@ -13,8 +13,8 @@ import constructChemical from "../assets/construct.jpg";
 
 const productCategories = [
     {
-        id: "bitumen",
-        name: "Bitumen Solutions",
+        id: "bituminous-products",
+        name: "Bituminous Products",
         tagline:
             "Comprehensive range of CRMB, PMB, VG & PG grades for road construction and infrastructure projects.",
         bgImage: bitumen,
@@ -112,7 +112,9 @@ const NatureProductList = () => {
     useEffect(() => {
         const categoryId = searchParams.get("categoryId");
         if (categoryId) {
-            const foundCategory = productCategories.find((cat) => cat.id === categoryId);
+            const foundCategory = productCategories.find(
+                (cat) => cat.plantId === categoryId  // ✅ Match plantId, not id
+            );
             setCurrentCategory(foundCategory || null);
         }
     }, [searchParams]);
@@ -392,10 +394,7 @@ const NatureProductList = () => {
                             Products
                         </Link>
                         <ChevronRight className="w-4 h-4" />
-                        <Link
-                            to={`/nature/${searchParams.get("categoryId")}`}
-                            className="hover:text-foreground transition-colors"
-                        >
+                        <Link to={`/nature/${currentCategory?.id || "products"}`}>
                             {currentCategory?.name || "Category"}
                         </Link>
                         <ChevronRight className="w-4 h-4" />

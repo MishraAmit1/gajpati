@@ -88,7 +88,7 @@ export const Footer = () => {
           <div className="flex space-x-6 mt-4 md:mt-0">
             <span className="text-gray-400 text-sm hover:text-amber cursor-pointer">Privacy Policy</span>
             <span className="text-gray-400 text-sm hover:text-amber cursor-pointer">Terms of Service</span>
-            <span className="text-gray-400 text-sm hover:text-amber cursor-pointer">ISO 9001:2015</span>
+            <span className="text-gray-400 text-sm hover:text-amber cursor-pointer">ISO / BIS</span>
           </div>
         </div>
       </div>

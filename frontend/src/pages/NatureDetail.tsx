@@ -319,7 +319,7 @@ const NatureDetail = () => {
                                 </div>
                                 <div className="text-center p-4 bg-white rounded-lg border">
                                     <Shield className="h-8 w-8 text-amber mx-auto mb-2" />
-                                    <div className="text-sm font-medium text-eerie-black">ISO 9001:2015 Certified</div>
+                                    <div className="text-sm font-medium text-eerie-black">ISO / BIS Certified</div>
                                 </div>
                                 <div className="text-center p-4 bg-white rounded-lg border">
                                     <Shield className="h-8 w-8 text-amber mx-auto mb-2" />

@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Filter, Grid, List, ArrowRight, Download, Mail, Building2, Shield, Beaker, MessageCircleCode } from "lucide-react";
+import { Filter, Grid, List, ArrowRight, Download, Mail, Building2, Shield, Beaker } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
 import {
@@ -12,13 +12,14 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { useQuery } from "@tanstack/react-query";
-import { fetchPlantsWithStats, type PlantWithStats } from "../services/plantStats";
+import { fetchPlantsWithStats } from "../services/plantStats";
 import { Spinner } from "./Products";
 import { SubcategoryListRow } from "./SubcategoryListRow";
 import QuoteModal from "../components/QuoteModal";
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
 import bitumen from "../assets/bitumen.jpg";
 import constructChemical from "../assets/construct_chemical.jpg";
+
 // --- Interfaces ---
 interface Nature {
     _id: string;
@@ -34,23 +35,39 @@ interface Nature {
     seoKeywords: string[];
 }
 
-interface ProductCategory {
-    id: string;
-    name: string;
-    tagline: string;
-    bgImage: string;
-    plantId: string;
-    filters: {
-        title: string;
-        options: string[];
-    }[];
-    description?: string;
-    icon?: any;
+function capitalizeWords(str: string) {
+    return str
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
 }
 
-// --- Static Category Configurations ---
-const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: { title: string; options: string[] }[]; bgImage: string; gradient: string; linkPdf: string } } = {
-    bitumen: {
+// Helper to generate slug if backend slug not present
+// Helper to generate slug if backend slug not present
+const toSlug = (s?: string) =>
+    (s || "")
+        .toLowerCase()
+        .trim()
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+// Singular/Plural helpers for tolerant matching
+const toSingular = (s: string) => (s.endsWith("s") ? s.slice(0, -1) : s);
+const toPlural = (s: string) => (s.endsWith("s") ? s : `${s}s`);
+
+// --- Static Category Configurations (UI only) ---
+const categoryConfigs: {
+    [key: string]: {
+        tagline: string;
+        icon: any;
+        filters: { title: string; options: string[] }[];
+        bgImage: string;
+        gradient: string;
+        linkPdf: string;
+    }
+} = {
+    "bituminous-products": {
         tagline: "Trusted Bitumen Technologies for Every Road",
         icon: Building2,
         bgImage: bitumen,
@@ -86,9 +103,15 @@ const categoryConfigs: { [key: string]: { tagline: string; icon: any; filters: {
             { title: "Size", options: ["5L Cans", "20L Drums", "200L Drums"] },
         ],
     },
+    default: {
+        tagline: "Explore our range of products",
+        icon: Building2,
+        bgImage: "https://via.placeholder.com/1200x300",
+        gradient: "from-egyptian-blue to-violet-blue",
+        linkPdf: "#",
+        filters: [{ title: "Category", options: [] }],
+    },
 };
-
-
 
 // --- Mapping for Short Forms to Full Names ---
 const gradeTypeMapping: { [key: string]: string[] } = {
@@ -101,11 +124,14 @@ const gradeTypeMapping: { [key: string]: string[] } = {
     PR: ["Pothole Repair", "PR Bitumen", "Pothole Bitumen"],
 };
 
-function capitalizeWords(str: string) {
-    return str
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+// Detect a UI key from plant name (for icons/bg/filters only)
+function detectCategoryKey(name?: string) {
+    const s = (name || "").toLowerCase();
+    if (s.includes("gabion")) return "gabion";
+    if (s.includes("bituminous")) return "bituminous-products"; // <<< NEW key
+    if (s.includes("bitumen")) return "bitumen"; // fallback if old legacy comes in
+    if (s.includes("construction") || s.includes("chemical")) return "construct";
+    return "other";
 }
 
 // --- FilterSidebar Component ---
@@ -116,15 +142,12 @@ const FilterSidebar = ({
     onFilterChange,
 }: {
     mobile?: boolean;
-    categoryId: string;
+    categoryId: string; // UI key: bitumen/gabion/construct/default
     selectedFilters: { [filterTitle: string]: string[] };
     onFilterChange: (filterTitle: string, option: string) => void;
 }) => {
     const filters = categoryConfigs[categoryId]?.filters || [
-        {
-            title: "Category",
-            options: [],
-        },
+        { title: "Category", options: [] },
     ];
 
     const FilterContent = () => (
@@ -151,7 +174,7 @@ const FilterSidebar = ({
                                 {/* Tooltip */}
                                 <span className="absolute left-0 top-full mt-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10">
                                     {filter.title === "Grade Type" && gradeTypeMapping[option]
-                                        ? gradeTypeMapping[option][0] // Show first full name
+                                        ? gradeTypeMapping[option][0]
                                         : option}
                                 </span>
                             </label>
@@ -193,7 +216,6 @@ const FilterSidebar = ({
     );
 };
 
-
 // --- SubcategoryCard Component ---
 const SubcategoryCard = ({
     title,
@@ -216,26 +238,23 @@ const SubcategoryCard = ({
 }) => {
     return (
         <Link to={link} className="block group h-full">
-            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-5 flex flex-col h-[480px]"> {/* Fixed height */}
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-5 flex flex-col h-[480px]">
                 {/* Image - Fixed height */}
                 <div className="relative mb-4 overflow-hidden rounded-lg h-48 flex-shrink-0">
                     <img src={image} alt={title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
                 </div>
 
-                {/* Content container with flex-grow */}
+                {/* Content */}
                 <div className="flex flex-col flex-grow overflow-hidden">
-                    {/* Title - Fixed space */}
                     <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">
                         {title}
                     </h3>
 
-                    {/* Description - Fixed space with line clamp */}
                     <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-3 line-clamp-3">
                         {description}
                     </p>
 
-                    {/* Applications - Fixed space */}
                     {applications.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-3 min-h-[32px]">
                             {applications.slice(0, 3).map((feature, idx) => (
@@ -252,10 +271,8 @@ const SubcategoryCard = ({
                         </div>
                     )}
 
-                    {/* Spacer to push footer down */}
-                    <div className="flex-grow"></div>
+                    <div className="flex-grow" />
 
-                    {/* Footer - Always at bottom */}
                     <div className="flex items-center justify-between pt-3 border-t border-zinc-100 dark:border-zinc-800">
                         <span className="text-xs text-zinc-400">
                             {productCount} product{productCount !== 1 ? "s" : ""}
@@ -273,15 +290,17 @@ const SubcategoryCard = ({
 
 // --- Main NatureProducts Component ---
 export const NatureProducts = () => {
-    const { id } = useParams<{ id: string }>();
+    const { slug } = useParams<{ slug: string }>(); // slug-based route
     const [natures, setNatures] = useState<Nature[]>([]);
     const [natureProductCounts, setNatureProductCounts] = useState<{ [key: string]: number }>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-
+    const normalizedSlug = useMemo(
+        () => toSlug(decodeURIComponent(slug || "")),
+        [slug]
+    );
     // Fetch plant data for breadcrumb and heading
     const { data: plants, isLoading: plantsLoading, error: plantsError } = useQuery({
         queryKey: ['plants'],
@@ -289,39 +308,49 @@ export const NatureProducts = () => {
         staleTime: 5 * 60 * 1000,
     });
 
-    // Find the plant for the current categoryId
+    // Find the plant using slug (prefer backend slug field, fallback to generated slug from name)
     const currentPlant = useMemo(() => {
-        if (!plants || !id) return null;
-        return plants.find((plant) => {
-            const nameLower = plant.name.toLowerCase();
-            if (id === 'bitumen' && nameLower.includes('bitumen')) return true;
-            if (id === 'gabion' && nameLower.includes('gabions')) return true;
-            if (id === 'construct' && (nameLower.includes('construction') || nameLower.includes('chemical'))) return true;
-            return false;
+        if (!plants || !normalizedSlug) return null;
+
+        // 1) Exact backend slug match (case-insensitive)
+        const byBackendSlug = plants.find(
+            (p: any) => (p.slug || "").toLowerCase() === normalizedSlug
+        );
+        if (byBackendSlug) return byBackendSlug;
+
+        // 2) Exact name-based slug match
+        const byNameSlug = plants.find((p) => toSlug(p.name) === normalizedSlug);
+        if (byNameSlug) return byNameSlug;
+
+        // 3) Singular/Plural tolerant match
+        const singular = toSingular(normalizedSlug);
+        const plural = toPlural(normalizedSlug);
+        const bySingularPlural = plants.find(
+            (p) => toSlug(p.name) === singular || toSlug(p.name) === plural
+        );
+        if (bySingularPlural) return bySingularPlural;
+
+        // 4) Loose fallback (startsWith either side)
+        const byLoose = plants.find((p) => {
+            const s = toSlug(p.name);
+            return s.startsWith(normalizedSlug) || normalizedSlug.startsWith(s);
         });
-    }, [plants, id]);
+        if (byLoose) return byLoose;
 
-    // Dynamically create productCategories from natures data
-    const productCategories = useMemo(() => {
-        if (!natures.length || !id) return [];
-        const config = categoryConfigs[id] || {
-            tagline: "Explore our range of products",
-            icon: Building2,
-            bgImage: "https://via.placeholder.com/1200x300",
-            filters: [{ title: "Category", options: [] }],
-        };
+        return null;
+    }, [plants, normalizedSlug]);
+    useEffect(() => {
+        if (plants && normalizedSlug && !currentPlant) {
+            console.warn("No plant matched slug:", normalizedSlug, {
+                available: plants.map((p: any) => p.slug || toSlug(p.name)),
+            });
+        }
+    }, [plants, normalizedSlug, currentPlant]);
 
-        return natures.map((nature) => ({
-            id,
-            name: nature.name,
-            tagline: config.tagline,
-            bgImage: nature.image || "https://via.placeholder.com/1200x300",
-            plantId: nature.plantId._id,
-            filters: config.filters,
-            description: nature.description,
-            icon: config.icon,
-        }));
-    }, [natures, id]);
+    // UI Config from plant name
+    const cfgKey = detectCategoryKey(currentPlant?.name);
+    const cfg = categoryConfigs[cfgKey] || categoryConfigs.default;
+    const IconComponent = cfg.icon;
 
     // --- Filter State for Frontend Filtering ---
     const [selectedFilters, setSelectedFilters] = useState<{ [filterTitle: string]: string[] }>({});
@@ -338,20 +367,14 @@ export const NatureProducts = () => {
         });
     };
 
-    // Fetch natures when id or currentPlant changes
+    // Fetch natures when slug or currentPlant changes
     useEffect(() => {
-        if (!id) {
-            setError("No category ID provided in URL");
+        if (!slug) {
+            setError("No category provided in URL");
             setLoading(false);
             return;
         }
 
-        if (!categoryConfigs[id]) {
-            setError(`Category "${id}" not found. Please select a valid category.`);
-            setLoading(false);
-            return;
-        }
-        // Wait for plants to finish loading before checking for currentPlant
         if (plantsLoading) {
             setLoading(true);
             return;
@@ -365,22 +388,21 @@ export const NatureProducts = () => {
 
         setLoading(true);
         const plantId = currentPlant._id;
-        console.log(`Fetching natures for plantId: ${plantId}, categoryId: ${id}`); // Debug log
+
         fetch(
             `${import.meta.env.VITE_API_URL || "https://gajpati-backend.onrender.com"}/api/v1/natures/search?plantId=${plantId}`
         )
             .then((res) => {
                 if (!res.ok) {
-                    console.error(`API error: ${res.status} ${res.statusText}`);
                     throw new Error("Failed to fetch natures");
                 }
                 return res.json();
             })
             .then((data) => {
                 const naturesData = data.data?.natures || [];
-                console.log("Fetched natures:", naturesData); // Debug log
                 setNatures(naturesData);
 
+                // Fetch product counts per nature (optional)
                 const fetchNatureCounts = async () => {
                     const counts: { [key: string]: number } = {};
                     for (const nature of naturesData) {
@@ -392,7 +414,6 @@ export const NatureProducts = () => {
                             const result = await response.json();
                             counts[nature._id] = result.data?.total || 0;
                         } catch (err) {
-                            console.error(`Error fetching product count for nature ${nature._id}:`, err);
                             counts[nature._id] = 0;
                         }
                     }
@@ -408,7 +429,7 @@ export const NatureProducts = () => {
                 setError("Failed to load product types. Please try again later.");
             })
             .finally(() => setLoading(false));
-    }, [id, currentPlant, plantsLoading]);
+    }, [slug, currentPlant, plantsLoading]);
 
     // --- Filtering Logic ---
     const filteredNatures = natures.filter((nature) => {
@@ -437,43 +458,32 @@ export const NatureProducts = () => {
             return true;
         });
     });
+
     // Dynamic SEO metadata
     const seoTitle = currentPlant
         ? `${capitalizeWords(currentPlant.name)} Products | Gajpati Industries`
-        : `${capitalizeWords(id)} Products | Gajpati Industries`;
+        : `Products | Gajpati Industries`;
 
     const seoDescription = currentPlant?.description
         ? `${currentPlant.description.slice(0, 157)}...`
-        : categoryConfigs[id]?.tagline
-            ? `${categoryConfigs[id].tagline.slice(0, 157)}...`
-            : `Explore high-quality ${capitalizeWords(id)} products from Gajpati Industries, designed for superior performance.`;
+        : `${cfg.tagline.slice(0, 157)}...`;
 
     const seoKeywords = useMemo(() => {
         const baseKeywords = [
             'Gajpati Industries',
-            id,
-            ...categoryConfigs[id]?.filters.flatMap(f => f.options) || [],
+            currentPlant?.name || 'products',
+            ...(cfg?.filters?.flatMap(f => f.options) || []),
         ];
         const natureKeywords = natures.flatMap(nature => nature.seoKeywords || []);
         return [...new Set([...baseKeywords, ...natureKeywords])].slice(0, 10);
-    }, [natures, id]);
+    }, [natures, currentPlant, cfg]);
 
-    if (!categoryConfigs[id] || plantsLoading) {
+    // Early returns
+    if (plantsLoading) {
         return (
             <div className="min-h-screen bg-background">
                 <div className="container-industrial py-8 text-center">
-                    {plantsLoading ? (
-                        <Spinner />
-                    ) : (
-                        <>
-                            <p className="text-red-500">Category not found</p>
-                            <div className="mt-4">
-                                <Button asChild variant="action">
-                                    <Link to="/products">Return to Products</Link>
-                                </Button>
-                            </div>
-                        </>
-                    )}
+                    <Spinner />
                 </div>
             </div>
         );
@@ -494,8 +504,20 @@ export const NatureProducts = () => {
         );
     }
 
-    // Get the Icon component dynamically
-    const IconComponent = categoryConfigs[id]?.icon;
+    if (!currentPlant) {
+        return (
+            <div className="min-h-screen bg-background">
+                <div className="container-industrial py-8 text-center">
+                    <p className="text-red-500">Plant not found</p>
+                    <div className="mt-4">
+                        <Button asChild variant="action">
+                            <Link to="/products">Return to Products</Link>
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -505,20 +527,20 @@ export const NatureProducts = () => {
                 <meta name="keywords" content={seoKeywords.join(', ')} />
                 <meta property="og:title" content={seoTitle} />
                 <meta property="og:description" content={seoDescription} />
-                <meta property="og:image" content={categoryConfigs[id]?.bgImage || 'https://yourdomain.com/images/default-og.jpg'} />
-                <meta property="og:url" content={`https://yourdomain.com/products/${id}`} />
+                <meta property="og:image" content={cfg?.bgImage || 'https://yourdomain.com/images/default-og.jpg'} />
+                <meta property="og:url" content={`https://yourdomain.com/nature/${slug}`} />
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={seoTitle} />
                 <meta name="twitter:description" content={seoDescription} />
-                <meta name="twitter:image" content={categoryConfigs[id]?.bgImage || 'https://yourdomain.com/images/default-og.jpg'} />
-                <link rel="canonical" href={`https://yourdomain.com/products/${id}`} />
+                <meta name="twitter:image" content={cfg?.bgImage || 'https://yourdomain.com/images/default-og.jpg'} />
+                <link rel="canonical" href={`https://yourdomain.com/nature/${slug}`} />
                 <script type="application/ld+json">
                     {JSON.stringify({
                         '@context': 'https://schema.org',
                         '@type': 'CollectionPage',
                         'name': seoTitle,
                         'description': seoDescription,
-                        'url': `https://yourdomain.com/products/${id}`,
+                        'url': `https://yourdomain.com/nature/${slug}`,
                         'publisher': {
                             '@type': 'Organization',
                             'name': 'Gajpati Industries',
@@ -533,11 +555,12 @@ export const NatureProducts = () => {
                         'itemListElement': [
                             { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://yourdomain.com' },
                             { '@type': 'ListItem', 'position': 2, 'name': 'Products', 'item': 'https://yourdomain.com/products' },
-                            { '@type': 'ListItem', 'position': 3, 'name': capitalizeWords(currentPlant?.name || id), 'item': `https://yourdomain.com/products/${id}` },
+                            { '@type': 'ListItem', 'position': 3, 'name': capitalizeWords(currentPlant?.name || ''), 'item': `https://yourdomain.com/nature/${slug}` },
                         ],
                     })}
                 </script>
             </Helmet>
+
             <div className="min-h-screen bg-background">
                 {/* Breadcrumb */}
                 <nav className="container py-4 bg-white border-b border-gray-200">
@@ -549,15 +572,16 @@ export const NatureProducts = () => {
                         <span className="text-gray-900 font-medium">{currentPlant?.name || "Category"}™</span>
                     </div>
                 </nav>
+
                 {/* Hero Section */}
                 <section
                     className="relative flex items-center justify-center min-h-[60vh] bg-cover bg-center"
                     style={{
-                        backgroundImage: `url(${categoryConfigs[id].bgImage})`,
+                        backgroundImage: `url(${cfg.bgImage})`,
                     }}
                 >
-                    {/* Gradient Overlay - Updated to use dynamic gradient */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${categoryConfigs[id].gradient}`}></div>
+                    {/* Gradient Overlay */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${cfg.gradient}`}></div>
 
                     {/* Content */}
                     <div className="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto px-4 py-16">
@@ -577,7 +601,7 @@ export const NatureProducts = () => {
                         </p>
                         {/* Buttons */}
                         <div className="flex flex-wrap gap-4">
-                            <Link to={categoryConfigs[id].linkPdf} target="_blank" className="flex items-center">
+                            <Link to={cfg.linkPdf} target="_blank" className="flex items-center">
                                 <Button size="lg" variant="secondary" className="bg-amber text-deep-gray hover:bg-amber/90">
                                     <Download className="h-5 w-5 mr-2" />
                                     Download Technical Data Sheet
@@ -591,6 +615,7 @@ export const NatureProducts = () => {
                     </div>
                 </section>
             </div>
+
             <div className="min-h-screen bg-background mb-20 -mt-32">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="container-industrial">
@@ -599,7 +624,7 @@ export const NatureProducts = () => {
                             <div className="flex items-center space-x-4 mb-8">
                                 <FilterSidebar
                                     mobile={true}
-                                    categoryId={id}
+                                    categoryId={cfgKey}
                                     selectedFilters={selectedFilters}
                                     onFilterChange={handleFilterChange}
                                 />
@@ -628,7 +653,7 @@ export const NatureProducts = () => {
                         {/* Main Content */}
                         <div className="flex gap-8">
                             <FilterSidebar
-                                categoryId={id}
+                                categoryId={cfgKey}
                                 selectedFilters={selectedFilters}
                                 onFilterChange={handleFilterChange}
                             />
@@ -660,7 +685,10 @@ export const NatureProducts = () => {
                                                         description={nature.description || "Explore products in this category"}
                                                         productCount={natureProductCounts[nature._id] || 0}
                                                         image={nature.image || "https://via.placeholder.com/1200x300"}
-                                                        link={`/nature/${nature._id}/products?categoryId=${id}`}
+                                                        // IMPORTANT: Go to products with IDs for fetching
+                                                        link={`/nature/${nature._id}/products?categoryId=${currentPlant._id}`}
+                                                        // link={`/nature/${nature._id}/products?categoryId=${id}`}
+
                                                         specs={
                                                             nature.technicalOverview
                                                                 ? nature.technicalOverview.split(",").map((spec) => spec.trim())
@@ -675,7 +703,8 @@ export const NatureProducts = () => {
                                                         description={nature.description || "Explore products in this category"}
                                                         productCount={natureProductCounts[nature._id] || 0}
                                                         image={nature.image || "https://via.placeholder.com/1200x300"}
-                                                        link={`/nature/${nature._id}/products?categoryId=${id}`}
+                                                        // IMPORTANT: Go to products with IDs for fetching
+                                                        link={`/nature/${nature._id}/products?categoryId=${currentPlant._id}`}
                                                         specs={
                                                             nature.technicalOverview
                                                                 ? nature.technicalOverview.split(",").map((spec) => spec.trim())
@@ -694,7 +723,9 @@ export const NatureProducts = () => {
                     </div>
                 </div>
             </div>
+
             <QuoteModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+
             {/* Floating CTA */}
             <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 bg-green-600">
                 <Button size="sm" className="shadow-xl bg-green-600 hover:bg-green-700" onClick={handleWhatsAppRedirect}>

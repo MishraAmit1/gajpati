@@ -194,7 +194,7 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
                     onChange={handleInputChange}
                     placeholder="Enter your full name"
                     disabled={loading}
-                    className="w-full"
+                    className="w-full placeholder:text-gray-400"
                   />
                   {errors.customerName && (
                     <p className="text-red-600 text-sm">
@@ -216,7 +216,7 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
                     onChange={handleInputChange}
                     placeholder="your.email@company.com"
                     disabled={loading}
-                    className="w-full"
+                    className="w-full placeholder:text-gray-400"
                   />
                   {errors.customerEmail && (
                     <p className="text-red-600 text-sm">
@@ -236,7 +236,7 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
                   onChange={handleInputChange}
                   placeholder="+91 98756-XXXX"
                   disabled={loading}
-                  className="w-full"
+                  className="w-full placeholder:text-gray-400"
                 />
                 {errors.customerPhone && (
                   <p className="text-red-600 text-sm">{errors.customerPhone}</p>
@@ -253,7 +253,7 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
                   onChange={handleInputChange}
                   placeholder="City, State"
                   disabled={loading}
-                  className="w-full"
+                  className="w-full placeholder:text-gray-400"
                 />
                 {errors.city && (
                   <p className="text-red-600 text-sm">{errors.city}</p>
@@ -310,7 +310,7 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
                   variant="cta"
                   size="xl"
                   type="submit"
-                  className="w-full"
+                  className="w-full placeholder:text-gray-400"
                   disabled={loading}
                 >
                   {loading ? "Submitting..." : "Submit Quote Request"}

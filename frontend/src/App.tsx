@@ -9,6 +9,7 @@ import NotFound from './pages/NotFound';
 import OurFacility from './pages/OurFacility';
 const About = lazy(() => import('./pages/About'));
 const Careers = lazy(() => import('./pages/Careers'));
+const CareerDetails = lazy(() => import('./pages/CareerDetails')); // Added CareerDetails
 const Products = lazy(() => import('./pages/Products'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Blog = lazy(() => import('./pages/Blog'));
@@ -41,10 +42,11 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
               <Route path="/careers" element={<Careers />} />
+              <Route path="/careers/:id" element={<CareerDetails />} /> {/* Added route for job details */}
               <Route path="/our-facility" element={<OurFacility />} />
               <Route path="/products" element={<Products />} />
               <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/nature/:id" element={<NatureProducts />} />
+              <Route path="/nature/:slug" element={<NatureProducts />} />
               <Route path="/nature/:natureId/products" element={<NatureProductList />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />

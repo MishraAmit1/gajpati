@@ -159,7 +159,7 @@ const Contact = () => {
   return (
     <>
       <Helmet>
-        <title>Contact Us | Gajpati Industries - Get in Touch</title>
+        <title>Contact Us | Gajpati Industries - We’re Here for You</title>
         <meta
           name="description"
           content="Connect with Gajpati Industries for project consultations, product specifications, and customized chemical solutions. Submit your inquiry or contact our experts today."
@@ -168,7 +168,7 @@ const Contact = () => {
           name="keywords"
           content="contact Gajpati Industries, infrastructure chemicals, project inquiry, technical support, manufacturing locations"
         />
-        <meta property="og:title" content="Contact Us | Gajpati Industries - Get in Touch" />
+        <meta property="og:title" content="Contact Us | Gajpati Industries - We’re Here for You" />
         <meta
           property="og:description"
           content="Connect with Gajpati Industries for project consultations, product specifications, and customized chemical solutions. Submit your inquiry or contact our experts today."
@@ -176,7 +176,7 @@ const Contact = () => {
         <meta property="og:image" content="https://gajpatiindustries.com/images/contact-og.jpg" />
         <meta property="og:url" content="https://gajpatiindustries.com/contact" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Contact Us | Gajpati Industries - Get in Touch" />
+        <meta name="twitter:title" content="Contact Us | Gajpati Industries - We’re Here for You" />
         <meta
           name="twitter:description"
           content="Connect with Gajpati Industries for project consultations, product specifications, and customized chemical solutions. Submit your inquiry or contact our experts today."
@@ -237,7 +237,7 @@ const Contact = () => {
           <Container>
             <div className="text-center">
               <h1 id="contact-heading" className="font-display font-bold text-3xl sm:text-4xl lg:text-hero mb-3 sm:mb-4">
-                Get in Touch
+                We’re Here for You
               </h1>
               <p className="text-base sm:text-lg lg:text-xl leading-relaxed max-w-2xl sm:max-w-3xl mx-auto">
                 Connect with our technical experts for project consultations, product specifications,
@@ -289,7 +289,7 @@ const Contact = () => {
                             onChange={handleInputChange}
                             placeholder="Enter your full name"
                             disabled={mutation.isLoading}
-                            className="w-full"
+                            className="w-full placeholder:text-gray-400"
                             aria-required="true"
                             aria-invalid={!!errors.customerName}
                             aria-describedby={errors.customerName ? 'customerName-error' : undefined}
@@ -310,7 +310,7 @@ const Contact = () => {
                             onChange={handleInputChange}
                             placeholder="e.g., Project Manager, Civil Engineer"
                             disabled={mutation.isLoading}
-                            className="w-full"
+                            className="w-full placeholder:text-gray-400"
                           />
                         </div>
                       </div>
@@ -326,7 +326,7 @@ const Contact = () => {
                             onChange={handleInputChange}
                             placeholder="your.email@company.com"
                             disabled={mutation.isLoading}
-                            className="w-full"
+                            className="w-full placeholder:text-gray-400"
                             aria-required="true"
                             aria-invalid={!!errors.customerEmail}
                             aria-describedby={errors.customerEmail ? 'customerEmail-error' : undefined}
@@ -347,7 +347,7 @@ const Contact = () => {
                             onChange={handleInputChange}
                             placeholder="e.g., +91 9528355555"
                             disabled={mutation.isLoading}
-                            className="w-full"
+                            className="w-full placeholder:text-gray-400"
                             aria-required="true"
                             aria-invalid={!!errors.customerPhone}
                             aria-describedby={errors.customerPhone ? 'customerPhone-error' : undefined}
@@ -370,7 +370,7 @@ const Contact = () => {
                             onChange={handleInputChange}
                             placeholder="Your company name"
                             disabled={mutation.isLoading}
-                            className="w-full"
+                            className="w-full placeholder:text-gray-400"
                             aria-required="true"
                             aria-invalid={!!errors.companyName}
                             aria-describedby={errors.companyName ? 'companyName-error' : undefined}
@@ -391,7 +391,7 @@ const Contact = () => {
                             onChange={handleInputChange}
                             placeholder="City, State"
                             disabled={mutation.isLoading}
-                            className="w-full"
+                            className="w-full placeholder:text-gray-400"
                             aria-required="true"
                             aria-invalid={!!errors.city}
                             aria-describedby={errors.city ? 'city-error' : undefined}
@@ -495,7 +495,7 @@ const Contact = () => {
                           variant="cta"
                           size="xl"
                           type="submit"
-                          className="w-full"
+                          className="w-full placeholder:text-gray-400"
                           disabled={mutation.isLoading}
                           aria-label="Submit inquiry form"
                         >
@@ -598,7 +598,7 @@ const Contact = () => {
                       </div>
                       <div className="flex items-start space-x-3">
                         <div>
-                          <div className="text-gray-500 text-sm">ISO 9001:2015 Certified</div>
+                          <div className="text-gray-500 text-sm">ISO / BIS Certified</div>
                           <div className="text-gray-500 text-sm">NDA Available on Request</div>
                         </div>
                       </div>
@@ -617,12 +617,12 @@ const Contact = () => {
                   <Button
                     variant="enterprise"
                     size="lg"
-                    className="w-full"
+                    className="w-full placeholder:text-gray-400"
                     onClick={handleRequestSample}
                   >
                     Request Product Samples
                   </Button>
-                  <Button variant="trust" size="lg" asChild className="w-full">
+                  <Button variant="trust" size="lg" asChild className="w-full placeholder:text-gray-400">
                     <a href="/downloads/company-profile.pdf" download>
                       Download Company Profile
                     </a>

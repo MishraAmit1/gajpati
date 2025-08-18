@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import {
     Briefcase, MapPin, Clock, Users, TrendingUp, Heart, Award, Building2,
-    GraduationCap, Mail, ChevronRight, CheckCircle, X, ArrowLeft,
-    Calendar, DollarSign, Target, FileText
+    GraduationCap, Mail, ChevronRight, CheckCircle
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Container = ({ children, className = '' }) => (
     <div className={`max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 ${className}`}>{children}</div>
@@ -15,22 +15,8 @@ const Container = ({ children, className = '' }) => (
 
 const Careers = () => {
     const [selectedDepartment, setSelectedDepartment] = useState('all');
-    const [showModal, setShowModal] = useState(false);
-    const [selectedJob, setSelectedJob] = useState(null);
-    const [showJobDetail, setShowJobDetail] = useState(false);
-    // Scroll to top when showing job detail
-    useEffect(() => {
-        if (showJobDetail) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }, [showJobDetail]);
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: ''
-    });
 
-    // Enhanced job openings data with more details
+    // Job openings data
     const jobOpenings = [
         {
             id: 1,
@@ -48,7 +34,7 @@ const Careers = () => {
                 "B.Tech/M.Tech in Chemical Engineering",
                 "Experience in bitumen/chemical manufacturing",
                 "Strong leadership and safety management skills",
-                "Knowledge of ISO 9001:2015 and safety standards",
+                "Knowledge of ISO / BIS and safety standards",
                 "Excellent problem-solving abilities"
             ],
             responsibilities: [
@@ -264,313 +250,6 @@ const Careers = () => {
         ? jobOpenings
         : jobOpenings.filter(job => job.department === selectedDepartment);
 
-    const handleViewDetails = (job) => {
-        setSelectedJob(job);
-        setShowJobDetail(true);
-    };
-
-    const handleBackToListings = () => {
-        setShowJobDetail(false);
-        setSelectedJob(null);
-    };
-
-    const handleApplyClick = () => {
-        setFormData({ name: '', email: '', phone: '' });
-        setShowModal(true);
-    };
-
-    const handleCloseModal = () => {
-        setShowModal(false);
-    };
-
-    const handleInputChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        // Create WhatsApp message
-        const message = `Hello! I would like to apply for the position of *${selectedJob?.title}*
-
-*Applicant Details:*
-Name: ${formData.name}
-Email: ${formData.email}
-Phone: ${formData.phone}
-Position: ${selectedJob?.title}
-Department: ${selectedJob?.department}
-Location: ${selectedJob?.location}
-
-I am interested in this opportunity and would like to share my resume.`;
-
-        // Encode message for URL
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappNumber = '919528355555'; // Added country code 91 for India
-        const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-
-        // Open WhatsApp
-        window.open(whatsappURL, '_blank');
-
-        // Close modal after redirect
-        setTimeout(() => {
-            setShowModal(false);
-        }, 1000);
-    };
-
-    // Job Detail View
-    if (showJobDetail && selectedJob) {
-        return (
-            <>
-                <Helmet>
-                    <title>{selectedJob.title} - Careers at Gajpati Industries</title>
-                    <meta name="description" content={selectedJob.detailedDescription} />
-                </Helmet>
-
-                <div className="min-h-screen bg-background">
-                    {/* Header */}
-                    <section className="bg-gradient-hero text-white py-8">
-                        <Container>
-                            <Button
-                                variant="ghost"
-                                onClick={handleBackToListings}
-                                className="text-white hover:text-black mb-4"
-                            >
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back to All Jobs
-                            </Button>
-                            <h1 className="font-display font-bold text-3xl sm:text-4xl mb-2">
-                                {selectedJob.title}
-                            </h1>
-                            <div className="flex flex-wrap gap-4 text-sm">
-                                <Badge className="bg-amber text-egyptian-blue hover:text-black">
-                                    {selectedJob.department}
-                                </Badge>
-                                <span className="flex items-center">
-                                    <MapPin className="h-4 w-4 mr-1" />
-                                    {selectedJob.location}
-                                </span>
-                                <span className="flex items-center">
-                                    <Briefcase className="h-4 w-4 mr-1" />
-                                    {selectedJob.type}
-                                </span>
-                                <span className="flex items-center">
-                                    <Calendar className="h-4 w-4 mr-1" />
-                                    Posted: {selectedJob.postedDate}
-                                </span>
-                            </div>
-                        </Container>
-                    </section>
-
-                    {/* Job Details */}
-                    <section className="py-12">
-                        <Container>
-                            <div className="grid lg:grid-cols-3 gap-8">
-                                {/* Main Content */}
-                                <div className="lg:col-span-2 space-y-8">
-                                    {/* Overview */}
-                                    <Card>
-                                        <CardContent className="p-6">
-                                            <h2 className="font-display font-bold text-2xl text-egyptian-blue mb-4">
-                                                Job Overview
-                                            </h2>
-                                            <p className="text-gray-600 leading-relaxed">
-                                                {selectedJob.detailedDescription}
-                                            </p>
-                                        </CardContent>
-                                    </Card>
-
-                                    {/* Responsibilities */}
-                                    <Card>
-                                        <CardContent className="p-6">
-                                            <h2 className="font-display font-bold text-2xl text-egyptian-blue mb-4">
-                                                Key Responsibilities
-                                            </h2>
-                                            <ul className="space-y-2">
-                                                {selectedJob.responsibilities.map((resp, index) => (
-                                                    <li key={index} className="flex items-start">
-                                                        <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                                                        <span className="text-gray-700">{resp}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </CardContent>
-                                    </Card>
-
-                                    {/* Requirements */}
-                                    <Card>
-                                        <CardContent className="p-6">
-                                            <h2 className="font-display font-bold text-2xl text-egyptian-blue mb-4">
-                                                Requirements
-                                            </h2>
-                                            <ul className="space-y-2">
-                                                {selectedJob.requirements.map((req, index) => (
-                                                    <li key={index} className="flex items-start">
-                                                        <Target className="h-5 w-5 text-amber mr-3 mt-0.5 flex-shrink-0" />
-                                                        <span className="text-gray-700">{req}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </CardContent>
-                                    </Card>
-
-                                    {/* Preferred Skills */}
-                                    <Card>
-                                        <CardContent className="p-6">
-                                            <h2 className="font-display font-bold text-2xl text-egyptian-blue mb-4">
-                                                Preferred Skills
-                                            </h2>
-                                            <ul className="space-y-2">
-                                                {selectedJob.preferredSkills.map((skill, index) => (
-                                                    <li key={index} className="flex items-start">
-                                                        <FileText className="h-5 w-5 text-violet-blue mr-3 mt-0.5 flex-shrink-0" />
-                                                        <span className="text-gray-700">{skill}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-
-                                {/* Sidebar */}
-                                <div className="space-y-6">
-                                    {/* Job Summary Card */}
-                                    <Card className="top-6">
-                                        <CardContent className="p-6">
-                                            <h3 className="font-semibold text-lg text-egyptian-blue mb-4">
-                                                Job Summary
-                                            </h3>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <p className="text-sm text-gray-500">Experience</p>
-                                                    <p className="font-medium">{selectedJob.experience}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm text-gray-500">Salary Range</p>
-                                                    <p className="font-medium flex items-center">
-                                                        <DollarSign className="h-4 w-4 mr-1" />
-                                                        {selectedJob.salary}
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm text-gray-500">Openings</p>
-                                                    <p className="font-medium">{selectedJob.openings} Position{selectedJob.openings > 1 ? 's' : ''}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm text-gray-500">Job Type</p>
-                                                    <p className="font-medium">{selectedJob.type}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm text-gray-500">Location</p>
-                                                    <p className="font-medium">{selectedJob.location}</p>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                variant="action"
-                                                className="w-full mt-6"
-                                                onClick={handleApplyClick}
-                                            >
-                                                Apply Now
-                                            </Button>
-                                        </CardContent>
-                                    </Card>
-
-                                    {/* Company Benefits */}
-                                    <Card>
-                                        <CardContent className="p-6">
-                                            <h3 className="font-semibold text-lg text-egyptian-blue mb-4">
-                                                Why Join Us?
-                                            </h3>
-                                            <ul className="space-y-3 text-sm">
-                                                <li className="flex items-start">
-                                                    <CheckCircle className="h-4 w-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                                                    <span>Industry-leading compensation</span>
-                                                </li>
-                                                <li className="flex items-start">
-                                                    <CheckCircle className="h-4 w-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                                                    <span>Comprehensive health insurance</span>
-                                                </li>
-                                                <li className="flex items-start">
-                                                    <CheckCircle className="h-4 w-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                                                    <span>Professional development programs</span>
-                                                </li>
-                                                <li className="flex items-start">
-                                                    <CheckCircle className="h-4 w-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                                                    <span>Work-life balance</span>
-                                                </li>
-                                            </ul>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            </div>
-                        </Container>
-                    </section>
-
-                    {/* Modal */}
-                    {showModal && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 relative">
-                                <button
-                                    className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-                                    onClick={handleCloseModal}
-                                    aria-label="Close"
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
-                                <div className="p-6">
-                                    <h2 className="text-xl font-bold mb-2 text-egyptian-blue">Apply for {selectedJob?.title}</h2>
-                                    <form onSubmit={handleSubmit} className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleInputChange}
-                                                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleInputChange}
-                                                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                                            <input
-                                                type="tel"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleInputChange}
-                                                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
-                                                required
-                                            />
-                                        </div>
-                                        <div className="pt-2">
-                                            <Button type="submit" variant="cta" className="w-full">
-                                                Apply via WhatsApp
-                                            </Button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </>
-        );
-    }
-
-    // Main Careers Page (List View)
     return (
         <>
             <Helmet>
@@ -722,7 +401,6 @@ I am interested in this opportunity and would like to share my resume.`;
                                                         {job.experience}
                                                     </div>
                                                     <div className="flex items-center">
-                                                        <DollarSign className="h-4 w-4 mr-1" />
                                                         {job.salary}
                                                     </div>
                                                 </div>
@@ -732,13 +410,15 @@ I am interested in this opportunity and would like to share my resume.`;
                                                     {job.department}
                                                 </Badge>
                                                 <Button
+                                                    asChild
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => handleViewDetails(job)}
                                                     className="text-black bg-amber hover:bg-amber hover:text-egyptian-blue"
                                                 >
-                                                    View Details
-                                                    <ChevronRight className="ml-1 h-4 w-4" />
+                                                    <Link to={`/careers/${job.id}`}>
+                                                        View Details
+                                                        <ChevronRight className="ml-1 h-4 w-4" />
+                                                    </Link>
                                                 </Button>
                                             </div>
                                         </div>

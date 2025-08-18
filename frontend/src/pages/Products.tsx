@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link, useSearchParams } from "react-router-dom";
 import { Helmet } from 'react-helmet-async';
-
+import bitumeImage from "../assets/bitumen.jpg"
 import {
   Search,
   Download,
@@ -69,8 +69,27 @@ export const Spinner = function Spinner({
   );
 };
 
+// Detect UI key from plant name (for icon/bg only)
+function detectCategoryKey(name?: string) {
+  const s = (name || "").toLowerCase();
+  if (s.includes("gabion")) return "gabion";
+  if (s.includes("bitumen") || s.includes("bituminous")) return "bitumen"; // include "bituminous"
+  if (s.includes("construction") || s.includes("chemical")) return "construct";
+  return "other";
+}
+
+// Fallback slug generator (if backend doesn't send slug)
+const toSlug = (s?: string) =>
+  (s || "")
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 const Products = () => {
   const [searchParams] = useSearchParams();
+  // categoryIdFromQuery is legacy; not used for routing anymore
   const categoryIdFromQuery = searchParams.get("categoryId");
   const plantIdFromQuery = searchParams.get("plantId");
   const natureIdFromQuery = searchParams.get("natureId");
@@ -100,12 +119,12 @@ const Products = () => {
       .join(' ');
   }
 
-  // Define static category configurations
+  // Static category configurations (for icons/backgrounds only)
   const categoryConfigs = {
     bitumen: {
       icon: Building2,
       gradient: "bg-gradient-to-br from-egyptian-blue to-violet-blue",
-      bgImage: "https://www.constructionworld.in/assets/uploads/s_ae40e2939eb212f9b98fc628c69fbf5a.jpg",
+      bgImage: bitumeImage,
     },
     gabion: {
       icon: Shield,
@@ -117,38 +136,36 @@ const Products = () => {
       gradient: "bg-gradient-to-br from-egyptian-blue to-violet-blue",
       bgImage: "https://backgroundimages.withfloats.com/actual/5bd1af4f3f02cc0001c0f035.jpg",
     },
+    other: {
+      icon: Building2,
+      gradient: "bg-gradient-to-br from-egyptian-blue to-violet-blue",
+      bgImage: "https://via.placeholder.com/1200x300",
+    },
+  };
+  // Desired UI order fallback (used only if slug not in priority map)
+  const categoryOrder = ['gabion', 'bitumen', 'construct'];
+
+  // Strict priority by slug (deterministic order)
+  const priorityBySlug: Record<string, number> = {
+    "gabions": 0,
+    "bituminous-products": 1,       // confirm this matches your backend/slug
+    "construction-chemicals": 2,
   };
 
-  // Define the desired category order
-  const categoryOrder = ['bitumen', 'gabion', 'construct'];
-
-  // Dynamically create productCategories from plant data
+  // Build categories from plants (keep uiKey for UI, slug for URL, id for data)
   const productCategories = useMemo(() => {
     if (!plants) return [];
     const categories = plants.map((plant) => {
-      const nameLower = plant.name.toLowerCase();
-      let categoryId = 'other';
-      let config = {
-        icon: Building2,
-        gradient: "bg-gradient-to-br from-egyptian-blue to-violet-blue",
-        bgImage: "https://via.placeholder.com/1200x300",
-      };
-
-      if (nameLower.includes('bitumen')) {
-        categoryId = 'bitumen';
-        config = categoryConfigs.bitumen;
-      } else if (nameLower.includes('gabion')) {
-        categoryId = 'gabion';
-        config = categoryConfigs.gabion;
-      } else if (nameLower.includes('construction') || nameLower.includes('chemical')) {
-        categoryId = 'construct';
-        config = categoryConfigs.construct;
-      }
+      const uiKey = detectCategoryKey(plant.name);
+      const config = (categoryConfigs as any)[uiKey] || (categoryConfigs as any).other;
+      const slug = (plant as any).slug || toSlug(plant.name);
 
       return {
-        id: categoryId,
+        id: plant._id,   // data id (not used in URL)
+        uiKey,           // for UI sorting and config
+        slug,            // pretty URL
         name: plant.name,
-        tagline: plant.description || "Explore our range of products",
+        tagline: (plant as any).description || "Explore our range of products",
         icon: config.icon,
         gradient: config.gradient,
         bgImage: config.bgImage,
@@ -156,16 +173,27 @@ const Products = () => {
       };
     });
 
+    // Sort by strict slug priority first; fallback to uiKey order
     return categories.sort((a, b) => {
-      const indexA = categoryOrder.indexOf(a.id);
-      const indexB = categoryOrder.indexOf(b.id);
-      return (indexA === -1 ? categoryOrder.length : indexA) - (indexB === -1 ? categoryOrder.length : indexB);
+      const pa = priorityBySlug[a.slug];
+      const pb = priorityBySlug[b.slug];
+
+      if (pa !== undefined || pb !== undefined) {
+        return (pa ?? 999) - (pb ?? 999);
+      }
+
+      const indexA = categoryOrder.indexOf(a.uiKey);
+      const indexB = categoryOrder.indexOf(b.uiKey);
+      return (indexA === -1 ? categoryOrder.length : indexA)
+        - (indexB === -1 ? categoryOrder.length : indexB);
     });
   }, [plants]);
 
-  const currentCategory = productCategories.find(
-    (cat) => cat.id === categoryIdFromQuery
-  );
+  // Current category (for hero on listing page) resolved via plantId from query
+  const currentCategory = useMemo(() => {
+    if (!plantIdFromQuery) return undefined;
+    return productCategories.find(cat => cat.plantId === plantIdFromQuery);
+  }, [productCategories, plantIdFromQuery]);
 
   // Helper to check if search term is meaningful
   function isValidSearchTerm(term: string) {
@@ -177,11 +205,11 @@ const Products = () => {
     setPage(1);
     setProducts([]);
     setHasMore(true);
-  }, [categoryIdFromQuery, natureIdFromQuery, debouncedSearch]);
+  }, [plantIdFromQuery, natureIdFromQuery, debouncedSearch]);
 
-  // Fetch products when plantId, natureId, search, or page changes
+  // Fetch products when plantId, natureId, search, or page changes (ID-based)
   useEffect(() => {
-    if (!plantIdFromQuery || !currentCategory || !natureIdFromQuery) return;
+    if (!plantIdFromQuery || !natureIdFromQuery) return;
 
     setLoading(true);
     setError(null);
@@ -212,7 +240,7 @@ const Products = () => {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [categoryIdFromQuery, plantIdFromQuery, natureIdFromQuery, debouncedSearch, page, currentCategory]);
+  }, [plantIdFromQuery, natureIdFromQuery, debouncedSearch, page]);
 
   // Infinite scroll: observe sentinel
   useEffect(() => {
@@ -231,6 +259,9 @@ const Products = () => {
       if (sentinel) observer.unobserve(sentinel);
     };
   }, [hasMore, loading]);
+
+  // Decide view: show grid unless both plantId and natureId are present
+  const showCategoryGrid = !(plantIdFromQuery && natureIdFromQuery);
 
   return (
     <>
@@ -309,25 +340,16 @@ const Products = () => {
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:mt-0 mt-10">
-          {!categoryIdFromQuery && !natureIdFromQuery ? (
+          {showCategoryGrid ? (
             <section className="py-8 sm:py-10 bg-gradient-to-b from-background to-slate-50 -mt-10">
               <div className="container-industrial">
-                {/* <div className="text-center mb-10 sm:mb-12">
-                <h2 className="font-display font-bold text-2xl sm:text-3xl lg:text-4xl text-eerie-black mb-3 sm:mb-4">
-                  Our Product Categories
-                </h2>
-                <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
-                  Discover our comprehensive range of industrial-grade solutions
-                  designed for modern infrastructure needs
-                </p>
-              </div> */}
                 {plantsLoading ? (
                   <div className="text-center py-8 sm:py-12">
                     <Spinner size={8} border={3} />
                   </div>
                 ) : plantsError ? (
                   <div className="text-center py-8 sm:py-12">
-                    <p className="text-red-500 text-sm sm:text-base">{plantsError.message}</p>
+                    <p className="text-red-500 text-sm sm:text-base">{(plantsError as any).message}</p>
                     <Button variant="outline" onClick={() => window.location.reload()} className="mt-3 sm:mt-4 text-sm sm:text-base">
                       Retry
                     </Button>
@@ -336,13 +358,15 @@ const Products = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {productCategories.map((category, index) => (
                       <Link
-                        to={`/nature/${category.id}`}
-                        key={category.name}
+                        to={`/nature/${category.slug}`} // Pretty URL
+                        key={category.id}
                         className="block group"
-                        onClick={() => console.log(`Navigating to /nature/${category.id}`)}
+                        onClick={() => console.log(`Navigating to /nature/${category.slug}`)}
                       >
                         <div
-                          className="card-industrial p-6 sm:p-8 text-center hover-lift fade-in hover-lift rounded-lg border border-yellow-500 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
+                          className="card-industrial p-3 sm:p-4 text-center rounded-lg 
+               border border-yellow-500 bg-white shadow-sm hover:shadow-xl 
+               transition-all duration-300 h-[350px] sm:h-[410px]"
                           style={{ animationDelay: `${index * 100}ms` }}
                         >
                           <div className="relative mb-4 sm:mb-6 overflow-hidden rounded-lg">
@@ -379,7 +403,7 @@ const Products = () => {
                 <div className="absolute inset-0 opacity-50">
                   <img
                     src={currentCategory?.bgImage || "https://via.placeholder.com/1200x300"}
-                    alt={currentCategory?.name + " background" || "Category background"}
+                    alt={currentCategory?.name ? `${currentCategory.name} background` : "Category background"}
                     className="w-full h-full object-cover object-center"
                   />
                 </div>
@@ -465,90 +489,101 @@ const Products = () => {
               ) : (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {productCategories.map((category, index) => (
+                      <Link
+                        to={`/nature/${category.slug}`}
+                        key={category.id}
+                        className={`block group ${category.uiKey === "bitumen" ? "lg:col-span-2 lg:row-span-2" : ""
+                          }`}
+                      >
+                        <div
+                          className={`card-industrial p-3 sm:p-4 text-center hover-lift fade-in rounded-lg border border-yellow-500 bg-white shadow-sm hover:shadow-xl transition-all duration-300 
+        ${category.uiKey === "bitumen" ? "h-[420px]" : "h-[340px]"}`}
+                          style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                          <div className="relative mb-3 sm:mb-4 overflow-hidden rounded-lg">
+                            <img
+                              src={category.bgImage}
+                              alt={category.name}
+                              className={`w-full object-cover transition-transform duration-300 group-hover:scale-105 
+              ${category.uiKey === "bitumen" ? "h-56 sm:h-72" : "h-40 sm:h-48"}`}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                            <div className="absolute top-3 sm:top-4 left-3 sm:left-4 p-2 sm:p-3 bg-white rounded-lg shadow-md">
+                              <category.icon className="w-6 h-6 sm:w-8 sm:h-8 text-egyptian-blue" />
+                            </div>
+                          </div>
+                          <h3
+                            className={`font-display font-semibold text-lg sm:text-xl lg:text-2xl text-eerie-black mb-2 sm:mb-3 
+          ${category.uiKey === "bitumen" ? "text-3xl" : ""}`}
+                          >
+                            {capitalizeWords(category.name || "Category")}
+                          </h3>
+                          <p className="text-gray-600 text-sm sm:text-sm mb-3 sm:mb-4">
+                            {category.tagline}
+                          </p>
+                          <div className="flex items-center justify-center text-egyptian-blue text-sm sm:text-base font-medium group-hover:text-violet-blue transition-colors">
+                            <span>Explore Product Types</span>
+                            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1 sm:ml-2 transition-transform group-hover:translate-x-1" />
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {products.map((product) => (
                       <Card
                         key={product._id || product.id}
-                        className="shadow-card hover:shadow-xl transition-shadow duration-300"
+                        className="shadow-card hover:shadow-lg transition-shadow duration-300"
                       >
                         <CardContent className="p-0">
-                          <div className="h-40 sm:h-48 bg-gradient-to-br from-platinum to-white border-b border-gray-200 flex items-center justify-center">
-                            {product.images && product.images.length > 0 ? (
+                          <div className="h-28 sm:h-32 bg-gradient-to-br from-platinum to-white border-b flex items-center justify-center">
+                            {product.images?.[0] ? (
                               <img
-                                src={
-                                  product.images.find((img) => img.isPrimary)?.url ||
-                                  product.images[0].url
-                                }
-                                alt={
-                                  product.images.find((img) => img.isPrimary)?.alt ||
-                                  product.images[0].alt ||
-                                  product.name
-                                }
+                                src={product.images[0].url}
+                                alt={product.name}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <div className="text-5xl sm:text-6xl text-egyptian-blue/20 font-bold">
+                              <div className="text-3xl sm:text-4xl text-egyptian-blue/20 font-bold">
                                 {product.name?.charAt(0) || "P"}
                               </div>
                             )}
                           </div>
-                          <div className="p-4 sm:p-6">
-                            <div className="flex items-start justify-between mb-2 sm:mb-3">
-                              <Badge variant="secondary" className="text-xs sm:text-sm">
+
+                          {/* 👇 internal section - compact */}
+                          <div className="p-2 sm:p-3">
+                            <div className="flex items-start justify-between mb-1 sm:mb-2">
+                              <Badge variant="secondary" className="text-[10px] sm:text-xs">
                                 {product.plantId?.name || "Plant"}
                               </Badge>
                               <Badge
                                 variant="outline"
-                                className="text-xs sm:text-sm text-amber border-amber"
+                                className="text-[10px] sm:text-xs text-amber border-amber"
                               >
-                                {product.certification ||
-                                  product.plantId?.certifications?.[0] || "Certified"}
+                                {product.certification || product.plantId?.certifications?.[0] || "Certified"}
                               </Badge>
                             </div>
-                            <h3 className="font-display font-semibold text-base sm:text-lg lg:text-lg text-eerie-black mb-2 group-hover:text-egyptian-blue transition-colors">
+
+                            <h3 className="font-display font-semibold text-sm sm:text-base mb-1">
                               {product.name}
                             </h3>
-                            <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+                            <p className="text-gray-600 text-xs leading-snug mb-2">
                               {product.description || product.shortDescription}
                             </p>
-                            <div className="mb-3 sm:mb-4">
-                              <p className="text-xs sm:text-sm text-gray-500 mb-1 sm:mb-2">Available at:</p>
-                              <div className="flex flex-wrap gap-1 sm:gap-2">
-                                {product.plantAvailability && product.plantAvailability.length > 0 ? (
-                                  product.plantAvailability.map((pa: any, idx: number) => (
-                                    <Badge
-                                      key={pa.state || idx}
-                                      variant="outline"
-                                      className="text-xs"
-                                    >
-                                      {pa.state}
-                                    </Badge>
-                                  ))
-                                ) : (
-                                  <Badge variant="outline" className="text-xs">
-                                    N/A
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex gap-2 sm:gap-3">
+
+                            <div className="flex gap-2">
                               <Button
                                 asChild
                                 variant="enterprise"
-                                size="sm"
-                                className="w-auto min-w-[120px] sm:min-w-[140px] px-3 sm:px-4 py-2"
+                                size="xs"
+                                className="min-w-[100px] px-2 py-1 text-xs"
                               >
-                                <Link to={`/product/${product._id || product.id}`}>
-                                  View Details
-                                </Link>
+                                <Link to={`/product/${product._id || product.id}`}>View</Link>
                               </Button>
                               {product.brochure?.url && (
-                                <Button asChild variant="download" size="sm" className="px-3 sm:px-4 py-2">
-                                  <a
-                                    href={product.brochure.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <Button asChild variant="download" size="xs" className="px-2 py-1 text-xs">
+                                  <a href={product.brochure.url} target="_blank" rel="noopener noreferrer">
+                                    <Download className="h-3 w-3" />
                                   </a>
                                 </Button>
                               )}

@@ -194,7 +194,7 @@ const About = () => {
                     <Award className="h-10 w-10 sm:h-12 sm:w-12 text-amber mx-auto mb-3 sm:mb-4" />
                     <h3 className="font-semibold text-base sm:text-lg mb-2">Quality Certified</h3>
                     <p className="text-xs sm:text-sm text-gray-600">
-                      ISO 9001:2015, IS, and ASTM certified products
+                      ISO / BIS, IS, and ASTM certified products
                     </p>
                   </CardContent>
                 </Card>
