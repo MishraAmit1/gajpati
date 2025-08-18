@@ -616,8 +616,8 @@ export const NatureProducts = () => {
                 </section>
             </div>
 
-            <div className="min-h-screen bg-background mb-20 md:-mt-32 mt-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen bg-background md:-mt-32 -mt-28">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
                     <div className="container-industrial">
                         {/* Controls */}
                         <div className="flex items-center justify-between">
@@ -651,7 +651,7 @@ export const NatureProducts = () => {
                         </div>
 
                         {/* Main Content */}
-                        <div className="flex gap-8">
+                        <div className="flex gap-4 md:gap-8">
                             <FilterSidebar
                                 categoryId={cfgKey}
                                 selectedFilters={selectedFilters}
