@@ -72,7 +72,7 @@ const categoryConfigs: {
         icon: Building2,
         bgImage: bitumen,
         gradient: "from-gray-500/40 via-blue-800/80 to-gray-500/40",
-        linkPdf: "https://gajpati.in/wp-content/uploads/2023/10/Bitumen-Product-Catalogue.pdf",
+        linkPdf: "https://gajpati.com/wp-content/uploads/2023/10/Bitumen-Product-Catalogue.pdf",
         filters: [
             { title: "Grade Type", options: ["CRMB", "PMB", "VG", "PG", "PR", "CB", "BM"] },
             { title: "Application", options: ["Road Construction", "Waterproofing", "Industrial"] },
@@ -616,7 +616,7 @@ export const NatureProducts = () => {
                 </section>
             </div>
 
-            <div className="min-h-screen bg-background mb-20 -mt-32">
+            <div className="min-h-screen bg-background mb-20 md:-mt-32 mt-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="container-industrial">
                         {/* Controls */}
