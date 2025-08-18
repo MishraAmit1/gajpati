@@ -23,6 +23,9 @@ const initialFormState = {
   plantAvailability: [{ state: "" }],
   applications: "",
   status: "In Stock",
+  settingTime: "",
+  shelfLife: "",
+  packaging: "",
 };
 
 const arrToString = (val) => (Array.isArray(val) ? val.join(", ") : val || "");
@@ -248,6 +251,12 @@ const ProductForm = ({
     if (!isEdit && !values.brochure)
       errors.brochure = "Brochure file is required";
     if (!isEdit && !values.tds) errors.tds = "TDS file is required";
+    if (!String(values.settingTime).trim())
+      errors.settingTime = "Setting Time is required";
+    if (!String(values.shelfLife).trim())
+      errors.shelfLife = "Shelf Life is required";
+    if (!String(values.packaging).trim())
+      errors.packaging = "At least one packaging option is required";
     if (!String(values.seoTitle).trim())
       errors.seoTitle = "SEO Title is required";
     if (!String(values.seoDescription).trim())
@@ -328,6 +337,9 @@ const ProductForm = ({
       // TDS
       if (values.tds) formData.append("tds", values.tds);
       if (values.tdsTitle) formData.append("tdsTitle", values.tdsTitle);
+      formData.append("settingTime", values.settingTime);
+      formData.append("shelfLife", values.shelfLife);
+      formData.append("packaging", values.packaging);
       // SEO
       formData.append("seoTitle", values.seoTitle);
       formData.append("seoDescription", values.seoDescription);
@@ -598,7 +610,7 @@ const ProductForm = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <div>
           <label className="block font-medium mb-0.5">
-            TDS {isEdit ? "(leave blank to keep current)" : "*"}
+            MSDS {isEdit ? "(leave blank to keep current)" : "*"}
           </label>
           <Input
             name="tds"
@@ -632,7 +644,7 @@ const ProductForm = ({
           )}
         </div>
         <div>
-          <label className="block font-medium mb-0.5">TDS Title</label>
+          <label className="block font-medium mb-0.5">MSDS Title</label>
           <Input
             name="tdsTitle"
             value={values.tdsTitle}
@@ -643,6 +655,55 @@ const ProductForm = ({
             className="py-1"
           />
         </div>
+      </div>
+      {/* Setting Time */}
+      <div>
+        <label className="block font-medium mb-0.5">Setting Time *</label>
+        <Input
+          name="settingTime"
+          value={values.settingTime}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          disabled={loading}
+          placeholder="e.g. 2-5 minutes"
+          className="py-1"
+        />
+        {touched.settingTime && errors.settingTime && (
+          <div className="text-red-600 text-xs mt-1">{errors.settingTime}</div>
+        )}
+      </div>
+
+      {/* Shelf Life */}
+      <div>
+        <label className="block font-medium mb-0.5">Shelf Life *</label>
+        <Input
+          name="shelfLife"
+          value={values.shelfLife}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          disabled={loading}
+          placeholder="e.g. 6 months"
+          className="py-1"
+        />
+        {touched.shelfLife && errors.shelfLife && (
+          <div className="text-red-600 text-xs mt-1">{errors.shelfLife}</div>
+        )}
+      </div>
+      {/* Packaging */}
+      <div>
+        <label className="block font-medium mb-0.5">Packaging *</label>
+        <Input
+          name="packaging"
+          value={values.packaging}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          disabled={loading}
+          placeholder="Comma separated (e.g. 200L, 1000L)"
+          className="py-1"
+        />
+        {touched.packaging && errors.packaging && (
+          <div className="text-red-600 text-xs mt-1">{errors.packaging}</div>
+        )}
       </div>
       {/* SEO fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
