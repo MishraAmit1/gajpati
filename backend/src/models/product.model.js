@@ -110,7 +110,7 @@ const productSchema = new mongoose.Schema(
       },
       title: {
         type: String,
-        required: [true, "TDS title is required"],
+        required: [true, "MSDS title is required"],
         minlength: [3, "Title must be at least 3 characters"],
         maxlength: [100, "Title cannot exceed 100 characters"],
         trim: true,
@@ -152,6 +152,28 @@ const productSchema = new mongoose.Schema(
         trim: true,
       },
     ],
+    settingTime: {
+      type: String,
+      required: [true, "Setting Time is required"],
+      trim: true,
+    },
+
+    shelfLife: {
+      type: String,
+      required: [true, "Shelf Life is required"],
+      trim: true,
+    },
+
+    packaging: {
+      type: [String],
+      required: [true, "Packaging details are required"],
+      validate: {
+        validator: function (arr) {
+          return arr.length > 0;
+        },
+        message: "Packaging must contain at least one option",
+      },
+    },
     status: {
       type: String,
       enum: ["In Stock", "Limited Stock", "Out of Stock"],

@@ -46,6 +46,9 @@ export const createProduct = asyncHandler(async (req, res) => {
     plantAvailability,
     applications,
     status,
+    settingTime, // 🆕 Add this
+    shelfLife, // 🆕 Add this
+    packaging, // 🆕 Add this
   } = req.body;
   if (
     !name ||
@@ -60,7 +63,10 @@ export const createProduct = asyncHandler(async (req, res) => {
     !technicalSpecifications ||
     !plantAvailability ||
     !applications ||
-    !status
+    !status ||
+    !settingTime || // 🆕 required
+    !shelfLife || // 🆕 required
+    !packaging // 🆕 required
   ) {
     throw throwApiError(400, "All required fields must be provided");
   }
@@ -196,7 +202,11 @@ export const createProduct = asyncHandler(async (req, res) => {
     if (!Array.isArray(applicationsArray) || applicationsArray.length === 0) {
       throw throwApiError(400, "At least one application is required");
     }
-
+    // 🆕 Convert and validate packaging
+    const packagingArray = convertToArray(packaging);
+    if (!Array.isArray(packagingArray) || packagingArray.length === 0) {
+      throw throwApiError(400, "At least one packaging option is required");
+    }
     // Validate status
     const validStatuses = ["In Stock", "Limited Stock", "Out of Stock"];
     if (!validStatuses.includes(status)) {
@@ -219,6 +229,9 @@ export const createProduct = asyncHandler(async (req, res) => {
         url: tdsUpload.url,
         title: req.body.tdsTitle || "Technical Data Sheet",
       },
+      settingTime,
+      shelfLife,
+      packaging: packagingArray,
       seoTitle,
       seoDescription,
       seoKeywords: seoKeywordsArray,
@@ -457,7 +470,11 @@ export const updateProduct = asyncHandler(async (req, res) => {
     plantAvailability,
     applications,
     status,
+    settingTime,
+    shelfLife,
+    packaging,
   } = req.body;
+
   // Validate ID
   if (!id || !mongoose.isValidObjectId(id)) {
     throw throwApiError(400, "Invalid Product ID format");
@@ -468,15 +485,13 @@ export const updateProduct = asyncHandler(async (req, res) => {
     throw throwApiError(404, "Product not found");
   }
 
-  // Validate natureId and plantId if provided
+  // Validate Nature and Plant if provided
   if (natureId) {
     if (!mongoose.isValidObjectId(natureId)) {
       throw throwApiError(400, "Invalid Nature ID format");
     }
     const nature = await Nature.findOne({ _id: natureId, isActive: true });
-    if (!nature) {
-      throw throwApiError(404, "Active Nature not found");
-    }
+    if (!nature) throw throwApiError(404, "Active Nature not found");
   }
 
   if (plantId) {
@@ -484,26 +499,22 @@ export const updateProduct = asyncHandler(async (req, res) => {
       throw throwApiError(400, "Invalid Plant ID format");
     }
     const plant = await Plant.findOne({ _id: plantId, isActive: true });
-    if (!plant) {
-      throw throwApiError(404, "Active Plant not found");
-    }
+    if (!plant) throw throwApiError(404, "Active Plant not found");
   }
 
-  // --- ROBUST IMAGE MERGE LOGIC START ---
-  // Build a map of old images by URL for easy lookup
+  // ---------------- IMAGE MERGE LOGIC -----------------
   const oldImages = product.images || [];
   const oldImagesMap = {};
-  for (const img of oldImages) {
-    oldImagesMap[img.url] = img;
-  }
+  for (const img of oldImages) oldImagesMap[img.url] = img;
+
   let images = [];
   const deletedFiles = [];
   let primaryCount = 0;
 
-  // Find all image indexes from the request (order matters)
+  // Find all image indexes coming from request body
   let imageIndexes = [];
   Object.keys(req.body).forEach((key) => {
-    const match = key.match(/^images\[(\d+)\]/);
+    const match = key.match(/^images```math(\d+)```/);
     if (match) {
       const idx = parseInt(match[1], 10);
       if (!imageIndexes.includes(idx)) imageIndexes.push(idx);
@@ -511,62 +522,73 @@ export const updateProduct = asyncHandler(async (req, res) => {
   });
   imageIndexes = imageIndexes.sort((a, b) => a - b);
 
-  // Track which old images are kept
   const keptOldUrls = new Set();
 
-  for (let i = 0; i < imageIndexes.length; i++) {
-    let imgObj = null;
-    // If a file is present for this index, use it
-    const file = req.files?.images?.find(
-      (f) =>
-        f.fieldname === `images` &&
-        f.originalname === req.body[`images[${i}].alt`]
-    );
-    if (file) {
-      const uploadResult = await uploadToSupabase(file, "products");
-      if (!uploadResult?.url) {
-        throw throwApiError(500, "Failed to upload image to Supabase");
-      }
-      imgObj = {
-        url: uploadResult.url,
-        alt: req.body[`images[${i}].alt`] || file.originalname,
-        isPrimary: req.body[`images[${i}].isPrimary`] === "true" || false,
-      };
-    } else {
-      // No file, so use the old image URL
-      const url = req.body[`images[${i}].url`];
-      if (url && oldImagesMap[url]) {
+  // 🆕 Safety Net: if no image fields or files are sent, keep old images
+  if (
+    imageIndexes.length === 0 &&
+    (!req.files?.images || req.files?.images.length === 0)
+  ) {
+    images = product.images;
+    primaryCount = product.images.filter((img) => img.isPrimary).length;
+  } else {
+    // Otherwise, rebuild images from request
+    for (let i = 0; i < imageIndexes.length; i++) {
+      let imgObj = null;
+
+      // Check if file is uploaded for this index
+      const file = req.files?.images?.find(
+        (f) =>
+          f.fieldname === `images` &&
+          f.originalname === req.body[`images[${i}].alt`]
+      );
+
+      if (file) {
+        const uploadResult = await uploadToSupabase(file, "products");
+        if (!uploadResult?.url) {
+          throw throwApiError(500, "Failed to upload image to Supabase");
+        }
         imgObj = {
-          url,
-          alt: req.body[`images[${i}].alt`] || oldImagesMap[url].alt || "",
+          url: uploadResult.url,
+          alt: req.body[`images[${i}].alt`] || file.originalname,
           isPrimary: req.body[`images[${i}].isPrimary`] === "true" || false,
         };
-        keptOldUrls.add(url);
+      } else {
+        // No file uploaded, keep old URL if exists
+        const url = req.body[`images[${i}].url`];
+        if (url && oldImagesMap[url]) {
+          imgObj = {
+            url,
+            alt: req.body[`images[${i}].alt`] || oldImagesMap[url].alt || "",
+            isPrimary: req.body[`images[${i}].isPrimary`] === "true" || false,
+          };
+          keptOldUrls.add(url);
+        }
+      }
+
+      if (imgObj) {
+        if (imgObj.isPrimary) primaryCount++;
+        images.push(imgObj);
       }
     }
-    if (imgObj) {
-      if (imgObj.isPrimary) primaryCount++;
-      images.push(imgObj);
+
+    // Any old images not reused → delete them
+    for (const img of oldImages) {
+      if (!keptOldUrls.has(img.url)) {
+        deletedFiles.push({ url: img.url, type: "products" });
+      }
     }
   }
-  // Any old images not in keptOldUrls are removed by the user, so delete them
-  for (const img of oldImages) {
-    if (!keptOldUrls.has(img.url)) {
-      deletedFiles.push({ url: img.url, type: "products" });
-    }
-  }
-  // Enforce max 5 images
-  if (images.length > 5) {
-    throw throwApiError(400, "Maximum 5 images allowed");
-  }
+
+  // Validation for images
   if (images.length === 0) {
     throw throwApiError(400, "At least one image is required");
   }
   if (primaryCount !== 1) {
     throw throwApiError(400, "Exactly one image must be marked as primary");
   }
-  // --- ROBUST IMAGE MERGE LOGIC END ---
 
+  // ---------------- BROCHURE + TDS -----------------
   let brochure = product.brochure;
   if (req.files?.brochure?.[0]) {
     deletedFiles.push({ url: product.brochure.url, type: "products" });
@@ -596,11 +618,11 @@ export const updateProduct = asyncHandler(async (req, res) => {
     };
   }
 
-  // Generate slug if name is updated
+  // Slug Handling
   const productSlug =
     slug || (name && name !== product.name ? generateSlug(name) : product.slug);
 
-  // Check for duplicate name or slug
+  // Duplicate check
   if (name || slug) {
     const existingProduct = await Product.findOne({
       $or: [{ name: name?.toLowerCase() }, { slug: productSlug }],
@@ -611,7 +633,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     }
   }
 
-  // Handle array fields
+  // ---------------- ARRAYS HANDLING -----------------
   const seoKeywordsArray = seoKeywords
     ? convertToArray(seoKeywords)
     : product.seoKeywords;
@@ -619,7 +641,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
     throw throwApiError(400, "At least one SEO keyword is required");
   }
 
-  // Convert and validate technicalSpecifications
   let technicalSpecificationsArray = product.technicalSpecifications || [];
   if (typeof technicalSpecifications !== "undefined") {
     if (Array.isArray(technicalSpecifications)) {
@@ -642,7 +663,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
     );
   }
 
-  // Convert and validate plantAvailability
   let plantAvailabilityArray = product.plantAvailability || [];
   if (typeof plantAvailability !== "undefined") {
     if (Array.isArray(plantAvailability)) {
@@ -662,7 +682,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
     throw throwApiError(400, "At least one plant availability is required");
   }
 
-  // Convert and validate applications
   const applicationsArray =
     typeof applications !== "undefined"
       ? convertToArray(applications)
@@ -671,12 +690,21 @@ export const updateProduct = asyncHandler(async (req, res) => {
     throw throwApiError(400, "At least one application is required");
   }
 
-  // Validate status
   const validStatuses = ["In Stock", "Limited Stock", "Out of Stock"];
   const statusValue = typeof status !== "undefined" ? status : product.status;
   if (!validStatuses.includes(statusValue)) {
     throw throwApiError(400, "Invalid status value");
   }
+
+  const packagingArray =
+    typeof packaging !== "undefined"
+      ? convertToArray(packaging)
+      : product.packaging;
+  if (!Array.isArray(packagingArray) || packagingArray.length === 0) {
+    throw throwApiError(400, "At least one packaging option is required");
+  }
+
+  // ---------------- UPDATE QUERY -----------------
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
@@ -698,6 +726,9 @@ export const updateProduct = asyncHandler(async (req, res) => {
         plantAvailability: plantAvailabilityArray,
         applications: applicationsArray,
         status: statusValue,
+        settingTime: settingTime || product.settingTime,
+        shelfLife: shelfLife || product.shelfLife,
+        packaging: packagingArray,
         updatedAt: new Date(),
       },
       { new: true, runValidators: true }
@@ -706,7 +737,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
       .populate("plantId", "name certifications")
       .select("-__v -createdAt -updatedAt");
 
-    // Delete old files from Supabase
+    // Cleanup for deleted files
     for (const file of deletedFiles) {
       await deleteFromSupabase(file.url, file.type);
     }
