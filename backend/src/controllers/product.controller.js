@@ -455,6 +455,10 @@ export const fetchProductsWithSearch = asyncHandler(async (req, res) => {
 
 export const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  console.log("=== UPDATE PRODUCT DEBUG ===");
+  console.log("Body keys:", Object.keys(req.body));
+  console.log("Files:", req.files);
+  console.log("Image fields in body:");
   const {
     name,
     abbreviation,
@@ -503,46 +507,52 @@ export const updateProduct = asyncHandler(async (req, res) => {
   }
 
   // ---------------- IMAGE MERGE LOGIC -----------------
+  // ---------------- IMAGE MERGE LOGIC -----------------
   const oldImages = product.images || [];
   const oldImagesMap = {};
   for (const img of oldImages) oldImagesMap[img.url] = img;
 
-  let images = [];
   const deletedFiles = [];
-  let primaryCount = 0;
 
-  // Find all image indexes coming from request body
+  // 1. Find all image indexes from request body
   let imageIndexes = [];
   Object.keys(req.body).forEach((key) => {
-    const match = key.match(/^images```math(\d+)```/);
+    const match = key.match(/^images\[(\d+)\]/);
     if (match) {
       const idx = parseInt(match[1], 10);
       if (!imageIndexes.includes(idx)) imageIndexes.push(idx);
     }
   });
-  imageIndexes = imageIndexes.sort((a, b) => a - b);
+  imageIndexes.sort((a, b) => a - b);
+  console.log("Found image indexes:", imageIndexes);
 
+  // 2. Map "which uploaded file belongs to which index"
+  const fileIndexMap = {};
+  let runningFileIdx = 0;
+  Object.keys(req.body).forEach((key) => {
+    const match = key.match(/^imageFileIndex_(\d+)$/);
+    if (match) {
+      // client sends e.g. imageFileIndex_0 : "2"
+      const imageIndex = parseInt(req.body[key], 10);
+      // That means req.files.images[runningFileIdx] belongs to index=2
+      fileIndexMap[imageIndex] = runningFileIdx;
+      runningFileIdx++;
+    }
+  });
+  console.log("FileIndexMap:", fileIndexMap);
+
+  let images = [];
+  let primaryCount = 0;
   const keptOldUrls = new Set();
 
-  // 🆕 Safety Net: if no image fields or files are sent, keep old images
-  if (
-    imageIndexes.length === 0 &&
-    (!req.files?.images || req.files?.images.length === 0)
-  ) {
-    images = product.images;
-    primaryCount = product.images.filter((img) => img.isPrimary).length;
-  } else {
-    // Otherwise, rebuild images from request
-    for (let i = 0; i < imageIndexes.length; i++) {
-      let imgObj = null;
+  // 3. Actually rebuild images
+  for (const idx of imageIndexes) {
+    let imgObj = null;
 
-      // Check if file is uploaded for this index
-      const file = req.files?.images?.find(
-        (f) =>
-          f.fieldname === `images` &&
-          f.originalname === req.body[`images[${i}].alt`]
-      );
-
+    if (fileIndexMap.hasOwnProperty(idx)) {
+      // New file was uploaded for this slot
+      const fileIdx = fileIndexMap[idx];
+      const file = req.files?.images?.[fileIdx];
       if (file) {
         const uploadResult = await uploadToSupabase(file, "products");
         if (!uploadResult?.url) {
@@ -550,44 +560,43 @@ export const updateProduct = asyncHandler(async (req, res) => {
         }
         imgObj = {
           url: uploadResult.url,
-          alt: req.body[`images[${i}].alt`] || file.originalname,
-          isPrimary: req.body[`images[${i}].isPrimary`] === "true" || false,
+          alt: req.body[`images[${idx}].alt`] || file.originalname,
+          isPrimary: req.body[`images[${idx}].isPrimary`] === "true",
         };
-      } else {
-        // No file uploaded, keep old URL if exists
-        const url = req.body[`images[${i}].url`];
-        if (url && oldImagesMap[url]) {
-          imgObj = {
-            url,
-            alt: req.body[`images[${i}].alt`] || oldImagesMap[url].alt || "",
-            isPrimary: req.body[`images[${i}].isPrimary`] === "true" || false,
-          };
-          keptOldUrls.add(url);
-        }
       }
-
-      if (imgObj) {
-        if (imgObj.isPrimary) primaryCount++;
-        images.push(imgObj);
+    } else {
+      // No new file → keep existing URL from request body
+      const url = req.body[`images[${idx}].url`];
+      if (url && oldImagesMap[url]) {
+        imgObj = {
+          url,
+          alt: req.body[`images[${idx}].alt`] || oldImagesMap[url].alt,
+          isPrimary: req.body[`images[${idx}].isPrimary`] === "true",
+        };
+        keptOldUrls.add(url);
       }
     }
 
-    // Any old images not reused → delete them
-    for (const img of oldImages) {
-      if (!keptOldUrls.has(img.url)) {
-        deletedFiles.push({ url: img.url, type: "products" });
-      }
+    if (imgObj) {
+      if (imgObj.isPrimary) primaryCount++;
+      images.push(imgObj);
     }
   }
 
-  // Validation for images
+  // 4. Remove any old images not marked
+  for (const img of oldImages) {
+    if (!keptOldUrls.has(img.url)) {
+      deletedFiles.push({ url: img.url, type: "products" });
+    }
+  }
+
+  // 5. Validations
   if (images.length === 0) {
     throw throwApiError(400, "At least one image is required");
   }
   if (primaryCount !== 1) {
     throw throwApiError(400, "Exactly one image must be marked as primary");
   }
-
   // ---------------- BROCHURE + TDS -----------------
   let brochure = product.brochure;
   if (req.files?.brochure?.[0]) {
