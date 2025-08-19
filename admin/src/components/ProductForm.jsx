@@ -591,7 +591,7 @@ const ProductForm = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <div>
           <label className="block font-medium mb-0.5">
-            Brochure {isEdit ? "(leave blank to keep current)" : "*"}
+            MSDS {isEdit ? "(leave blank to keep current)" : "*"}
           </label>
           <Input
             name="brochure"
@@ -641,7 +641,7 @@ const ProductForm = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <div>
           <label className="block font-medium mb-0.5">
-            MSDS {isEdit ? "(leave blank to keep current)" : "*"}
+            TDS {isEdit ? "(leave blank to keep current)" : "*"}
           </label>
           <Input
             name="tds"
@@ -675,7 +675,7 @@ const ProductForm = ({
           )}
         </div>
         <div>
-          <label className="block font-medium mb-0.5">MSDS Title</label>
+          <label className="block font-medium mb-0.5">TDS Title</label>
           <Input
             name="tdsTitle"
             value={values.tdsTitle}
