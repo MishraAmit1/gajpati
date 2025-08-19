@@ -19,6 +19,17 @@ import { handleWhatsAppRedirect } from '../helper/whatsapp';
 const Container = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
   <div className={`max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 ${className}`}>{children}</div>
 );
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < breakpoint);
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < breakpoint);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, [breakpoint]);
+
+  return isMobile;
+}
 const LoadingSpinner = () => (
   <div className="text-center py-12">
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber mx-auto"></div>
@@ -55,7 +66,10 @@ const Index = () => {
   });
 
   // Define the desired plant order
-  const plantOrder = ['gabions', 'bituminous-products', 'construction-chemicals'];
+  const isMobile = useIsMobile();
+  const plantOrder = isMobile
+    ? ['bituminous-products', 'gabions', 'construction-chemicals'] // mobile order
+    : ['gabions', 'bituminous-products', 'construction-chemicals']; // desktop order
 
   // Define static category configurations
   const categoryConfigs = {

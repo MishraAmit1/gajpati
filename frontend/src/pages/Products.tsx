@@ -16,7 +16,17 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { fetchPlantsWithStats, type PlantWithStats } from "../services/plantStats";
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < breakpoint);
 
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < breakpoint);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, [breakpoint]);
+
+  return isMobile;
+}
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -144,26 +154,32 @@ const Products = () => {
   };
   // Desired UI order fallback (used only if slug not in priority map)
   const categoryOrder = ['gabion', 'bitumen', 'construct'];
+  const isMobile = useIsMobile();
 
-  // Strict priority by slug (deterministic order)
-  const priorityBySlug: Record<string, number> = {
-    "gabions": 0,
-    "bituminous-products": 1,       // confirm this matches your backend/slug
-    "construction-chemicals": 2,
-  };
+  const priorityBySlug: Record<string, number> = isMobile
+    ? {
+      "bituminous-products": 0,   // bituminous first on mobile
+      "gabions": 1,
+      "construction-chemicals": 2,
+    }
+    : {
+      "gabions": 0,               // gabions first on desktop
+      "bituminous-products": 1,
+      "construction-chemicals": 2,
+    };
 
   // Build categories from plants (keep uiKey for UI, slug for URL, id for data)
   const productCategories = useMemo(() => {
     if (!plants) return [];
     const categories = plants.map((plant) => {
       const uiKey = detectCategoryKey(plant.name);
-      const config = (categoryConfigs as any)[uiKey] || (categoryConfigs as any).other;
+      const config = categoryConfigs[uiKey] || categoryConfigs.other;
       const slug = (plant as any).slug || toSlug(plant.name);
 
       return {
-        id: plant._id,   // data id (not used in URL)
-        uiKey,           // for UI sorting and config
-        slug,            // pretty URL
+        id: plant._id,
+        uiKey,
+        slug,
         name: plant.name,
         tagline: (plant as any).description || "Explore our range of products",
         icon: config.icon,
@@ -173,7 +189,6 @@ const Products = () => {
       };
     });
 
-    // Sort by strict slug priority first; fallback to uiKey order
     return categories.sort((a, b) => {
       const pa = priorityBySlug[a.slug];
       const pb = priorityBySlug[b.slug];
@@ -184,10 +199,10 @@ const Products = () => {
 
       const indexA = categoryOrder.indexOf(a.uiKey);
       const indexB = categoryOrder.indexOf(b.uiKey);
-      return (indexA === -1 ? categoryOrder.length : indexA)
-        - (indexB === -1 ? categoryOrder.length : indexB);
+      return (indexA === -1 ? categoryOrder.length : indexA) -
+        (indexB === -1 ? categoryOrder.length : indexB);
     });
-  }, [plants]);
+  }, [plants, priorityBySlug]);
 
   // Current category (for hero on listing page) resolved via plantId from query
   const currentCategory = useMemo(() => {

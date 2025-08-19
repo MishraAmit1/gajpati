@@ -482,7 +482,7 @@ const Contact = () => {
                             aria-describedby={errors.consent ? 'consent-error' : undefined}
                           />
                           <Label htmlFor="consent" className="text-sm">
-                            I consent to the processing of my personal data for this inquiry{' '}
+                            I agree to the processing of my above data for this inquiry{' '}
                             <span aria-hidden="true">*</span>
                           </Label>
                         </div>
