@@ -67,7 +67,20 @@ const ProductForm = ({
   const [tdsPreview, setTdsPreview] = useState(null);
   const [existingTds, setExistingTds] = useState(initialValues.tds || null);
   const [imageLimitError, setImageLimitError] = useState("");
-
+  useEffect(() => {
+    if (initialValues?.images) {
+      console.log("Initial images from API:", initialValues.images); // Debug this
+      setImages(
+        initialValues.images.map((img) => ({
+          ...img,
+          file: null,
+          // Make sure we preserve the original URL
+          url: img.url,
+          isNew: false,
+        }))
+      );
+    }
+  }, [initialValues?._id]);
   useEffect(() => {
     setImages(
       (initialValues.images || []).map((img) => ({ ...img, file: null }))
@@ -106,7 +119,6 @@ const ProductForm = ({
         setImageLimitError("Maximum 5 images allowed.");
         return prev;
       }
-      // Only add if not exceeding 5
       return [
         ...prev,
         {
@@ -114,6 +126,7 @@ const ProductForm = ({
           alt: file.name,
           isPrimary: false,
           file,
+          isNew: true, // Mark as new
         },
       ];
     });
@@ -136,9 +149,17 @@ const ProductForm = ({
   const handleImageChange = (e, idx) => {
     const file = e.target.files[0];
     if (!file) return;
+
     setImages((prev) =>
       prev.map((img, i) =>
-        i === idx ? { ...img, file, url: URL.createObjectURL(file) } : img
+        i === idx
+          ? {
+              ...img,
+              file,
+              url: URL.createObjectURL(file),
+              isNew: true, // Mark as new to differentiate from existing
+            }
+          : img
       )
     );
   };
@@ -304,9 +325,11 @@ const ProductForm = ({
     setTouched(
       Object.keys(values).reduce((acc, key) => ({ ...acc, [key]: true }), {})
     );
+
     if (Object.keys(validationErrors).length === 0) {
-      // Prepare FormData for backend
       const formData = new FormData();
+
+      // Basic fields
       formData.append("name", values.name);
       formData.append("abbreviation", values.abbreviation);
       if (values.slug) formData.append("slug", values.slug);
@@ -314,37 +337,44 @@ const ProductForm = ({
       formData.append("plantId", values.plantId);
       formData.append("description", values.description);
       formData.append("shortDescription", values.shortDescription);
-      // Images
+
+      // Images - CRITICAL SECTION
       if (images && images.length > 0) {
+        let fileIndex = 0;
+
         images.forEach((img, idx) => {
           if (img.file) {
+            // This is a new file upload
             formData.append("images", img.file);
-            formData.append(`images[${idx}].alt`, img.alt || img.file.name);
+            // Track which index this file belongs to
+            formData.append(`imageFileIndex_${fileIndex}`, idx.toString());
+            fileIndex++;
+            // Don't send blob URL for new files
+            formData.append(`images[${idx}].url`, "");
           } else {
-            formData.append(`images[${idx}].url`, img.url);
-            formData.append(`images[${idx}].alt`, img.alt || "");
+            // This is an existing image
+            formData.append(`images[${idx}].url`, img.url || "");
           }
+          formData.append(`images[${idx}].alt`, img.alt || "");
           formData.append(
             `images[${idx}].isPrimary`,
             img.isPrimary ? "true" : "false"
           );
         });
       }
-      // Brochure
+
+      // Rest of your form fields...
       if (values.brochure) formData.append("brochure", values.brochure);
       if (values.brochureTitle)
         formData.append("brochureTitle", values.brochureTitle);
-      // TDS
       if (values.tds) formData.append("tds", values.tds);
       if (values.tdsTitle) formData.append("tdsTitle", values.tdsTitle);
       formData.append("settingTime", values.settingTime);
       formData.append("shelfLife", values.shelfLife);
       formData.append("packaging", values.packaging);
-      // SEO
       formData.append("seoTitle", values.seoTitle);
       formData.append("seoDescription", values.seoDescription);
       formData.append("seoKeywords", values.seoKeywords);
-      // New fields
       formData.append(
         "technicalSpecifications",
         JSON.stringify(values.technicalSpecifications)
@@ -355,6 +385,7 @@ const ProductForm = ({
       );
       formData.append("applications", values.applications);
       formData.append("status", values.status);
+
       onSubmit(formData);
     }
   };
