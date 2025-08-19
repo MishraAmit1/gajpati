@@ -126,7 +126,7 @@ import inquiresRouter from "./routes/inquires.routes.js";
 import plantStatsRouter from "./routes/plantStats.routes.js";
 import subscriberRouter from "./routes/subscriber.route.js";
 import quotesRouter from "./routes/quote.routes.js";
-
+// hii
 // Apply routers
 app.get("/", async (req, res, next) => {
   res.json({ message: "Running" });
