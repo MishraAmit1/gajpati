@@ -96,7 +96,6 @@ const ProductDetail = () => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-
     const categoryId = searchParams.get("categoryId");
     if (categoryId) {
       const foundCategory =

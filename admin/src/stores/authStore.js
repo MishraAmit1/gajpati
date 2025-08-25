@@ -60,7 +60,42 @@ const useAuthStore = create((set, get) => ({
   },
 
   signup: async (userData) => {
-    // ... (unchanged)
+    set({ isLoading: true });
+    try {
+      const response = await apiService.register(userData);
+      set({ isLoading: false });
+      return {
+        success: true,
+        message: response.message || "Account created successfully!",
+      };
+    } catch (error) {
+      set({ isLoading: false });
+      // Handle specific backend error messages
+      let errorMessage = "Signup failed";
+      if (
+        error.message.includes(
+          "Username can only contain letters, numbers, and underscores"
+        )
+      ) {
+        errorMessage =
+          "Username can only contain letters, numbers, and underscores.";
+      } else if (
+        error.message.includes(
+          "User with this email or username already exists"
+        )
+      ) {
+        errorMessage = "An account with this email or username already exists.";
+      } else if (error.message.includes("Password must be at least")) {
+        errorMessage = "Password must be at least 6 characters long.";
+      } else if (error.message.includes("Invalid email")) {
+        errorMessage = "Please enter a valid email address.";
+      } else if (error.message.includes("Full name is required")) {
+        errorMessage = "Please enter your full name.";
+      } else {
+        errorMessage = error.message;
+      }
+      return { success: false, error: errorMessage };
+    }
   },
 
   logout: async () => {

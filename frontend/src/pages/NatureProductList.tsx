@@ -3,11 +3,13 @@ import { useParams, Link, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, MapPin, Beaker, ChevronRight } from "lucide-react";
+import { Download, MapPin, Beaker, ChevronRight, X } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Spinner } from "./Products";
 import QuoteModal from "../components/QuoteModal";
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
+import { toast } from "sonner";
+import { createQuote } from "../services/quote";
 import bitumen from "../assets/bitumen1.jpg";
 import constructChemical from "../assets/construct.jpg";
 
@@ -108,6 +110,18 @@ const NatureProductList = () => {
     const PAGE_SIZE = 10;
     const sentinelRef = useRef<HTMLDivElement | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    // TDS Modal State
+    const [showTDSModal, setShowTDSModal] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [tdsFormData, setTdsFormData] = useState({
+        customerName: '',
+        customerEmail: '',
+        customerPhone: '',
+        city: '',
+        selectedProducts: [],
+    });
+    const [tdsErrors, setTdsErrors] = useState<any>({});
+    const [tdsLoading, setTdsLoading] = useState(false);
 
     useEffect(() => {
         const categoryId = searchParams.get("categoryId");
@@ -311,7 +325,84 @@ const NatureProductList = () => {
             if (sentinel) observer.unobserve(sentinel);
         };
     }, [hasMore, loading]);
+    // TDS Modal Functions
+    const handleTDSClick = (product: Product) => {
+        setSelectedProduct(product);
+        setTdsFormData({
+            customerName: '',
+            customerEmail: '',
+            customerPhone: '',
+            city: '',
+            selectedProducts: [product?.name || ''],
+        });
+        setTdsErrors({});
+        setShowTDSModal(true);
+    };
 
+    const handleCloseTDSModal = () => {
+        setShowTDSModal(false);
+        setSelectedProduct(null);
+    };
+
+    const handleTdsInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { id, value } = e.target;
+        setTdsFormData((prev) => ({ ...prev, [id]: value }));
+        setTdsErrors((prev) => ({ ...prev, [id]: '' }));
+    };
+
+    const validateTdsForm = () => {
+        const newErrors: any = {};
+        if (!tdsFormData.customerName || tdsFormData.customerName.length < 3) {
+            newErrors.customerName = 'Full name is required and must be at least 3 characters';
+        }
+        if (!tdsFormData.customerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(tdsFormData.customerEmail)) {
+            newErrors.customerEmail = 'A valid email address is required';
+        }
+        if (!tdsFormData.customerPhone || tdsFormData.customerPhone.length < 10) {
+            newErrors.customerPhone = 'A valid phone number is required';
+        }
+        if (!tdsFormData.city || tdsFormData.city.length < 3) {
+            newErrors.city = 'City is required and must be at least 3 characters';
+        }
+        return newErrors;
+    };
+
+    const handleTdsSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const validationErrors = validateTdsForm();
+        if (Object.keys(validationErrors).length > 0) {
+            setTdsErrors(validationErrors);
+            return;
+        }
+
+        setTdsLoading(true);
+
+        try {
+            await createQuote(tdsFormData);
+            toast.success("✅ Success!", {
+                description: "TDS request submitted successfully! Download will start shortly.",
+                duration: 3000,
+            });
+
+            if (selectedProduct?.tds?.url) {
+                setTimeout(() => {
+                    window.open(selectedProduct.tds.url, '_blank');
+                }, 1000);
+            }
+
+            setTimeout(() => {
+                setShowTDSModal(false);
+            }, 2000);
+
+        } catch (err: any) {
+            toast.error("❌ Error", {
+                description: err.message || "Failed to submit request. Please try again.",
+                duration: 3000,
+            });
+        } finally {
+            setTdsLoading(false);
+        }
+    };
     // Dynamic SEO metadata
     const seoTitle = nature.seoTitle || `${nature.name || 'Products'} | Gajpati Industries`;
     const seoDescription = nature.seoDescription ||
@@ -610,15 +701,13 @@ const NatureProductList = () => {
                                                 <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-border">
                                                     {product.tds?.url && (
                                                         <Button
-                                                            asChild
                                                             variant="default"
                                                             size="sm"
                                                             className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
+                                                            onClick={() => handleTDSClick(product)}
                                                         >
-                                                            <a href={product.tds.url} target="_blank" rel="noopener noreferrer">
-                                                                <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                                                                <span className="text-xs sm:text-sm">Download TDS</span>
-                                                            </a>
+                                                            <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                                                            <span className="text-xs sm:text-sm">Download TDS</span>
                                                         </Button>
                                                     )}
                                                     <Button
@@ -656,6 +745,131 @@ const NatureProductList = () => {
                         </div>
                     )}
                 </div>
+                {/* TDS Download Modal */}
+                {showTDSModal && selectedProduct && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                        <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 relative">
+                            <button
+                                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+                                onClick={handleCloseTDSModal}
+                                aria-label="Close"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                            <div className="p-6">
+                                <div className="flex justify-between items-center mb-4">
+                                    <div>
+                                        <h2 className="text-xl font-bold text-egyptian-blue">Download TDS</h2>
+                                        <p className="text-gray-600 text-sm">
+                                            Technical Data Sheet for {selectedProduct.name}
+                                        </p>
+                                    </div>
+                                    {/* Direct Download Button */}
+                                    {selectedProduct.tds?.url && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => window.open(selectedProduct.tds.url, '_blank')}
+                                        >
+                                            <Download className="h-4 w-4 mr-1" />
+                                            Direct Download
+                                        </Button>
+                                    )}
+                                </div>
+
+                                <form onSubmit={handleTdsSubmit} className="space-y-4">
+                                    {/* Name & Email */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                                            <input
+                                                type="text"
+                                                id="customerName"
+                                                value={tdsFormData.customerName}
+                                                onChange={handleTdsInputChange}
+                                                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                                                required
+                                                placeholder="Enter your full name"
+                                            />
+                                            {tdsErrors.customerName && (
+                                                <p className="text-red-600 text-xs mt-1">{tdsErrors.customerName}</p>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                            <input
+                                                type="email"
+                                                id="customerEmail"
+                                                value={tdsFormData.customerEmail}
+                                                onChange={handleTdsInputChange}
+                                                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                                                required
+                                                placeholder="your.email@company.com"
+                                            />
+                                            {tdsErrors.customerEmail && (
+                                                <p className="text-red-600 text-xs mt-1">{tdsErrors.customerEmail}</p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                                        <input
+                                            type="tel"
+                                            id="customerPhone"
+                                            value={tdsFormData.customerPhone}
+                                            onChange={handleTdsInputChange}
+                                            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                                            required
+                                            placeholder="+91 98765 43210"
+                                        />
+                                        {tdsErrors.customerPhone && (
+                                            <p className="text-red-600 text-xs mt-1">{tdsErrors.customerPhone}</p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                                        <input
+                                            type="text"
+                                            id="city"
+                                            value={tdsFormData.city}
+                                            onChange={handleTdsInputChange}
+                                            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                                            required
+                                            placeholder="City, State"
+                                        />
+                                        {tdsErrors.city && (
+                                            <p className="text-red-600 text-xs mt-1">{tdsErrors.city}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Show current product name (read-only) */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
+                                        <div className="w-full border border-gray-200 rounded px-3 py-2 bg-gray-50 text-gray-700">
+                                            {selectedProduct?.name}
+                                        </div>
+                                    </div>
+
+                                    {/* Submit Button */}
+                                    <div className="pt-2">
+                                        <Button
+                                            type="submit"
+                                            variant="cta"
+                                            className="w-full"
+                                            disabled={tdsLoading}
+                                        >
+                                            {tdsLoading ? 'Submitting...' : 'Submit & Download TDS'}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <QuoteModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
                 <QuoteModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
                 <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 bg-green-600">
                     <Button size="sm" className="shadow-xl bg-green-600 hover:bg-green-700" onClick={handleWhatsAppRedirect}>
