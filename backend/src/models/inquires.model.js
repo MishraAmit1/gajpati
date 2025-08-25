@@ -22,10 +22,6 @@ const inquirySchema = new mongoose.Schema(
     customerPhone: {
       type: String,
       required: [true, "Mobile Number is required"],
-      match: [
-        /^\+91\d{10}$/,
-        "Mobile Number must be in the format +91 followed by 10 digits",
-      ],
       trim: true,
     },
     companyName: {
@@ -71,8 +67,6 @@ const inquirySchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      minlength: [3, "Description must be at least 3 characters"],
-      maxlength: [1000, "Description cannot exceed 1000 characters"],
       trim: true,
     },
     status: {

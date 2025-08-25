@@ -61,8 +61,6 @@ const allowedOrigins = [
   "https://gajpatiindustries.com",
   "https://www.gajpatiindustries.com",
   "https://admin.gajpatiindustries.com",
-  "https://gajpatiadminfrontend.onrender.com",
-  "https://gajpatifrontend.onrender.com",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:3000", // Add server origin
@@ -90,16 +88,13 @@ app.use(
             defaultSrc: ["'self'"],
             imgSrc: [
               "'self'",
-              "data:",
-              "http://localhost:3000",
-              "http://localhost:5173",
-              "http://localhost:5174",
+              "https://gajpatiindustries.com",
+              "https://admin.gajpatiindustries.com",
             ],
             connectSrc: [
               "'self'",
-              "http://localhost:3000",
-              "http://localhost:5173",
-              "http://localhost:5174",
+              "https://gajpatiindustries.com",
+              "https://admin.gajpatiindustries.com",
             ],
           },
         }
@@ -110,7 +105,7 @@ app.use(
             connectSrc: ["'self'"],
           },
         },
-    crossOriginResourcePolicy: false, // Images can be embedded
+    crossOriginResourcePolicy: false,
   })
 );
 app.use(cookieParser());

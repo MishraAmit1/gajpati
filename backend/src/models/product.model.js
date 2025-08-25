@@ -110,7 +110,7 @@ const productSchema = new mongoose.Schema(
       },
       title: {
         type: String,
-        required: [true, "MSDS title is required"],
+        required: [true, "TDS title is required"],
         minlength: [3, "Title must be at least 3 characters"],
         maxlength: [100, "Title cannot exceed 100 characters"],
         trim: true,
