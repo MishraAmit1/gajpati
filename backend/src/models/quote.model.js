@@ -22,32 +22,16 @@ const quoteSchema = new mongoose.Schema(
     customerPhone: {
       type: String,
       required: [true, "Mobile Number is required"],
-      match: [
-        /^\+91\d{10}$/,
-        "Mobile Number must be in the format +91 followed by 10 digits",
-      ],
       trim: true,
     },
     city: {
       type: String,
-      required: [true, "City/Site Location is required"],
       minlength: [3, "City must be at least 3 characters"],
       maxlength: [50, "City cannot exceed 50 characters"],
       trim: true,
     },
     selectedProducts: {
       type: [String],
-      required: [true, "At least one product must be selected"],
-      enum: {
-        values: ["Bitumen", "Gabion", "Construct"],
-        message: "Product must be one of: Bitumen, Gabion, Construct",
-      },
-      validate: {
-        validator: function (v) {
-          return v.length > 0;
-        },
-        message: "At least one product must be selected",
-      },
     },
     status: {
       type: String,
