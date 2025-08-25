@@ -447,7 +447,7 @@ const BlogPost = () => {
                 </p>
                 <div className="flex flex-col gap-3 sm:gap-4 justify-start sm:justify-center">
                   <Button variant="cta" size="lg" asChild className="w-auto min-w-[160px] px-3 sm:min-w-[200px] sm:px-4 py-2">
-                    <Link to={`/downloads/${post.slug}-datasheet.pdf`}>Download Technical Data Sheet</Link>
+                    <Link to={`/downloads/${post.slug}-datasheet.pdf`}>Download Brochure</Link>
                   </Button>
                   <Button variant="enterprise" size="lg" asChild className="w-auto min-w-[160px] px-3 sm:min-w-[200px] sm:px-4 py-2">
                     <Link to="/contact">Speak with Expert</Link>

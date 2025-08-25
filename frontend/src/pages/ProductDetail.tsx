@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Download, CheckCircle, Factory, Shield, FileText, ChevronRight } from "lucide-react";
+import { Download, CheckCircle, Factory, Shield, FileText, ChevronRight, X, Wrench } from "lucide-react";
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
 
 const productCategories = [
@@ -67,6 +67,17 @@ const ProductDetail = () => {
   const [mainImageIdx, setMainImageIdx] = useState(0);
   const [currentCategory, setCurrentCategory] = useState<any>(null);
 
+  // Technical Support Modal State
+  const [showTechnicalSupportModal, setShowTechnicalSupportModal] = useState(false);
+  const [technicalSupportData, setTechnicalSupportData] = useState({
+    name: '',
+    email: '',
+    company: '',
+    projectType: '',
+    technicalQuery: '',
+    urgency: ''
+  });
+
   useEffect(() => {
     if (!id) return;
     setLoading(true);
@@ -95,6 +106,63 @@ const ProductDetail = () => {
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, [id, searchParams]);
+
+  // Technical Support Modal Functions
+  const handleTechnicalSupportClick = () => {
+    setTechnicalSupportData({
+      name: '',
+      email: '',
+      company: '',
+      projectType: '',
+      technicalQuery: '',
+      urgency: ''
+    });
+    setShowTechnicalSupportModal(true);
+  };
+
+  const handleCloseTechnicalSupportModal = () => {
+    setShowTechnicalSupportModal(false);
+  };
+
+  const handleTechnicalSupportInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setTechnicalSupportData({
+      ...technicalSupportData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleTechnicalSupportSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const message = `Hello! I need technical support for *${product?.name}* (${product?.abbreviation}).
+
+*Technical Support Request Details:*
+Name: ${technicalSupportData.name}
+Email: ${technicalSupportData.email}
+Company: ${technicalSupportData.company}
+Project Type: ${technicalSupportData.projectType}
+Urgency: ${technicalSupportData.urgency}
+
+*Technical Query:*
+${technicalSupportData.technicalQuery}
+
+*Product Details:*
+Product: ${product?.name}
+Abbreviation: ${product?.abbreviation}
+Category: ${product?.natureId?.name}
+
+Please provide technical assistance and guidance for this product.`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappNumber = '919528355555';
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+    window.open(whatsappURL, '_blank');
+
+    setTimeout(() => {
+      setShowTechnicalSupportModal(false);
+    }, 1000);
+  };
 
   if (loading) return <div className="text-center py-12">Loading...</div>;
   if (error || !product) return <div className="text-center text-red-500 py-12">{error || "Product not found."}</div>;
@@ -255,7 +323,6 @@ const ProductDetail = () => {
                         asChild
                         variant="cta"
                         size="lg"
-                        // Here is the fix: we add responsive padding classes
                         className="flex-1 px-3 sm:px-8"
                       >
                         <a href={product.tds.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
@@ -269,18 +336,22 @@ const ProductDetail = () => {
                         asChild
                         variant="action"
                         size="lg"
-                        // Here is the fix: we add responsive padding classes
                         className="flex-1 px-3 sm:px-8"
                       >
                         <a href={product.brochure.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                           <Download className="h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">Download TDS</span>
+                          <span className="truncate">Download Brochure</span>
                         </a>
                       </Button>
                     )}
                   </div>
-                  <Button variant="trust" size="lg" className="w-full">
-                    <FileText className="h-4 w-4 mr-2 flex-shrink-0" />
+                  <Button
+                    variant="trust"
+                    size="lg"
+                    className="w-full"
+                    onClick={handleTechnicalSupportClick}
+                  >
+                    <Wrench className="h-4 w-4 mr-2 flex-shrink-0" />
                     <span className="truncate">Request Technical Support</span>
                   </Button>
                 </div>
@@ -391,24 +462,6 @@ const ProductDetail = () => {
                   )}
                 </CardContent>
               </Card>
-              {/* <Card className="shadow-card">
-                <CardHeader>
-                  <CardTitle className="text-egyptian-blue">Reference Projects</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    <li className="p-3 bg-amber/5 rounded-lg border-l-4 border-amber">
-                      <span className="text-gray-700 text-sm">Delhi Metro Phase 4 - Access Roads</span>
-                    </li>
-                    <li className="p-3 bg-amber/5 rounded-lg border-l-4 border-amber">
-                      <span className="text-gray-700 text-sm">Mumbai-Pune Expressway - Maintenance</span>
-                    </li>
-                    <li className="p-3 bg-amber/5 rounded-lg border-l-4 border-amber">
-                      <span className="text-gray-700 text-sm">Chennai Port Connectivity - New Construction</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card> */}
             </div>
           </div>
         </section>
@@ -443,26 +496,21 @@ const ProductDetail = () => {
         </section>
         <section className="py-12 sm:py-16 bg-gradient-hero text-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            {/* Make heading and paragraph text responsive */}
             <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl mb-4 sm:mb-6">
               Ready to Use {product.abbreviation} in Your Project?
             </h2>
             <p className="text-base sm:text-xl mb-6 sm:mb-8 leading-relaxed">
               Get technical specifications, pricing, and delivery details for your specific requirements.
             </p>
-
-            {/* Keep the stacking logic, but make the buttons responsive */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 variant="action"
-                // We remove size="xl" and add these responsive classes
                 className="h-11 px-6 text-base sm:h-12 sm:px-8 sm:text-lg"
               >
                 Request Detailed Quote
               </Button>
               <Button
                 variant="trust"
-                // We remove size="xl" and add these responsive classes
                 className="h-11 px-6 text-base sm:h-12 sm:px-8 sm:text-lg"
               >
                 Schedule Site Visit
@@ -470,6 +518,134 @@ const ProductDetail = () => {
             </div>
           </div>
         </section>
+
+        {/* Technical Support Modal */}
+        {showTechnicalSupportModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 relative">
+              <button
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+                onClick={handleCloseTechnicalSupportModal}
+                aria-label="Close"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <div className="p-6">
+                <h2 className="text-xl font-bold mb-2 text-egyptian-blue">Request Technical Support</h2>
+                <p className="text-gray-600 mb-4 text-sm">
+                  Get expert technical assistance for {product.name} ({product.abbreviation})
+                </p>
+                <form onSubmit={handleTechnicalSupportSubmit} className="space-y-4">
+                  {/* First Row - 2 columns */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={technicalSupportData.name}
+                        onChange={handleTechnicalSupportInputChange}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                        required
+                        placeholder="Enter your full name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={technicalSupportData.email}
+                        onChange={handleTechnicalSupportInputChange}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                        required
+                        placeholder="your.email@company.com"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Second Row - 2 columns */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Company/Organization *</label>
+                      <input
+                        type="text"
+                        name="company"
+                        value={technicalSupportData.company}
+                        onChange={handleTechnicalSupportInputChange}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                        required
+                        placeholder="Your company name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Project Type *</label>
+                      <select
+                        name="projectType"
+                        value={technicalSupportData.projectType}
+                        onChange={handleTechnicalSupportInputChange}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                        required
+                      >
+                        <option value="">Select project type</option>
+                        <option value="Road Construction">Road Construction</option>
+                        <option value="Bridge Construction">Bridge Construction</option>
+                        <option value="Building Construction">Building Construction</option>
+                        <option value="Infrastructure Development">Infrastructure Development</option>
+                        <option value="Maintenance & Repair">Maintenance & Repair</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Third Row - Full width */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Urgency Level *</label>
+                    <select
+                      name="urgency"
+                      value={technicalSupportData.urgency}
+                      onChange={handleTechnicalSupportInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      required
+                    >
+                      <option value="">Select urgency level</option>
+                      <option value="Low - General Inquiry">Low - General Inquiry</option>
+                      <option value="Medium - Project Planning">Medium - Project Planning</option>
+                      <option value="High - Active Project">High - Active Project</option>
+                      <option value="Urgent - Critical Issue">Urgent - Critical Issue</option>
+                    </select>
+                  </div>
+
+                  {/* Fourth Row - Full width */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Technical Query *</label>
+                    <textarea
+                      name="technicalQuery"
+                      value={technicalSupportData.technicalQuery}
+                      onChange={handleTechnicalSupportInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      rows={3}
+                      required
+                      placeholder="Please describe your technical query, application requirements, or specific challenges..."
+                    />
+                  </div>
+
+                  {/* Rest remains same */}
+                  <div className="pt-2">
+                    <Button type="submit" variant="cta" className="w-full">
+                      <Wrench className="h-4 w-4 mr-2" />
+                      Request Technical Support via WhatsApp
+                    </Button>
+                  </div>
+                  <div className="text-xs text-gray-500 text-center">
+                    Our technical experts will respond within 4-6 hours during business days
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 bg-green-600">
           <Button size="sm" className="shadow-xl bg-green-600 hover:bg-green-700" onClick={handleWhatsAppRedirect}>
             <svg style={{ width: "20px", height: "20px" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">

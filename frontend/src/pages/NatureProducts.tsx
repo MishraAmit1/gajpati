@@ -586,7 +586,7 @@ export const NatureProducts = () => {
                                     className="bg-amber text-deep-gray hover:bg-amber/90 text-xs sm:text-base px-3 sm:px-4 py-1 sm:py-2"
                                 >
                                     <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-                                    Download Technical Data Sheet
+                                    Download Brochure
                                 </Button>
                             </Link>
                             <Button

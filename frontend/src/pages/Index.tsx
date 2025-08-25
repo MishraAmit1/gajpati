@@ -11,11 +11,14 @@ import heroImage1 from '../assets/111.webp';
 import heroImage2 from '../assets/1111.webp';
 import heroImage3 from '../assets/11111.webp';
 import heroImage4 from '../assets/111111.webp';
-import { ArrowRight, CheckCircle, Factory, Shield, Award, Building2, Beaker, MessageCircleCode } from 'lucide-react';
+import { ArrowRight, CheckCircle, Factory, Shield, Award, Building2, Beaker, MessageCircleCode, MapPin } from 'lucide-react';
 import { fetchProducts } from '../services/product';
 import type { Product } from '../services/product';
 import QuoteModal from "../components/QuoteModal";
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
+import ourFacilityImage from '../assets/about.jpg';
+import Blog from '../components/Blog';
+
 const Container = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
   <div className={`max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 ${className}`}>{children}</div>
 );
@@ -299,7 +302,70 @@ const Index = () => {
             </div>
           </div>
         </section>
-
+        {/* Facility Overview */}
+        {/* <section className="py-12 sm:py-16 lg:py-20 bg-platinum/30">
+          <Container>
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 items-center">
+              <div>
+                <h2 className="font-display font-bold text-2xl sm:text-3xl lg:text-h1 text-egyptian-blue mb-4 sm:mb-6">
+                  About Gajpati Industries
+                </h2>
+                <div className="space-y-4 text-gray-700 text-sm sm:text-base leading-relaxed">
+                  <p>
+                    Founded in 2020, Gajpati Industries began as a vision to simplify and modernize the infrastructure material supply chain in India. Backed by the legacy and leadership of A&T Infracon, our sister concern, we've rapidly evolved into a trusted brand known for quality, scalability, and innovation.
+                  </p>
+                  <p>
+                    Our expertise spans across critical categories such as:
+                  </p>
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
+                      <span>Bitumen & Emulsions for road construction and maintenance</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
+                      <span>Gabion Wire Structures for slope protection and erosion control</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
+                      <span>Construction Chemicals for enhanced structural performance</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
+                      <span>Waterproofing & Sealants for long-lasting protection</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
+                      <span>Concrete Admixtures for superior concrete performance</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
+                      <span>Curing Compounds & Epoxy Systems for durability</span>
+                    </li>
+                  </ul>
+                  <p>
+                    With strategically placed stock points, field engineers, and a responsive support network, Gajpati ensures that infrastructure developers, government agencies, and contractors get the right material, at the right time, anywhere in India.
+                  </p>
+                </div>
+              </div>
+              <div className="relative">
+                <LazyLoad height={400} offset={100}>
+                  <div className="rounded-lg overflow-hidden shadow-xl">
+                    <img
+                      src={ourFacilityImage}
+                      alt="Gajpati Industries - Building India's Infrastructure"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </LazyLoad>
+                <Badge className="absolute top-4 right-4 bg-egyptian-blue text-white">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  Since 2020
+                </Badge>
+              </div>
+            </div>
+          </Container>
+        </section> */}
         {/* Plant Cards Section */}
         <LazyLoad height={200} offset={100}>
           <section className="py-8 sm:py-16 bg-white">
@@ -477,7 +543,7 @@ const Index = () => {
             </Container>
           </section>
         </LazyLoad>
-
+        <Blog />
         {/* Floating CTA */}
         <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 bg-green-600">
           <Button size="sm" className="shadow-xl bg-green-600 hover:bg-green-700" onClick={handleWhatsAppRedirect}>

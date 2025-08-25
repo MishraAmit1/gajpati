@@ -7,9 +7,11 @@ import { Layout } from './components/Layout';
 import Index from './pages/Index';
 import NotFound from './pages/NotFound';
 import OurFacility from './pages/OurFacility';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 const About = lazy(() => import('./pages/About'));
 const Careers = lazy(() => import('./pages/Careers'));
-const CareerDetails = lazy(() => import('./pages/CareerDetails')); // Added CareerDetails
+const CareerDetails = lazy(() => import('./pages/CareerDetails'));
 const Products = lazy(() => import('./pages/Products'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Blog = lazy(() => import('./pages/Blog'));
@@ -67,6 +69,8 @@ const App = () => (
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/product-list" element={<ProductList />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

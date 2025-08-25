@@ -8,10 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, MapPin, Phone, Mail, Clock, FileText, MessageSquare, AlertCircle } from 'lucide-react';
+import { CheckCircle, MapPin, Phone, Mail, Clock, FileText, MessageSquare, AlertCircle, X, Calendar } from 'lucide-react';
 import { createInquiry } from '../services/inquiry';
-import { PopupButton } from 'react-calendly';
-import { toast } from "sonner"; // 👈 Use sonner instead
+import { toast } from "sonner";
 
 const Container = ({ children, className = '' }) => (
   <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
@@ -67,31 +66,37 @@ const Contact = () => {
   });
   const [errors, setErrors] = useState({});
 
+  // Plant Visit Modal State
+  const [showPlantVisitModal, setShowPlantVisitModal] = useState(false);
+  const [plantVisitData, setPlantVisitData] = useState({
+    name: '',
+    email: '',
+    company: '',
+    preferredDate: '',
+    purpose: ''
+  });
+
   const mutation = useMutation({
     mutationFn: createInquiry,
     onSuccess: (data, variables) => {
-      console.log("Success! Showing toast..."); // Debug log
+      console.log("Success! Showing toast...");
 
-      // Success toast with Sonner 🎉
       toast.success("✅ Success!", {
         description: "Inquiry submitted successfully! Our team will respond within 24 hours.",
         duration: 3000,
       });
 
-      // Convert values -> labels for WhatsApp message
       const selectedProductLabels = products
         .filter((p) => variables.selectedProducts.includes(p.value))
         .map((p) => p.label);
 
       const message = `New Inquiry Submission:\n\nName: ${variables.customerName}\nEmail: ${variables.customerEmail}\nPhone: ${variables.customerPhone}\nCompany: ${variables.companyName}\nCity: ${variables.city}\nPurpose: ${variables.purpose}\nProducts: ${selectedProductLabels.join(', ')}\nDescription: ${variables.description || 'N/A'}`;
 
-      // 2 second delay before WhatsApp redirect
       setTimeout(() => {
         const whatsappUrl = `https://wa.me/9528355555?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
       }, 2000);
 
-      // Reset form
       setFormData({
         customerName: '',
         customerEmail: '',
@@ -106,9 +111,8 @@ const Contact = () => {
       });
     },
     onError: (err) => {
-      console.log("Error! Showing toast..."); // Debug log
+      console.log("Error! Showing toast...");
 
-      // Error toast with Sonner 🚨
       toast.error("❌ Error", {
         description: err.message || "Failed to submit inquiry. Please try again.",
         duration: 3000,
@@ -174,6 +178,54 @@ const Contact = () => {
       return;
     }
     mutation.mutate(formData);
+  };
+
+  // Plant Visit Modal Functions
+  const handlePlantVisitClick = () => {
+    setPlantVisitData({
+      name: '',
+      email: '',
+      company: '',
+      preferredDate: '',
+      purpose: ''
+    });
+    setShowPlantVisitModal(true);
+  };
+
+  const handleClosePlantVisitModal = () => {
+    setShowPlantVisitModal(false);
+  };
+
+  const handlePlantVisitInputChange = (e) => {
+    setPlantVisitData({
+      ...plantVisitData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handlePlantVisitSubmit = (e) => {
+    e.preventDefault();
+
+    const message = `Hello! I would like to schedule a plant visit.
+
+*Plant Visit Request Details:*
+Name: ${plantVisitData.name}
+Email: ${plantVisitData.email}
+Company: ${plantVisitData.company}
+Preferred Date: ${plantVisitData.preferredDate}
+Purpose: ${plantVisitData.purpose}
+
+Please confirm the visit schedule and provide any additional requirements.`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappNumber = '919528355555';
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+    window.open(whatsappURL, '_blank');
+
+    setTimeout(() => {
+      setShowPlantVisitModal(false);
+    }, 1000);
   };
 
   return (
@@ -335,8 +387,8 @@ const Contact = () => {
                             aria-describedby={errors.customerEmail ? 'customerEmail-error' : undefined}
                           />
                           {errors.customerEmail && (
-                            <p id="customerEmail-error" className="text-red-600">
-
+                            <p id="customerEmail-error" className="text-red-600 text-sm">
+                              {errors.customerEmail}
                             </p>
                           )}
                         </div>
@@ -610,21 +662,24 @@ const Contact = () => {
                 </Card>
 
                 <div className="space-y-3">
-                  <PopupButton
-                    url="https://calendly.com/amsmisho/30min"
-                    rootElement={document.getElementById('root')}
-                    text="Schedule Plant Visit"
-                    className="w-full rounded-md bg-amber text-white py-3 px-4 text-sm font-medium hover:bg-amber-dark focus:outline-none focus:ring-2 focus:ring-amber focus:ring-offset-2"
-                  />
+                  <Button
+                    variant="variants"
+                    size="lg"
+                    className="w-full rounded-md bg-amber text-black py-3 px-4 text-sm font-medium hover:bg-amber-dark focus:outline-none focus:ring-2 focus:ring-amber focus:ring-offset-2"
+                    onClick={handlePlantVisitClick}
+                  >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Schedule Plant Visit
+                  </Button>
                   <Button
                     variant="enterprise"
                     size="lg"
-                    className="w-full placeholder:text-gray-400"
+                    className="w-full"
                     onClick={handleRequestSample}
                   >
                     Request Product Samples
                   </Button>
-                  <Button variant="trust" size="lg" asChild className="w-full placeholder:text-gray-400">
+                  <Button variant="trust" size="lg" asChild className="w-full">
                     <a href="/downloads/company-profile.pdf" download>
                       Download Company Profile
                     </a>
@@ -637,6 +692,97 @@ const Contact = () => {
         <section className="py-0">
           <InteractiveMap />
         </section>
+
+        {/* Plant Visit Modal - Phone Number field removed */}
+        {showPlantVisitModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 relative">
+              <button
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+                onClick={handleClosePlantVisitModal}
+                aria-label="Close"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <div className="p-6">
+                <h2 className="text-xl font-bold mb-2 text-egyptian-blue">Schedule Plant Visit</h2>
+                <p className="text-gray-600 mb-4 text-sm">
+                  Visit our state-of-the-art manufacturing facility in Jammu & Kashmir
+                </p>
+                <form onSubmit={handlePlantVisitSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={plantVisitData.name}
+                      onChange={handlePlantVisitInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      required
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={plantVisitData.email}
+                      onChange={handlePlantVisitInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      required
+                      placeholder="your.email@company.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Company/Organization *</label>
+                    <input
+                      type="text"
+                      name="company"
+                      value={plantVisitData.company}
+                      onChange={handlePlantVisitInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      required
+                      placeholder="Your company name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Date *</label>
+                    <input
+                      type="date"
+                      name="preferredDate"
+                      value={plantVisitData.preferredDate}
+                      onChange={handlePlantVisitInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      required
+                      min={new Date().toISOString().split('T')[0]} // Prevent past dates
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Purpose of Visit</label>
+                    <textarea
+                      name="purpose"
+                      value={plantVisitData.purpose}
+                      onChange={handlePlantVisitInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      rows={3}
+                      placeholder="e.g., Product evaluation, technical discussion, business partnership..."
+                    />
+                  </div>
+                  <div className="pt-2">
+                    <Button type="submit" variant="cta" className="w-full">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Request Plant Visit via WhatsApp
+                    </Button>
+                  </div>
+                  <div className="text-xs text-gray-500 text-center">
+                    Our team will confirm the visit schedule within 24 hours
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
