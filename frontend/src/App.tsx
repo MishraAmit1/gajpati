@@ -18,7 +18,6 @@ const Contact = lazy(() => import('./pages/Contact'));
 const ProductList = lazy(() => import('./pages/ProductList'));
 const NatureProducts = lazy(() => import('./pages/NatureProducts'));
 const NatureProductList = lazy(() => import('./pages/NatureProductList'));
-console.log(import.meta.env.API_BASE_URL);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,7 +31,23 @@ const queryClient = new QueryClient({
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
+      <Toaster
+        position="top-right"
+        expand={true}
+        richColors={true}
+        closeButton={true}
+        toastOptions={{
+          style: {
+            background: 'white',
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
+            padding: '16px',
+            fontSize: '14px',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+          },
+          className: 'custom-toast',
+        }}
+      />
       <BrowserRouter>
         <Layout>
           <Suspense fallback={<div className="flex justify-center items-center h-screen">

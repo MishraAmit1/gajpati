@@ -4,27 +4,8 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  server: {
-    proxy: {
-      '/api': {
-        target: 'https://gajpati-backend.onrender.com',
-        changeOrigin: true,
-        secure: true,
-      },
-    },
-  },
-  preview: {
-    proxy: {
-      '/api': {
-        target: 'https://gajpati-backend.onrender.com',
-        changeOrigin: true,
-        secure: true,
-      },
-    },
-    allowedHosts: ['gajpatifrontend.onrender.com'],
-  },
   build: {
-    sourcemap: true, // Enable source maps for debugging
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: {

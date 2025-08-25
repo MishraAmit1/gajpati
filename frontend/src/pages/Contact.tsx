@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
-import LazyLoad from 'react-lazyload';
 import { useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,29 +7,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, MapPin, Phone, Mail, Clock, Shield, FileText, MessageSquare, Factory } from 'lucide-react';
+import { CheckCircle, MapPin, Phone, Mail, Clock, FileText, MessageSquare, AlertCircle } from 'lucide-react';
 import { createInquiry } from '../services/inquiry';
 import { PopupButton } from 'react-calendly';
-import { Link } from 'react-router-dom';
+import { toast } from "sonner"; // 👈 Use sonner instead
 
-const Container = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+const Container = ({ children, className = '' }) => (
   <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
 );
+
 const handleRequestSample = () => {
-  const phoneNumber = "9528355555"; // Without +91 format me normal
+  const phoneNumber = "9528355555";
   const message = "Hi, my name is ____ I want a sample";
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
   window.open(whatsappUrl, "_blank");
 };
-const locations = [
-  { name: 'Delhi Plant', lat: 28.4595, lng: 77.0266, location: 'Gurgaon, Haryana', phone: '+91 95283 55555' },
-  { name: 'Mumbai Plant', lat: 19.0760, lng: 72.8777, location: 'Bhiwandi, Maharashtra', phone: '+91 95283 55555' },
-  { name: 'Chennai Plant', lat: 12.9165, lng: 79.6566, location: 'Sriperumbudur, Tamil Nadu', phone: '+91 98765 43212' },
-  { name: 'Pune Plant', lat: 18.5204, lng: 73.8567, location: 'Ranjangaon, Maharashtra', phone: '+91 98765 43213' },
-  { name: 'Kolkata Center', lat: 22.5726, lng: 88.3639, location: 'Salt Lake, West Bengal', phone: '+91 98765 43214' },
-];
 
 const InteractiveMap = () => (
   <section className="py-0">
@@ -50,8 +42,17 @@ const InteractiveMap = () => (
 );
 
 const Contact = () => {
-  const products = useMemo(() => ['Bitumen', 'Gabion', 'Construct'], []);
+  const products = useMemo(
+    () => [
+      { value: "Bitumen", label: "Bitumen" },
+      { value: "Gabion", label: "Gabion" },
+      { value: "Construct", label: "Construction Chemicals" },
+    ],
+    []
+  );
+
   const purposes = useMemo(() => ['Tender', 'Site Use', 'Resale', 'Other'], []);
+
   const [formData, setFormData] = useState({
     customerName: '',
     customerEmail: '',
@@ -65,15 +66,32 @@ const Contact = () => {
     consent: false,
   });
   const [errors, setErrors] = useState({});
-  const [showSuccess, setShowSuccess] = useState(false);
 
   const mutation = useMutation({
     mutationFn: createInquiry,
     onSuccess: (data, variables) => {
-      setShowSuccess(true);
-      const message = `New Inquiry Submission:\n\nName: ${variables.customerName}\nEmail: ${variables.customerEmail}\nPhone: ${variables.customerPhone}\nCompany: ${variables.companyName}\nCity: ${variables.city}\nPurpose: ${variables.purpose}\nProducts: ${variables.selectedProducts.join(', ')}\nDescription: ${variables.description || 'N/A'}`;
-      const whatsappUrl = `https://wa.me/9528355555?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank');
+      console.log("Success! Showing toast..."); // Debug log
+
+      // Success toast with Sonner 🎉
+      toast.success("✅ Success!", {
+        description: "Inquiry submitted successfully! Our team will respond within 24 hours.",
+        duration: 3000,
+      });
+
+      // Convert values -> labels for WhatsApp message
+      const selectedProductLabels = products
+        .filter((p) => variables.selectedProducts.includes(p.value))
+        .map((p) => p.label);
+
+      const message = `New Inquiry Submission:\n\nName: ${variables.customerName}\nEmail: ${variables.customerEmail}\nPhone: ${variables.customerPhone}\nCompany: ${variables.companyName}\nCity: ${variables.city}\nPurpose: ${variables.purpose}\nProducts: ${selectedProductLabels.join(', ')}\nDescription: ${variables.description || 'N/A'}`;
+
+      // 2 second delay before WhatsApp redirect
+      setTimeout(() => {
+        const whatsappUrl = `https://wa.me/9528355555?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+      }, 2000);
+
+      // Reset form
       setFormData({
         customerName: '',
         customerEmail: '',
@@ -86,10 +104,15 @@ const Contact = () => {
         description: '',
         consent: false,
       });
-      setTimeout(() => setShowSuccess(false), 5000);
     },
     onError: (err) => {
-      setErrors({ submit: err.message || 'Failed to submit inquiry. Please try again.' });
+      console.log("Error! Showing toast..."); // Debug log
+
+      // Error toast with Sonner 🚨
+      toast.error("❌ Error", {
+        description: err.message || "Failed to submit inquiry. Please try again.",
+        duration: 3000,
+      });
     },
   });
 
@@ -99,11 +122,11 @@ const Contact = () => {
     setErrors((prev) => ({ ...prev, [id]: '' }));
   };
 
-  const handleProductChange = (product) => {
+  const handleProductChange = (productValue) => {
     setFormData((prev) => {
-      const selectedProducts = prev.selectedProducts.includes(product)
-        ? prev.selectedProducts.filter((p) => p !== product)
-        : [...prev.selectedProducts, product];
+      const selectedProducts = prev.selectedProducts.includes(productValue)
+        ? prev.selectedProducts.filter((p) => p !== productValue)
+        : [...prev.selectedProducts, productValue];
       return { ...prev, selectedProducts };
     });
     setErrors((prev) => ({ ...prev, selectedProducts: '' }));
@@ -126,10 +149,10 @@ const Contact = () => {
       newErrors.customerPhone = 'Phone number must be 10-12 digits, optionally starting with +';
     }
     if (!formData.companyName || formData.companyName.length < 3) {
-      newErrors.companyName = 'Company name is required and must be at least 3 characters';
+      newErrors.companyName = 'Company name is required';
     }
     if (!formData.city || formData.city.length < 3) {
-      newErrors.city = 'City is required and must be at least 3 characters';
+      newErrors.city = 'City is required';
     }
     if (!formData.purpose) {
       newErrors.purpose = 'Purpose of request is required';
@@ -139,9 +162,6 @@ const Contact = () => {
     }
     if (!formData.consent) {
       newErrors.consent = 'You must consent to data processing';
-    }
-    if (formData.description.length > 0 && (formData.description.length < 3 || formData.description.length > 1000)) {
-      newErrors.description = 'Description must be between 3 and 1000 characters';
     }
     return newErrors;
   };
@@ -159,7 +179,7 @@ const Contact = () => {
   return (
     <>
       <Helmet>
-        <title>Contact Us | Gajpati Industries - We’re Here for You</title>
+        <title>Contact Us | Gajpati Industries - We're Here for You</title>
         <meta
           name="description"
           content="Connect with Gajpati Industries for project consultations, product specifications, and customized chemical solutions. Submit your inquiry or contact our experts today."
@@ -168,7 +188,7 @@ const Contact = () => {
           name="keywords"
           content="contact Gajpati Industries, infrastructure chemicals, project inquiry, technical support, manufacturing locations"
         />
-        <meta property="og:title" content="Contact Us | Gajpati Industries - We’re Here for You" />
+        <meta property="og:title" content="Contact Us | Gajpati Industries - We're Here for You" />
         <meta
           property="og:description"
           content="Connect with Gajpati Industries for project consultations, product specifications, and customized chemical solutions. Submit your inquiry or contact our experts today."
@@ -176,7 +196,7 @@ const Contact = () => {
         <meta property="og:image" content="https://gajpatiindustries.com/images/contact-og.jpg" />
         <meta property="og:url" content="https://gajpatiindustries.com/contact" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Contact Us | Gajpati Industries - We’re Here for You" />
+        <meta name="twitter:title" content="Contact Us | Gajpati Industries - We're Here for You" />
         <meta
           name="twitter:description"
           content="Connect with Gajpati Industries for project consultations, product specifications, and customized chemical solutions. Submit your inquiry or contact our experts today."
@@ -237,7 +257,7 @@ const Contact = () => {
           <Container>
             <div className="text-center">
               <h1 id="contact-heading" className="font-display font-bold text-3xl sm:text-4xl lg:text-hero mb-3 sm:mb-4">
-                We’re Here for You
+                We're Here for You
               </h1>
               <p className="text-base sm:text-lg lg:text-xl leading-relaxed max-w-2xl sm:max-w-3xl mx-auto">
                 Connect with our technical experts for project consultations, product specifications,
@@ -260,23 +280,6 @@ const Contact = () => {
                     </p>
                   </CardHeader>
                   <CardContent className="p-6 space-y-6 bg-gray-50 rounded-b-lg">
-                    {showSuccess && (
-                      <div
-                        className="flex items-center p-4 bg-green-100 border border-green-400 rounded-lg text-green-800 shadow-md transition-opacity duration-500 ease-in-out"
-                        style={{ opacity: showSuccess ? 1 : 0 }}
-                      >
-                        <CheckCircle className="h-5 w-5 mr-2" />
-                        <span className="text-sm font-medium">
-                          Inquiry submitted successfully! Our team will respond within 24 hours.
-                        </span>
-                      </div>
-                    )}
-                    {errors.submit && (
-                      <Alert variant="destructive">
-                        <AlertTitle>Error</AlertTitle>
-                        <AlertDescription>{errors.submit}</AlertDescription>
-                      </Alert>
-                    )}
                     <form onSubmit={handleSubmit} className="space-y-6" aria-labelledby="inquiry-form-title">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-2">
@@ -332,8 +335,8 @@ const Contact = () => {
                             aria-describedby={errors.customerEmail ? 'customerEmail-error' : undefined}
                           />
                           {errors.customerEmail && (
-                            <p id="customerEmail-error" className="text-red-600 text-sm">
-                              {errors.customerEmail}
+                            <p id="customerEmail-error" className="text-red-600">
+
                             </p>
                           )}
                         </div>
@@ -435,21 +438,21 @@ const Contact = () => {
                         <div className="flex flex-wrap gap-2 mb-2">
                           {products.map((product) => (
                             <Badge
-                              key={product}
+                              key={product.value}
                               variant="outline"
-                              className={`cursor-pointer ${formData.selectedProducts.includes(product) ? 'bg-egyptian-blue text-white' : 'hover:bg-egyptian-blue hover:text-white'}`}
-                              onClick={() => handleProductChange(product)}
+                              className={`cursor-pointer ${formData.selectedProducts.includes(product.value)
+                                ? 'bg-egyptian-blue text-white'
+                                : 'hover:bg-egyptian-blue hover:text-white'
+                                }`}
+                              onClick={() => handleProductChange(product.value)}
                               disabled={mutation.isLoading}
-                              aria-label={`Select ${product}`}
                             >
-                              {product}
+                              {product.label}
                             </Badge>
                           ))}
                         </div>
                         {errors.selectedProducts && (
-                          <p id="selectedProducts-error" className="text-red-600 text-sm">
-                            {errors.selectedProducts}
-                          </p>
+                          <p className="text-red-600 text-sm">{errors.selectedProducts}</p>
                         )}
                       </div>
                       <div className="space-y-2">
@@ -602,7 +605,6 @@ const Contact = () => {
                           <div className="text-gray-500 text-sm">NDA Available on Request</div>
                         </div>
                       </div>
-
                     </div>
                   </CardContent>
                 </Card>
@@ -610,7 +612,7 @@ const Contact = () => {
                 <div className="space-y-3">
                   <PopupButton
                     url="https://calendly.com/amsmisho/30min"
-                    rootElement={document.getElementById('root')!}
+                    rootElement={document.getElementById('root')}
                     text="Schedule Plant Visit"
                     className="w-full rounded-md bg-amber text-white py-3 px-4 text-sm font-medium hover:bg-amber-dark focus:outline-none focus:ring-2 focus:ring-amber focus:ring-offset-2"
                   />
@@ -632,32 +634,6 @@ const Contact = () => {
             </div>
           </Container>
         </section>
-        {/* <LazyLoad height={200} offset={100}>
-          <section className="py-16 bg-platinum/20">
-            <Container>
-              <div className="text-center mb-12">
-                <h2 className="font-display font-bold text-h2 text-egyptian-blue mb-4">
-                  Manufacturing Locations
-                </h2>
-                <p className="text-gray-600 max-w-2xl mx-auto">
-                  Our strategically located plants ensure quick delivery across India
-                </p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {locations.map((plant, index) => (
-                  <Card key={index} className="shadow-card">
-                    <CardContent className="p-6 text-center">
-                      <Factory className="h-12 w-12 text-egyptian-blue mx-auto mb-4" />
-                      <h3 className="font-semibold text-lg mb-2">{plant.name}</h3>
-                      <p className="text-gray-600 text-sm mb-3">{plant.location}</p>
-                      <p className="text-gray-600 text-sm">{plant.phone}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </Container>
-          </section>
-        </LazyLoad> */}
         <section className="py-0">
           <InteractiveMap />
         </section>

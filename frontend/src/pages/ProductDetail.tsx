@@ -274,7 +274,7 @@ const ProductDetail = () => {
                       >
                         <a href={product.brochure.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                           <Download className="h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">Download MSDS</span>
+                          <span className="truncate">Download TDS</span>
                         </a>
                       </Button>
                     )}
