@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Download, CheckCircle, Factory, Shield, FileText, ChevronRight, X, Wrench } from "lucide-react";
+import { Download, CheckCircle, Factory, Shield, FileText, ChevronRight, X, Wrench, Calendar } from "lucide-react";
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
 import { toast } from "sonner";
 import { createQuote } from "../services/quote";
@@ -91,7 +91,135 @@ const ProductDetail = () => {
   });
   const [tdsErrors, setTdsErrors] = useState({});
   const [tdsLoading, setTdsLoading] = useState(false);
+  const [showSiteVisitModal, setShowSiteVisitModal] = useState(false);
+  const [siteVisitData, setSiteVisitData] = useState({
+    name: '',
+    email: '',
+    company: '',
+    preferredDate: '',
+    purpose: ''
+  });
+  // Quote Modal State
+  const [showQuoteModal, setShowQuoteModal] = useState(false);
+  const [quoteData, setQuoteData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    quantity: '',
+    deliveryLocation: '',
+    requirements: ''
+  });
+  // Quote Modal Functions
+  const handleQuoteClick = () => {
+    setQuoteData({
+      name: '',
+      email: '',
+      phone: '',
+      company: '',
+      quantity: '',
+      deliveryLocation: '',
+      requirements: ''
+    });
+    setShowQuoteModal(true);
+  };
 
+  const handleCloseQuoteModal = () => {
+    setShowQuoteModal(false);
+  };
+
+  const handleQuoteInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setQuoteData({
+      ...quoteData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleQuoteSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const message = `Hello! I would like to request a detailed quote for *${product?.name}* (${product?.abbreviation}).
+
+*Quote Request Details:*
+Name: ${quoteData.name}
+Email: ${quoteData.email}
+Phone: ${quoteData.phone}
+Company: ${quoteData.company}
+Quantity Required: ${quoteData.quantity}
+Delivery Location: ${quoteData.deliveryLocation}
+
+*Additional Requirements:*
+${quoteData.requirements}
+
+*Product Details:*
+Product: ${product?.name}
+Abbreviation: ${product?.abbreviation}
+Category: ${product?.natureId?.name}
+
+Please provide pricing, delivery timeline, and payment terms.`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappNumber = '919528355555';
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+    window.open(whatsappURL, '_blank');
+
+    setTimeout(() => {
+      setShowQuoteModal(false);
+    }, 1000);
+  };
+  // Site Visit Modal Functions
+  const handleSiteVisitClick = () => {
+    setSiteVisitData({
+      name: '',
+      email: '',
+      company: '',
+      preferredDate: '',
+      purpose: ''
+    });
+    setShowSiteVisitModal(true);
+  };
+
+  const handleCloseSiteVisitModal = () => {
+    setShowSiteVisitModal(false);
+  };
+
+  const handleSiteVisitInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSiteVisitData({
+      ...siteVisitData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSiteVisitSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const message = `Hello! I would like to schedule a site visit for *${product?.name}* (${product?.abbreviation}).
+
+*Site Visit Request Details:*
+Name: ${siteVisitData.name}
+Email: ${siteVisitData.email}
+Company: ${siteVisitData.company}
+Preferred Date: ${siteVisitData.preferredDate}
+Purpose: ${siteVisitData.purpose}
+
+*Product Details:*
+Product: ${product?.name}
+Abbreviation: ${product?.abbreviation}
+Category: ${product?.natureId?.name}
+
+Please confirm the visit schedule and provide any additional requirements.`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappNumber = '919528355555';
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+    window.open(whatsappURL, '_blank');
+
+    setTimeout(() => {
+      setShowSiteVisitModal(false);
+    }, 1000);
+  };
   useEffect(() => {
     if (!id) return;
     setLoading(true);
@@ -598,19 +726,110 @@ Please provide technical assistance and guidance for this product.`;
               <Button
                 variant="action"
                 className="h-11 px-6 text-base sm:h-12 sm:px-8 sm:text-lg"
+                onClick={handleQuoteClick}
               >
                 Request Detailed Quote
               </Button>
               <Button
                 variant="trust"
                 className="h-11 px-6 text-base sm:h-12 sm:px-8 sm:text-lg"
+                onClick={handleSiteVisitClick}
               >
                 Schedule Site Visit
               </Button>
             </div>
           </div>
         </section>
-
+        {/* Site Visit Modal */}
+        {showSiteVisitModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 relative">
+              <button
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+                onClick={handleCloseSiteVisitModal}
+                aria-label="Close"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <div className="p-6">
+                <h2 className="text-xl font-bold mb-2 text-egyptian-blue">Schedule Site Visit</h2>
+                <p className="text-gray-600 mb-4 text-sm">
+                  Visit our site to see {product?.name} in action
+                </p>
+                <form onSubmit={handleSiteVisitSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={siteVisitData.name}
+                      onChange={handleSiteVisitInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      required
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={siteVisitData.email}
+                      onChange={handleSiteVisitInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      required
+                      placeholder="your.email@company.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Company/Organization *</label>
+                    <input
+                      type="text"
+                      name="company"
+                      value={siteVisitData.company}
+                      onChange={handleSiteVisitInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      required
+                      placeholder="Your company name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Date *</label>
+                    <input
+                      type="date"
+                      name="preferredDate"
+                      value={siteVisitData.preferredDate}
+                      onChange={handleSiteVisitInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Purpose of Visit</label>
+                    <textarea
+                      name="purpose"
+                      value={siteVisitData.purpose}
+                      onChange={handleSiteVisitInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      rows={3}
+                      placeholder="e.g., Product evaluation, technical discussion, quality inspection..."
+                    />
+                  </div>
+                  <div className="pt-2">
+                    <Button type="submit" variant="cta" className="w-full">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Request Site Visit via WhatsApp
+                    </Button>
+                  </div>
+                  <div className="text-xs text-gray-500 text-center">
+                    Our team will confirm the visit schedule within 24 hours
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* TDS Download Modal */}
         {showTDSModal && (
@@ -750,7 +969,136 @@ Please provide technical assistance and guidance for this product.`;
             </div>
           </div>
         )}
+        {/* Quote Modal */}
+        {showQuoteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 relative max-h-[90vh] overflow-y-auto">
+              <button
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+                onClick={handleCloseQuoteModal}
+                aria-label="Close"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <div className="p-6">
+                <h2 className="text-xl font-bold mb-2 text-egyptian-blue">Request Detailed Quote</h2>
+                <p className="text-gray-600 mb-4 text-sm">
+                  Get pricing and delivery details for {product?.name}
+                </p>
+                <form onSubmit={handleQuoteSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={quoteData.name}
+                        onChange={handleQuoteInputChange}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                        required
+                        placeholder="Enter your full name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={quoteData.email}
+                        onChange={handleQuoteInputChange}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                        required
+                        placeholder="your.email@company.com"
+                      />
+                    </div>
+                  </div>
 
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={quoteData.phone}
+                        onChange={handleQuoteInputChange}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                        required
+                        placeholder="+91 98765 43210"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Company/Organization *</label>
+                      <input
+                        type="text"
+                        name="company"
+                        value={quoteData.company}
+                        onChange={handleQuoteInputChange}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                        required
+                        placeholder="Your company name"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Quantity Required *</label>
+                      <input
+                        type="text"
+                        name="quantity"
+                        value={quoteData.quantity}
+                        onChange={handleQuoteInputChange}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                        required
+                        placeholder="e.g., 100 MT, 50 drums"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Location *</label>
+                      <input
+                        type="text"
+                        name="deliveryLocation"
+                        value={quoteData.deliveryLocation}
+                        onChange={handleQuoteInputChange}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                        required
+                        placeholder="City, State"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Additional Requirements</label>
+                    <textarea
+                      name="requirements"
+                      value={quoteData.requirements}
+                      onChange={handleQuoteInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-egyptian-blue"
+                      rows={3}
+                      placeholder="e.g., Specific grade requirements, delivery timeline, packaging preferences..."
+                    />
+                  </div>
+
+                  <div className="bg-gray-50 p-3 rounded">
+                    <p className="text-sm font-medium text-gray-700 mb-1">Product Details:</p>
+                    <p className="text-sm text-gray-600">{product?.name} ({product?.abbreviation})</p>
+                    <p className="text-sm text-gray-600">Category: {product?.natureId?.name}</p>
+                  </div>
+
+                  <div className="pt-2">
+                    <Button type="submit" variant="cta" className="w-full">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Request Quote via WhatsApp
+                    </Button>
+                  </div>
+                  <div className="text-xs text-gray-500 text-center">
+                    Our sales team will provide a detailed quote within 4-6 hours
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Technical Support Modal */}
         {showTechnicalSupportModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
