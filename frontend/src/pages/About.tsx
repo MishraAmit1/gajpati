@@ -1,8 +1,9 @@
 import { Helmet } from 'react-helmet-async';
+import React from 'react';
 import LazyLoad from 'react-lazyload';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Factory, Award, Calendar, Package, Wrench } from 'lucide-react';
+import { Factory, Award, Calendar, Package, Wrench, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
 
@@ -10,21 +11,27 @@ const Container = ({ children, className = '' }: { children: React.ReactNode; cl
   <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
 );
 
-const LeaderImage = ({ src, alt }: { src: string; alt: string }) => (
-  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto mb-4 overflow-hidden">
-    <img
-      src={src}
-      alt={alt}
-      className="h-full w-full object-cover"
-      loading="lazy"
-      onError={() => (
-        <div className="w-full h-full bg-gradient-hero flex items-center justify-center text-white">
-          {alt[0]}
+const LeaderImage = ({ src, alt }: { src: string; alt: string }) => {
+  const [imageError, setImageError] = React.useState(false);
+
+  return (
+    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gradient-to-br from-egyptian-blue to-violet-blue">
+      {!imageError ? (
+        <img
+          src={src}
+          alt={alt}
+          className="h-full w-full object-cover"
+          loading="lazy"
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center text-white">
+          <User className="w-12 h-12 sm:w-14 sm:h-14" />
         </div>
       )}
-    />
-  </div>
-);
+    </div>
+  );
+};
 const About = () => {
   return (
     <>
