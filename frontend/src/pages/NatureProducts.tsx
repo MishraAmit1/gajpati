@@ -561,80 +561,86 @@ export const NatureProducts = () => {
                         </p>
                     </div>
 
-                    {/* Cards Container - First component styling */}
-                    <div className="flex flex-wrap gap-4 sm:gap-6">
+                    {/* Single Row Container with both products */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                         {heroProducts.map((product) => (
-                            <div key={product._id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-md hover:shadow-lg transition-shadow
-                             duration-300 p-4 sm:p-5 flex flex-col w-[280px] sm:w-[320px] h-[380px] sm:h-[370px]">
-                                {/* Image Section */}
-                                <div className="relative mb-3 sm:mb-4 overflow-hidden rounded-lg h-32 sm:h-40 flex-shrink-0">
-                                    <img
-                                        src={`${product.images.find(img => img.isPrimary)?.url || product.images[0].url}?format=webp&quality=80`}
-                                        alt={product.name}
-                                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
-                                    {product.isNew && (
-                                        <span className="absolute top-3 right-3 bg-amber text-deep-gray text-xs font-bold px-2.5 py-1 rounded-full">
-                                            NEW
-                                        </span>
-                                    )}
-                                </div>
+                            <div
+                                key={product._id}
+                                className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-4 sm:p-5"
+                            >
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    {/* Image Section */}
+                                    <div className="relative w-full sm:w-32 md:w-40 h-32 sm:h-32 md:h-36 flex-shrink-0 overflow-hidden rounded-lg">
+                                        <img
+                                            src={`${product.images.find(img => img.isPrimary)?.url || product.images[0].url}?format=webp&quality=80`}
+                                            alt={product.name}
+                                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                                        />
+                                        {product.isNew && (
+                                            <span className="absolute top-2 right-2 bg-amber text-deep-gray text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                                NEW
+                                            </span>
+                                        )}
+                                    </div>
 
-                                {/* Content Section - Removed flex-grow and extra spacing */}
-                                <div className="flex flex-col overflow-hidden">
-                                    <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white line-clamp-2 mb-1">
-                                        {product.abbreviation}
-                                    </h3>
-                                    <p className="text-zinc-500 dark:text-zinc-400 text-xs sm:text-sm mb-2 line-clamp-1">
-                                        {product.name}
-                                    </p>
-                                    <p className="text-zinc-500 dark:text-zinc-400 text-xs sm:text-sm mb-3 line-clamp-2">
-                                        {product.shortDescription || product.description}
-                                    </p>
-
-                                    {/* Key Features Tags */}
-                                    {product.keyFeatures && product.keyFeatures.length > 0 && (
-                                        <div className="flex flex-wrap gap-1 sm:gap-2 mb-3">
-                                            {product.keyFeatures.slice(0, 3).map((feature: string, idx: number) => (
-                                                <span
-                                                    key={idx}
-                                                    className="bg-primary/10 text-primary text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-medium"
-                                                >
-                                                    {feature}
-                                                </span>
-                                            ))}
-                                            {product.keyFeatures.length > 3 && (
-                                                <span className="text-[10px] sm:text-xs text-zinc-400 self-center">
-                                                    +{product.keyFeatures.length - 3} more
-                                                </span>
-                                            )}
+                                    {/* Content Section */}
+                                    <div className="flex-1 flex flex-col">
+                                        <div>
+                                            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-0.5">
+                                                {product.abbreviation}
+                                            </h3>
+                                            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mb-2">
+                                                {product.name}
+                                            </p>
                                         </div>
-                                    )}
 
-                                    {/* Buttons Section - Directly after content */}
-                                    <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700 mt-auto">
-                                        <Link
-                                            to={`/product/${product._id}`}
-                                            className="text-primary font-medium text-sm hover:text-primary-dark transition-colors flex items-center"
-                                        >
-                                            View Details
-                                            <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                                        </Link>
-                                        <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() => handleWhatsAppRedirect(product.name)}
-                                            className="text-xs h-8"
-                                        >
-                                            <svg className="w-3.5 h-3.5 mr-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-                                                <path
-                                                    fill="currentColor"
-                                                    d="M 64 2 C 29.8 2 2 29.8 2 64 C 2 74.5 4.5992188 84.800391 9.6992188 93.900391 L 4.4003906 113.30078 C 3.5003906 116.40078 4.3992188 119.60039 6.6992188 121.90039 C 8.9992188 124.20039 12.200781 125.10078 15.300781 124.30078 L 35.5 119 C 44.3 123.6 54.099609 126 64.099609 126 C 98.299609 126 126.09961 98.2 126.09961 64 C 126.09961 47.4 119.7 31.899219 108 20.199219 C 96.2 8.4992187 80.6 2 64 2 z M 64 8 C 79 8 93.099609 13.800391 103.59961 24.400391 C 114.19961 35.000391 120.1 49.1 120 64 C 120 94.9 94.9 120 64 120 C 54.7 120 45.399219 117.59922 37.199219 113.19922 C 36.799219 112.99922 36.300781 112.80078 35.800781 112.80078 C 35.500781 112.80078 35.3 112.80039 35 112.90039 L 13.699219 118.5 C 12.199219 118.9 11.200781 118.09922 10.800781 117.69922 C 10.400781 117.29922 9.6 116.30078 10 114.80078 L 15.599609 94.199219 C 15.799609 93.399219 15.700781 92.600391 15.300781 91.900391 C 10.500781 83.500391 8 73.8 8 64 C 8 33.1 33.1 8 64 8 z M 64 17 C 38.1 17 17 38 17 64 C 17 72.3 19.200781 80.4 23.300781 87.5 C 24.900781 90.3 25.3 93.599219 24.5 96.699219 L 21.599609 107.19922 L 32.800781 104.30078 C 33.800781 104.00078 34.800781 103.90039 35.800781 103.90039 C 37.800781 103.90039 39.8 104.40039 41.5 105.40039 C 48.4 109.00039 56.1 111 64 111 C 89.9 111 111 89.9 111 64 C 111 51.4 106.09922 39.599219 97.199219 30.699219 C 88.399219 21.899219 76.6 17 64 17 z M 43.099609 36.699219 L 45.900391 36.699219 C 47.000391 36.699219 48.099219 36.799219 49.199219 39.199219 C 50.499219 42.099219 53.399219 49.399609 53.699219 50.099609 C 54.099219 50.799609 54.300781 51.699219 53.800781 52.699219 C 53.300781 53.699219 53.100781 54.299219 52.300781 55.199219 C 51.600781 56.099219 50.699609 57.100781 50.099609 57.800781 C 49.399609 58.500781 48.6 59.300781 49.5 60.800781 C 50.4 62.300781 53.299219 67.1 57.699219 71 C 63.299219 76 68.099609 77.600781 69.599609 78.300781 C 71.099609 79.000781 71.900781 78.900391 72.800781 77.900391 C 73.700781 76.900391 76.5 73.599609 77.5 72.099609 C 78.5 70.599609 79.500781 70.900391 80.800781 71.400391 C 82.200781 71.900391 89.400391 75.499219 90.900391 76.199219 C 92.400391 76.899219 93.399219 77.300391 93.699219 77.900391 C 94.099219 78.700391 94.100391 81.599609 92.900391 85.099609 C 91.700391 88.499609 85.700391 91.899609 82.900391 92.099609 C 80.200391 92.299609 77.699219 93.300391 65.199219 88.400391 C 50.199219 82.500391 40.7 67.099609 40 66.099609 C 39.3 65.099609 34 58.100781 34 50.800781 C 34 43.500781 37.799219 40 39.199219 38.5 C 40.599219 37 42.099609 36.699219 43.099609 36.699219 z"
-                                                />
-                                            </svg>
-                                            Get Quote
-                                        </Button>
+                                        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-2 line-clamp-2">
+                                            {product.shortDescription || product.description}
+                                        </p>
+
+                                        {/* Key Features Tags */}
+                                        {product.keyFeatures && product.keyFeatures.length > 0 && (
+                                            <div className="flex flex-wrap gap-1 mb-3">
+                                                {product.keyFeatures.slice(0, 3).map((feature: string, idx: number) => (
+                                                    <span
+                                                        key={idx}
+                                                        className="bg-primary/10 text-primary text-[10px] sm:text-xs px-1.5 py-0.5 rounded font-medium"
+                                                    >
+                                                        {feature}
+                                                    </span>
+                                                ))}
+                                                {product.keyFeatures.length > 3 && (
+                                                    <span className="text-[10px] sm:text-xs text-zinc-400 self-center">
+                                                        +{product.keyFeatures.length - 3}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* Action Buttons */}
+                                        <div className="flex items-center gap-2 mt-auto pt-2 border-t border-gray-100 dark:border-gray-800">
+                                            <Link
+                                                to={`/product/${product._id}`}
+                                                className="inline-flex items-center text-primary hover:text-primary-dark font-medium text-xs sm:text-sm transition-colors"
+                                            >
+                                                View Details
+                                                <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 ml-1" />
+                                            </Link>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => handleWhatsAppRedirect(product.name)}
+                                                className="text-xs h-7 px-2"
+                                            >
+                                                <svg className="w-3.5 h-3.5 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+                                                    <path
+                                                        fill="currentColor"
+                                                        d="M 64 2 C 29.8 2 2 29.8 2 64 C 2 74.5 4.5992188 84.800391 9.6992188 93.900391 L 4.4003906 113.30078 C 3.5003906 116.40078 4.3992188 119.60039 6.6992188 121.90039 C 8.9992188 124.20039 12.200781 125.10078 15.300781 124.30078 L 35.5 119 C 44.3 123.6 54.099609 126 64.099609 126 C 98.299609 126 126.09961 98.2 126.09961 64 C 126.09961 47.4 119.7 31.899219 108 20.199219 C 96.2 8.4992187 80.6 2 64 2 z M 64 8 C 79 8 93.099609 13.800391 103.59961 24.400391 C 114.19961 35.000391 120.1 49.1 120 64 C 120 94.9 94.9 120 64 120 C 54.7 120 45.399219 117.59922 37.199219 113.19922 C 36.799219 112.99922 36.300781 112.80078 35.800781 112.80078 C 35.500781 112.80078 35.3 112.80039 35 112.90039 L 13.699219 118.5 C 12.199219 118.9 11.200781 118.09922 10.800781 117.69922 C 10.400781 117.29922 9.6 116.30078 10 114.80078 L 15.599609 94.199219 C 15.799609 93.399219 15.700781 92.600391 15.300781 91.900391 C 10.500781 83.500391 8 73.8 8 64 C 8 33.1 33.1 8 64 8 z M 64 17 C 38.1 17 17 38 17 64 C 17 72.3 19.200781 80.4 23.300781 87.5 C 24.900781 90.3 25.3 93.599219 24.5 96.699219 L 21.599609 107.19922 L 32.800781 104.30078 C 33.800781 104.00078 34.800781 103.90039 35.800781 103.90039 C 37.800781 103.90039 39.8 104.40039 41.5 105.40039 C 48.4 109.00039 56.1 111 64 111 C 89.9 111 111 89.9 111 64 C 111 51.4 106.09922 39.599219 97.199219 30.699219 C 88.399219 21.899219 76.6 17 64 17 z M 43.099609 36.699219 L 45.900391 36.699219 C 47.000391 36.699219 48.099219 36.799219 49.199219 39.199219 C 50.499219 42.099219 53.399219 49.399609 53.699219 50.099609 C 54.099219 50.799609 54.300781 51.699219 53.800781 52.699219 C 53.300781 53.699219 53.100781 54.299219 52.300781 55.199219 C 51.600781 56.099219 50.699609 57.100781 50.099609 57.800781 C 49.399609 58.500781 48.6 59.300781 49.5 60.800781 C 50.4 62.300781 53.299219 67.1 57.699219 71 C 63.299219 76 68.099609 77.600781 69.599609 78.300781 C 71.099609 79.000781 71.900781 78.900391 72.800781 77.900391 C 73.700781 76.900391 76.5 73.599609 77.5 72.099609 C 78.5 70.599609 79.500781 70.900391 80.800781 71.400391 C 82.200781 71.900391 89.400391 75.499219 90.900391 76.199219 C 92.400391 76.899219 93.399219 77.300391 93.699219 77.900391 C 94.099219 78.700391 94.100391 81.599609 92.900391 85.099609 C 91.700391 88.499609 85.700391 91.899609 82.900391 92.099609 C 80.200391 92.299609 77.699219 93.300391 65.199219 88.400391 C 50.199219 82.500391 40.7 67.099609 40 66.099609 C 39.3 65.099609 34 58.100781 34 50.800781 C 34 43.500781 37.799219 40 39.199219 38.5 C 40.599219 37 42.099609 36.699219 43.099609 36.699219 z"
+                                                    />
+                                                </svg>
+                                                Quote
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
