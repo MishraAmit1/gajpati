@@ -620,7 +620,7 @@ export const NatureProducts = () => {
                                         {/* Action Buttons */}
                                         <div className="flex items-center gap-2 mt-auto pt-2 border-t border-gray-100 dark:border-gray-800">
                                             <Link
-                                                to={`/product/${product._id}`}
+                                                to={`/product/${product.slug}`}
                                                 className="inline-flex items-center text-primary hover:text-primary-dark font-medium text-xs sm:text-sm transition-colors"
                                             >
                                                 View Details

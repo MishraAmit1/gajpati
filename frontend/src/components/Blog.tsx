@@ -153,7 +153,7 @@ const Blog = () => {
                                             size="sm"
                                             className="w-full group"
                                         >
-                                            <Link to={`/blog/${post.slug}`} className="flex items-center justify-center">
+                                            <Link to={`/${post.slug}`} className="flex items-center justify-center">
                                                 Read Article
                                                 <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                             </Link>

@@ -11,12 +11,11 @@ import heroImage1 from '../assets/111.webp';
 import heroImage2 from '../assets/1111.webp';
 import heroImage3 from '../assets/11111.webp';
 import heroImage4 from '../assets/111111.webp';
-import { ArrowRight, CheckCircle, Factory, Shield, Award, Building2, Beaker, MessageCircleCode, MapPin } from 'lucide-react';
+import { ArrowRight, CheckCircle, Factory, Shield, Award, Building2, Beaker } from 'lucide-react';
 import { fetchProducts } from '../services/product';
 import type { Product } from '../services/product';
 import QuoteModal from "../components/QuoteModal";
 import { handleWhatsAppRedirect } from '../helper/whatsapp';
-import ourFacilityImage from '../assets/about.jpg';
 import Blog from '../components/Blog';
 
 const Container = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -49,18 +48,6 @@ const ErrorFallback = ({ error }: { error: string }) => (
 );
 
 const Index = () => {
-  const getPlantIcon = useCallback((plantName: string) => {
-    const name = plantName.toLowerCase();
-    if (name.includes('bitumen')) {
-      return <Building2 className="h-9 w-9 text-white" />;
-    } else if (name.includes('gabions')) {
-      return <Shield className="h-9 w-9 text-white" />;
-    } else if (name.includes('construction') || name.includes('chemical')) {
-      return <Beaker className="h-9 w-9 text-white" />;
-    } else {
-      return <Factory className="h-9 w-9 text-white" />;
-    }
-  }, []);
 
   const { data: plants, isLoading: plantsLoading, error: plantsError } = useQuery({
     queryKey: ['plants'],
@@ -532,7 +519,7 @@ const Index = () => {
                             {product.certification || 'Certified'}
                           </Badge>
                           <Button variant="enterprise" size="sm" asChild className="w-full sm:w-auto">
-                            <Link to={`/product/${product._id || product.id}`}>View Details</Link>
+                            <Link to={`/product/${product.slug || product.slug}`}>View Details</Link>
                           </Button>
                         </div>
                       </CardContent>
