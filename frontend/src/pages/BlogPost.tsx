@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import LazyLoad from 'react-lazyload';
 import { useQuery } from '@tanstack/react-query';
@@ -84,12 +84,11 @@ const BlogPost = () => {
       ],
       ALLOWED_ATTR: [
         'href', 'src', 'alt', 'title', 'width', 'height',
-        'target', 'rel'
+        'target', 'rel', 'id'
       ],
       // Remove all inline styles from TinyMCE
       FORBID_ATTR: ['style', 'class']
     });
-
     return cleanHtml;
   }, [post?.content]);
 
@@ -102,7 +101,49 @@ const BlogPost = () => {
       });
     });
   };
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      setTimeout(() => {
+        const id = hash.substring(1);
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, []);
+  // Second useEffect ko ye se replace karo:
+  useEffect(() => {
+    const handleHashClick = (e: Event) => {  // MouseEvent ki jagah Event use karo
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
 
+      if (link) {
+        const href = link.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          e.preventDefault();
+          const id = href.substring(1);
+          const element = document.getElementById(id);
+
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            window.history.pushState(null, '', href);
+          }
+        }
+      }
+    };
+
+    // Content div find karo
+    const contentDiv = document.querySelector('.prose');
+    if (contentDiv) {
+      contentDiv.addEventListener('click', handleHashClick);
+
+      return () => {
+        contentDiv.removeEventListener('click', handleHashClick);
+      };
+    }
+  }, [processedContent]);
   const handleWhatsAppShare = () => {
     const shareUrl = window.location.href;
     const encodedUrl = encodeURIComponent(shareUrl);
