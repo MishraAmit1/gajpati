@@ -16,7 +16,7 @@ export default {
       screens: {
         '2xl': '1400px'
       },
-      
+
     },
     extend: {
       colors: {
@@ -112,5 +112,5 @@ export default {
       }
     }
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require('@tailwindcss/typography')],
 } satisfies Config;

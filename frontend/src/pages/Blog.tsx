@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, User, ArrowRight, MessageCircleCode } from 'lucide-react';
+import { Calendar, Clock, User, ArrowRight } from 'lucide-react';
 import { fetchBlogs, type Blog } from '../services/blog';
 import { subscribe } from '../services/subscriber';
 import { toast } from 'react-hot-toast';
@@ -101,7 +101,6 @@ const Blog = () => {
         <meta name="keywords" content={seoKeywords.join(', ')} />
         <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={seoDescription} />
-        <meta property="og:image" content="https://gajpatiindustries.com/images/blog-og.jpg" />
         <meta property="og:url" content="https://gajpatiindustries.com/blog" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={seoTitle} />
@@ -120,16 +119,6 @@ const Blog = () => {
               'name': 'Gajpati Industries',
               'logo': { '@type': 'ImageObject', 'url': 'https://gajpatiindustries.com/images/logo.webp' },
             },
-          })}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://gajpatiindustries.com' },
-              { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': 'https://gajpatiindustries.com/blog' },
-            ],
           })}
         </script>
       </Helmet>
@@ -247,7 +236,7 @@ const Blog = () => {
                                 ))}
                               </div>
                               <Button asChild variant="enterprise" className="w-auto min-w-[140px] px-3 sm:min-w-[160px] sm:px-4 py-2 group">
-                                <Link to={`/blog/${post.slug}`} className="flex items-center">
+                                <Link to={`/${post.slug}`} className="flex items-center">
                                   Read Full Article
                                   <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Link>
@@ -309,7 +298,7 @@ const Blog = () => {
                             ))}
                           </div>
                           <Button asChild variant="ghost" className="w-auto min-w-[120px] px-3 sm:min-w-[140px] sm:px-4 py-2 group h-auto justify-start">
-                            <Link to={`/blog/${post.slug}`} className="flex items-center text-egyptian-blue hover:text-violet-blue">
+                            <Link to={`/${post.slug}`} className="flex items-center text-egyptian-blue hover:text-violet-blue">
                               Read Article
                               <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                             </Link>

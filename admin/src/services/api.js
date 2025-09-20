@@ -5,6 +5,7 @@ class ApiService {
     this.isRefreshing = false;
     this.failedQueue = [];
   }
+  // app.js me add kar
 
   processQueue(error, token = null) {
     this.failedQueue.forEach((prom) => {
@@ -322,7 +323,16 @@ class ApiService {
       method: "DELETE",
     });
   }
+  async uploadContentImage(file) {
+    const formData = new FormData();
+    formData.append("image", file);
 
+    return this.request("/blogs/upload-content-image", {
+      method: "POST",
+      body: formData,
+      headers: {}, // Remove Content-Type for FormData
+    });
+  }
   // Inquiries endpoints
   async getInquiries(params = {}) {
     const queryString = new URLSearchParams(params).toString();

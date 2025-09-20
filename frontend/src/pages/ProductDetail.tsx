@@ -416,45 +416,11 @@ Please provide technical assistance and guidance for this product.`;
         <meta name="keywords" content={seoKeywords.join(', ')} />
         <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={seoDescription} />
-        <meta property="og:image" content={mainImage?.url || currentCategory?.bgImage || 'https://yourdomain.com/images/default-og.jpg'} />
-        <meta property="og:url" content={`https://yourdomain.com/product/${id}?categoryId=${searchParams.get("categoryId") || currentCategory?.id || ''}`} />
+        <meta property="og:image" content={mainImage?.url || currentCategory?.bgImage} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={seoTitle} />
         <meta name="twitter:description" content={seoDescription} />
-        <meta name="twitter:image" content={mainImage?.url || currentCategory?.bgImage || 'https://yourdomain.com/images/default-og.jpg'} />
-        <link rel="canonical" href={`https://yourdomain.com/product/${id}?categoryId=${searchParams.get("categoryId") || currentCategory?.id || ''}`} />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Product',
-            'name': `Gajpati ${product.abbreviation} - ${product.name}`,
-            'description': seoDescription,
-            'image': mainImage?.url || currentCategory?.bgImage || 'https://yourdomain.com/images/default-og.jpg',
-            'brand': { '@type': 'Brand', 'name': 'Gajpati Industries' },
-            'category': product.natureId?.name || currentCategory?.name || 'Construction Materials',
-            'url': `https://yourdomain.com/product/${id}?categoryId=${searchParams.get("categoryId") || currentCategory?.id || ''}`,
-            'offers': {
-              '@type': 'Offer',
-              'availability': product.status === 'In Stock' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-              'priceCurrency': 'INR',
-              'price': 'Contact for pricing',
-              'url': `https://yourdomain.com/product/${id}?categoryId=${searchParams.get("categoryId") || currentCategory?.id || ''}`,
-            },
-          })}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://yourdomain.com' },
-              { '@type': 'ListItem', 'position': 2, 'name': 'Products', 'item': 'https://yourdomain.com/products' },
-              { '@type': 'ListItem', 'position': 3, 'name': currentCategory?.name || 'Category', 'item': `https://yourdomain.com/products/${searchParams.get("categoryId") || currentCategory?.id || ''}` },
-              { '@type': 'ListItem', 'position': 4, 'name': product.natureId?.name || 'Nature', 'item': `https://yourdomain.com/nature/${product.natureId?._id || product.natureId?.id || ''}/products?categoryId=${searchParams.get("categoryId") || currentCategory?.id || ''}` },
-              { '@type': 'ListItem', 'position': 5, 'name': product.name, 'item': `https://yourdomain.com/product/${id}?categoryId=${searchParams.get("categoryId") || currentCategory?.id || ''}` },
-            ],
-          })}
-        </script>
+
       </Helmet>
       <div className="min-h-screen bg-background">
         <div className="bg-platinum/30 py-4">

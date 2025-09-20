@@ -79,6 +79,7 @@ app.use(
   })
 );
 const isDev = process.env.NODE_ENV === "development";
+app.use("/Uploads", uploadsRouter);
 
 app.use(
   helmet({
@@ -125,6 +126,12 @@ import quotesRouter from "./routes/quote.routes.js";
 app.get("/", async (req, res, next) => {
   res.json({ message: "Running" });
 });
+app.use((req, res, next) => {
+  if (req.url.startsWith("/Uploads")) {
+    console.log(`Uploads route hit: ${req.method} ${req.url}`);
+  }
+  next();
+});
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/plants", plantRouter);
 app.use("/api/v1/natures", natureRouter);
@@ -134,7 +141,6 @@ app.use("/api/v1/inquires", inquiresRouter);
 app.use("/api/v1", plantStatsRouter);
 app.use("/api/v1", subscriberRouter);
 app.use("/api/v1/quotes", quotesRouter);
-app.use("/Uploads", uploadsRouter);
 
 // 404 handler
 app.use((req, res) => {
