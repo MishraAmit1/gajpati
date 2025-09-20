@@ -320,7 +320,7 @@ const BlogPost = () => {
                         {relatedPost.title}
                       </h4>
                       <Button asChild variant="ghost" size="sm" className="p-0 h-auto">
-                        <Link to={`/blog/${relatedPost.slug}`}>
+                        <Link to={`/${relatedPost.slug}`}>
                           Read Article →
                         </Link>
                       </Button>
