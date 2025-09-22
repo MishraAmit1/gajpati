@@ -166,9 +166,7 @@ const BlogPost = () => {
         <meta name="description" content={post.seoDescription || post.excerpt} />
         <meta name="keywords" content={post.seoKeywords?.join(', ')} />
         <link rel="canonical" href={`https://gajpatiindustries.com/${post.slug}`} />
-
       </Helmet>
-
       <div className="min-h-screen bg-background">
         {/* Breadcrumb */}
         <div className="bg-platinum/30 py-3 sm:py-4">

@@ -38,7 +38,7 @@
   </url>
   <!-- Nature Category Pages -->
   <url>
-    <loc>https://gajpatiindustries.com/nature/bitumen</loc>
+    <loc>https://gajpatiindustries.com/nature/bituminous-products</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -48,74 +48,74 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/construct</loc>
+    <loc>https://gajpatiindustries.com/nature/construction-chemicals</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Nature Product List Pages -->
   <url>
-    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b29/products?categoryId=bitumen</loc>
+    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b2b/products?categoryId=68808208cf8dba209c5a0b1e</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b2c/products?categoryId=bitumen</loc>
+    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b26/products?categoryId=68808208cf8dba209c5a0b1e</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/688f7e61ea6a047e4ffea4ec/products?categoryId=bitumen</loc>
+    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b25/products?categoryId=68808208cf8dba209c5a0b1d</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/688f7641800886493051d5c1/products?categoryId=bitumen</loc>
+    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b29/products?categoryId=68808208cf8dba209c5a0b1d</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/688f8380ea6a047e4ffea5bd/products?categoryId=bitumen</loc>
+    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b2c/products?categoryId=68808208cf8dba209c5a0b1d</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/688f80e9ea6a047e4ffea52d/products?categoryId=bitumen</loc>
+    <loc>https://gajpatiindustries.com/nature/688f7641800886493051d5c1/products?categoryId=68808208cf8dba209c5a0b1d</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b2b/products?categoryId=gabion</loc>
+    <loc>https://gajpatiindustries.com/nature/688f8380ea6a047e4ffea5bd/products?categoryId=68808208cf8dba209c5a0b1d</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b26/products?categoryId=gabion</loc>
+    <loc>https://gajpatiindustries.com/nature/688f80e9ea6a047e4ffea52d/products?categoryId=68808208cf8dba209c5a0b1d</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/688f9f4aa82d60c0175b5188/products?categoryId=construct</loc>
+    <loc>https://gajpatiindustries.com/nature/688f9f4aa82d60c0175b5188/products?categoryId=68808208cf8dba209c5a0b1f</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/68837e12e8806df083d01ffa/products?categoryId=construct</loc>
+    <loc>https://gajpatiindustries.com/nature/68837e12e8806df083d01ffa/products?categoryId=68808208cf8dba209c5a0b1f</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b2d/products?categoryId=construct</loc>
+    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b2d/products?categoryId=68808208cf8dba209c5a0b1f</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b2a/products?categoryId=construct</loc>
+    <loc>https://gajpatiindustries.com/nature/688086bbcf8dba209c5a0b2a/products?categoryId=68808208cf8dba209c5a0b1f</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/nature/688380cce8806df083d020a8/products?categoryId=construct</loc>
+    <loc>https://gajpatiindustries.com/nature/688380cce8806df083d020a8/products?categoryId=68808208cf8dba209c5a0b1f</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -242,12 +242,12 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/product/vg-40-super</loc>
+    <loc>https://gajpatiindustries.com/product/vg-40</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gajpatiindustries.com/product/vg-40</loc>
+    <loc>https://gajpatiindustries.com/product/vg-10</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
