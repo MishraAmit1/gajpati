@@ -99,7 +99,7 @@ const Contact = () => {
             Accept: "application/json",
           },
           body: JSON.stringify({
-            access_key: "17b8be4f-19fa-4a8f-8017-33fd56187fb9",
+            access_key: "95863a32-39e4-4218-be68-346273f0df06",
             subject: `New Inquiry from ${variables.customerName}`,
             from_name: "Gajpati Website",
             name: "Gajpati Industries",
