@@ -64,13 +64,6 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
     ) {
       newErrors.customerEmail = "A valid email address is required";
     }
-    if (
-      !formData.customerPhone ||
-      !/^\+91\d{10}$/.test(formData.customerPhone)
-    ) {
-      newErrors.customerPhone =
-        "Phone number must be in the format +91 followed by 10 digits";
-    }
     if (!formData.city || formData.city.length < 3) {
       newErrors.city = "City is required and must be at least 3 characters";
     }
@@ -94,41 +87,88 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
     setShowSuccess(false);
 
     try {
-      // Backend ko value bhejo
+      const selectedProductLabels = products
+        .filter((p) => formData.selectedProducts.includes(p.value))
+        .map((p) => p.label);
+
+      // 1. Backend save
       const payload = {
         customerName: formData.customerName,
         customerEmail: formData.customerEmail,
         customerPhone: formData.customerPhone,
         city: formData.city,
-        selectedProducts: formData.selectedProducts, // yahan value jayegi
+        selectedProducts: formData.selectedProducts,
         additionalRequirement: formData.additionalRequirement,
       };
       await createQuote(payload);
+
+      // 2. 🔥 SIMPLE EMAIL
+      try {
+        const emailResponse = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            access_key: "17b8be4f-19fa-4a8f-8017-33fd56187fb9",
+            subject: `Quote Request from ${formData.customerName}`,
+            from_name: "Gajpati Website",
+            name: "Gajpati Industries",
+            email: formData.customerEmail,
+            message: `
+QUOTE REQUEST RECEIVED
+
+Name: ${formData.customerName}
+Email: ${formData.customerEmail}
+Phone: ${formData.customerPhone}
+City: ${formData.city}
+
+Products: ${selectedProductLabels.join(", ")}
+
+Additional Requirements:
+${formData.additionalRequirement || "None"}
+
+Submitted: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}
+
+Reply to: ${formData.customerEmail}
+          `,
+          }),
+        });
+
+        const emailResult = await emailResponse.json();
+
+        if (emailResult.success) {
+          console.log("✅ Quote email sent");
+        }
+      } catch (emailError) {
+        console.error("❌ Email error:", emailError);
+      }
+
+      // 3. Success message
       setSuccess(
         "Quote request submitted successfully! Our team will respond within 24 hours."
       );
       setShowSuccess(true);
 
-      // WhatsApp message ke liye label nikalo
-      const selectedProductLabels = products
-        .filter((p) => formData.selectedProducts.includes(p.value))
-        .map((p) => p.label)
-        .join(", ");
-
-      const message = `New Quote Request:\n\nName: ${
+      // 4. WhatsApp redirect
+      const whatsappMessage = `New Quote Request:\n\nName: ${
         formData.customerName
       }\nEmail: ${formData.customerEmail}\nPhone: ${
         formData.customerPhone
-      }\nCity: ${
-        formData.city
-      }\nProducts: ${selectedProductLabels}\nAdditional Requirement: ${
-        formData.additionalRequirement || "N/A"
-      }`;
-      const whatsappUrl = `https://wa.me/+917777909218?text=${encodeURIComponent(
-        message
-      )}`;
-      window.open(whatsappUrl, "_blank");
+      }\nCity: ${formData.city}\nProducts: ${selectedProductLabels.join(
+        ", "
+      )}\nAdditional Requirement: ${formData.additionalRequirement || "N/A"}`;
 
+      const whatsappUrl = `https://wa.me/+917777909218?text=${encodeURIComponent(
+        whatsappMessage
+      )}`;
+
+      setTimeout(() => {
+        window.open(whatsappUrl, "_blank");
+      }, 1500);
+
+      // 5. Reset form
       setFormData({
         customerName: "",
         customerEmail: "",
@@ -137,7 +177,8 @@ const QuoteModal = ({ isOpen, setIsOpen }) => {
         selectedProducts: [],
         additionalRequirement: "",
       });
-      setTimeout(() => setIsOpen(false), 3000); // Close modal after success
+
+      setTimeout(() => setIsOpen(false), 3000);
     } catch (err) {
       console.error("Submission error:", err);
       setError(err.message || "Failed to submit quote request");

@@ -78,7 +78,7 @@ const Contact = () => {
 
   const mutation = useMutation({
     mutationFn: createInquiry,
-    onSuccess: (data, variables) => {
+    onSuccess: async (data, variables) => {
       console.log("Success! Showing toast...");
 
       toast.success("✅ Success!", {
@@ -90,6 +90,59 @@ const Contact = () => {
         .filter((p) => variables.selectedProducts.includes(p.value))
         .map((p) => p.label);
 
+      // 🔥 SIMPLE EMAIL FORMAT
+      try {
+        const emailResponse = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            access_key: "17b8be4f-19fa-4a8f-8017-33fd56187fb9",
+            subject: `New Inquiry from ${variables.customerName}`,
+            from_name: "Gajpati Website",
+            name: "Gajpati Industries",
+            email: variables.customerEmail,
+            message: `
+NEW INQUIRY RECEIVED
+
+Name: ${variables.customerName}
+Email: ${variables.customerEmail}
+Phone: ${variables.customerPhone}
+Company: ${variables.companyName}
+Designation: ${variables.designation || 'Not provided'}
+City: ${variables.city}
+
+Purpose: ${variables.purpose}
+Products: ${selectedProductLabels.join(', ')}
+
+Additional Details:
+${variables.description || 'No additional details'}
+
+Submitted: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+
+Reply to: ${variables.customerEmail}
+          `,
+          }),
+        });
+
+        const emailResult = await emailResponse.json();
+
+        if (emailResult.success) {
+          console.log("✅ Email sent successfully");
+          toast.success("📧 Email Sent!", {
+            description: "Inquiry forwarded to our team",
+            duration: 2000,
+          });
+        } else {
+          console.error("❌ Email failed:", emailResult.message);
+        }
+      } catch (emailError) {
+        console.error("❌ Email error:", emailError);
+      }
+
+      // WhatsApp redirect (existing code)
       const message = `New Inquiry Submission:\n\nName: ${variables.customerName}\nEmail: ${variables.customerEmail}\nPhone: ${variables.customerPhone}\nCompany: ${variables.companyName}\nCity: ${variables.city}\nPurpose: ${variables.purpose}\nProducts: ${selectedProductLabels.join(', ')}\nDescription: ${variables.description || 'N/A'}`;
 
       setTimeout(() => {
@@ -111,10 +164,8 @@ const Contact = () => {
       });
     },
     onError: (err) => {
-      console.log("Error! Showing toast...");
-
       toast.error("❌ Error", {
-        description: err.message || "Failed to submit inquiry. Please try again.",
+        description: err.message || "Failed to submit inquiry.",
         duration: 3000,
       });
     },
